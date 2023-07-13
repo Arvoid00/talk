@@ -1,29 +1,57 @@
 {
+  "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json",
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "./src/**/*"],
+  "exclude": [
+    "node_modules",
+    "**/__mocks__/**/*",
+    "**/__test__/**/*",
+    "**/*.spec.ts"
+  ],
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     },
+    "noEmit": true,
+    "isolatedModules": true,
+    // Always include these settings
+    "declarationMap": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    /* Basic Options */
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": [
+      "ESNext", // adds support for ESNext functionality
+      "DOM" // adds support for 'window' other dom methods
+    ],
+    "allowJs": true,
+    /* JSX support */
+    "jsx": "preserve",
+    "declaration": true,
+    /* Strict Type-Checking Options */
+    "strict": false,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    // "strictFunctionTypes": true,
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    /* Advanced Options */
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "noErrorTruncation": true,
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "strictNullChecks": true
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+    ]
+  }
 }
