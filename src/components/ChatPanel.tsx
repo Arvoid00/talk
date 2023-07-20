@@ -1,9 +1,9 @@
 import React from "react";
 import { type UseChatHelpers } from "ai/react";
-import { Button } from "./ui/button";
+import { Button } from "./core/Button";
 import { PromptForm } from "./PromptForm";
 import { ButtonScrollToBottom } from "./ButtonScrollToBottom";
-import { IconRefresh, IconStop } from "./ui/icons";
+import { IconRefresh, IconStop } from "./core/icons";
 // import { FooterText } from './footer'
 import type { Model } from "../constants/models";
 import { upsertChat } from "../actions/upsertChat";
@@ -26,7 +26,7 @@ export interface ChatPanelProps
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
-  id,
+  id = Math.random().toString(36).slice(2), // random id up to 11 chars
   isLoading,
   stop,
   append,
@@ -46,11 +46,10 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       content: value,
       role: `user`
     });
-    id = id ?? Math.random().toString(36).slice(2); // random id up to 11 chars
     await upsertChat({
       chat_id: id,
       title: `TODO: make title: ${id}`,
-      userId: userId || `unknown-user-id`, // TODO: try to get rid of unknown user id, higher up
+      userId: userId ?? `unknown-user-id`, // TODO: try to get rid of unknown user id, higher up
       messages,
       createdAt: new Date(),
       path: `todo`,

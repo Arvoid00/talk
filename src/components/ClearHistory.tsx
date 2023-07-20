@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { Button } from "./ui/button";
+import { Button } from "./core/Button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,8 +14,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger
-} from "./ui/alert-dialog";
-import { IconSpinner } from "./ui/icons";
+} from "./core/AlertDialog";
+import { IconSpinner } from "./core/icons";
 import type { ServerActionResult } from "../types";
 
 interface ClearHistoryProps {

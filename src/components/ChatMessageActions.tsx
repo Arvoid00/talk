@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { type Message } from "ai";
-import { Button } from "./ui/button";
-import { IconCheck, IconCopy } from "./ui/icons";
+import { Button } from "./core/Button";
+import { IconCheck, IconCopy } from "./core/icons";
 import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
 import { cn } from "../utils";
 

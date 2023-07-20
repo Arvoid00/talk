@@ -1,14 +1,14 @@
 import * as React from "react";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { Sidebar } from "./Sidebar";
-import { SidebarList } from "./SidebarList";
+import { Button } from "./core/Button";
+import { Sidebar } from "./Sidebar/Sidebar";
+import { SidebarList } from "./Sidebar/SidebarList";
 import {
   // IconGitHub,
   // IconNextChat,
   IconSeparator
-} from "./ui/icons";
-import { SidebarFooter } from "./SidebarFooter";
+} from "./core/icons";
+import { SidebarFooter } from "./Sidebar/SidebarFooter";
 import { ThemeToggle } from "./ThemeToggle";
 import { ClearHistory } from "./ClearHistory";
 import { UserMenu } from "./UserMenu";
@@ -42,8 +42,8 @@ export const Header = async () => {
           {session?.user ? (
             <UserMenu user={session.user} />
           ) : (
-            <Button variant="link" asChild className="-ml-2">
-              <Link href="/sign-in">Login</Link>
+            <Button as={Link} variant="link" className="-ml-2" href="/sign-in">
+              Login
             </Button>
           )}
         </div>

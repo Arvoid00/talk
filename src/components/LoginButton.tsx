@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Button, type ButtonProps } from "./ui/button";
-import { IconGitHub, IconSpinner } from "./ui/icons";
+import { Button, type ButtonProps } from "./core/Button";
+import { IconGitHub, IconSpinner } from "./core/icons";
 import { cn } from "../utils";
 
 interface LoginButtonProps extends ButtonProps {

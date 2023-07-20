@@ -1,10 +1,10 @@
 import React from "react";
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
-import { fontMono, fontSans } from "../theme/fonts";
+import { fontDisplay, fontBody, fontCode, fontInput  } from "../theme/fonts";
 import { cn } from "../utils";
 import { TailwindIndicator } from "../components/TailwindIndicator";
-import { Providers } from "../components/Providers";
+import { Providers } from "../theme/Providers";
 import { Header } from "../components/Header";
 import "../theme/globals.css";
 
@@ -36,9 +36,11 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => (
     <head />
     <body
       className={cn(
-        `font-sans antialiased`,
-        fontSans.variable,
-        fontMono.variable
+        fontDisplay.variable,
+        fontBody.variable,
+        fontCode.variable,
+        fontInput.variable,
+        `font-body antialiased`
       )}
     >
       <Toaster />

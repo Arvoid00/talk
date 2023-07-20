@@ -4,8 +4,8 @@ import { useChat } from "ai/react";
 import type { UseChatOptions, Message } from "ai/react";
 import { toast } from "react-hot-toast";
 // import { Session } from "@supabase/supabase-js";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "./core/Button";
+import { TextInput } from "./core/TextInput";
 import { AlertAuth } from "./AlertAuth";
 import { ChatList } from "./ChatList";
 import { ChatPanel } from "./ChatPanel";
@@ -18,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle
-} from "./ui/dialog";
+} from "./core/Dialog";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { cn } from "../utils";
 import { models, type Model } from "../constants/models";
@@ -129,7 +129,7 @@ export const Chat: React.FC<ChatProps> = ({
               the name <code className="font-mono">ai-token</code>.
             </DialogDescription>
           </DialogHeader>
-          <Input
+          <TextInput
             value={previewTokenInput}
             placeholder="OpenAI API key"
             onChange={(e) => setPreviewTokenInput(e.target.value)}

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Button, type ButtonProps } from "./ui/button";
-import { IconArrowDown } from "./ui/icons";
+import { Button, type ButtonProps } from "./core/Button";
+import { IconArrowDown } from "./core/icons";
 import { cn } from "../utils";
 import { useAtBottom } from "../hooks/useAtBottom";
 

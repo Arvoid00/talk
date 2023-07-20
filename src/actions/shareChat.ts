@@ -2,7 +2,7 @@
 import { type Chat } from "../types";
 import { supabase } from "../supabase";
 
-export const shareChat = async (chat: Chat): Promise<unknown> => {
+export const shareChat = async (chat: Chat): Promise<Chat> => {
   const payload = {
     ...chat,
     sharePath: `/share/${chat.id}`

@@ -2,9 +2,9 @@ import React from "react";
 import type { Message } from "ai";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { CodeBlock } from "./ui/codeblock";
+import { CodeBlock } from "./core/CodeBlock";
 import { Markdown } from "./Markdown";
-import { IconOpenAI, IconUser } from "./ui/icons";
+import { IconOpenAI, IconUser } from "./core/icons";
 import { ChatMessageActions } from "./ChatMessageActions";
 import { cn } from "../utils";
 
