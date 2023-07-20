@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { type Message } from "ai";
-import { Button } from "./core/Button";
-import { IconCheck, IconCopy } from "./core/icons";
-import { useCopyToClipboard } from "../hooks/useCopyToClipboard";
-import { cn } from "../utils";
+import { Button } from "../core/Button";
+import { IconCheck, IconCopy } from "../core/icons";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { cn } from "../../utils";
 
 interface ChatMessageActionsProps extends React.ComponentProps<"div"> {
   message: Message;

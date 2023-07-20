@@ -10,13 +10,14 @@ import {
 } from "./core/icons";
 import { SidebarFooter } from "./Sidebar/SidebarFooter";
 import { ThemeToggle } from "./ThemeToggle";
-import { ClearHistory } from "./ClearHistory";
+import { ClearHistory } from "./Sidebar/ClearHistory";
 import { UserMenu } from "./UserMenu";
 import { clearChats } from "../actions";
 import { auth } from "../auth";
 
-export const Header = async () => {
+export const Header: React.FC = async () => {
   const session = await auth();
+
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
       <div className="flex items-center">

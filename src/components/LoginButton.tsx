@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
+import React, { useCallback, useTransition } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button, type ButtonProps } from "./core/Button";
 import { IconGitHub, IconSpinner } from "./core/icons";
-import { cn } from "../utils";
 
 interface LoginButtonProps extends ButtonProps {
   showGithubIcon?: boolean;
   text?: string;
   provider?: string;
+  className?: string;
 }
 
 export const LoginButton: React.FC<LoginButtonProps> = ({
@@ -18,23 +18,28 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
   className,
   ...props
 }) => {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, startLogIn] = useTransition();
   // Create a Supabase client configured to use cookies
   const supabase = createClientComponentClient();
-  const handleSignIn = async (): Promise<void> => {
-    setIsLoading(true);
-    await supabase.auth.signInWithOAuth({
-      provider: `github`,
-      options: { redirectTo: `${location.origin}/api/auth/callback` }
-    });
-  };
+  const handleSignIn: React.MouseEventHandler = useCallback(
+    (e) => {
+      e.preventDefault();
+      startLogIn(async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: `github`,
+          options: { redirectTo: `${location.origin}/api/auth/callback` }
+        });
+      });
+    },
+    [supabase.auth]
+  );
 
   return (
     <Button
       variant="outline"
       onClick={handleSignIn}
       disabled={isLoading}
-      className={cn(className)}
+      className={className}
       {...props}
     >
       {isLoading ? (

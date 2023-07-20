@@ -6,11 +6,16 @@ import { IconArrowDown } from "./core/icons";
 import { cn } from "../utils";
 import { useAtBottom } from "../hooks/useAtBottom";
 
-export const ButtonScrollToBottom: React.FC<ButtonProps> = ({
-  className,
-  ...props
-}) => {
+export const ButtonScrollToBottom: React.FC<
+  ButtonProps & { className?: string }
+> = ({ className, ...props }) => {
   const isAtBottom = useAtBottom();
+
+  const handleScrollToBottom: React.MouseEventHandler = () =>
+    window.scrollTo({
+      top: document.body.offsetHeight,
+      behavior: `smooth`
+    });
 
   return (
     <Button
@@ -21,12 +26,7 @@ export const ButtonScrollToBottom: React.FC<ButtonProps> = ({
         isAtBottom ? `opacity-0` : `opacity-100`,
         className
       )}
-      onClick={() =>
-        window.scrollTo({
-          top: document.body.offsetHeight,
-          behavior: `smooth`
-        })
-      }
+      onClick={handleScrollToBottom}
       {...props}
     >
       <IconArrowDown />

@@ -1,7 +1,8 @@
 import React from "react";
-import { SidebarActions } from "./SidebarActions";
 import { SidebarItem } from "./SidebarItem";
 import { shareChat, removeChat, getChats } from "../../actions";
+import { ShareChat } from "./ShareChat";
+import { RemoveChat } from "./RemoveChat";
 
 export interface SidebarListProps {
   userId?: string;
@@ -18,11 +19,10 @@ export const SidebarList = async ({ userId }: SidebarListProps) => {
             (chat) =>
               chat && (
                 <SidebarItem key={chat.id as string} chat={chat}>
-                  <SidebarActions
-                    chat={chat}
-                    removeChat={removeChat}
-                    shareChat={shareChat}
-                  />
+                  <div className="space-x-1">
+                    <ShareChat chat={chat} onShareChat={shareChat} />
+                    <RemoveChat chat={chat} onRemove={removeChat} />
+                  </div>
                 </SidebarItem>
               )
           )}

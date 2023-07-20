@@ -1,6 +1,6 @@
 import React from "react";
 import { nanoid } from "../utils";
-import { Chat } from "../components/Chat";
+import { Chat } from "../components/Chat/Chat";
 import { auth } from "../auth";
 
 /* eslint-disable @typescript-eslint/quotes */

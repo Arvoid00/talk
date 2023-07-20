@@ -1,12 +1,12 @@
 import React from "react";
 import { type UseChatHelpers } from "ai/react";
-import { Button } from "./core/Button";
-import { PromptForm } from "./PromptForm";
-import { ButtonScrollToBottom } from "./ButtonScrollToBottom";
-import { IconRefresh, IconStop } from "./core/icons";
+import { Button } from "../core/Button";
+import { PromptForm } from "../forms/PromptForm";
+import { ButtonScrollToBottom } from "../ButtonScrollToBottom";
+import { IconRefresh, IconStop } from "../core/icons";
 // import { FooterText } from './footer'
-import type { Model } from "../constants/models";
-import { upsertChat } from "../actions/upsertChat";
+import type { Model } from "../../constants/models";
+import { upsertChat } from "../../actions/upsertChat";
 
 export interface ChatPanelProps
   extends Pick<

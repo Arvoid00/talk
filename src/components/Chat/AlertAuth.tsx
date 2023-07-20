@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, AlertDescription, AlertTitle } from "./core/Alert";
+import { Alert, AlertDescription, AlertTitle } from "../core/Alert";
 
 export const AlertAuth: React.FC = () => (
   <Alert variant="destructive" className="mt-5 max-w-sm self-center ">

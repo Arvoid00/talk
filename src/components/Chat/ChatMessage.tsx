@@ -2,11 +2,11 @@ import React from "react";
 import type { Message } from "ai";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { CodeBlock } from "./core/CodeBlock";
-import { Markdown } from "./Markdown";
-import { IconOpenAI, IconUser } from "./core/icons";
+import { CodeBlock } from "../core/CodeBlock";
+import { Markdown } from "../Markdown";
+import { IconOpenAI, IconUser } from "../core/icons";
 import { ChatMessageActions } from "./ChatMessageActions";
-import { cn } from "../utils";
+import { cn } from "../../utils";
 
 export interface ChatMessageProps {
   message: Message;

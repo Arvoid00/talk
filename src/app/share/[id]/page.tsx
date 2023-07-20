@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSharedChat } from "../../../actions/getSharedChat";
 import { formatDate } from "../../../utils";
-import { ChatList } from "../../../components/ChatList";
+import { ChatList } from "../../../components/Sidebar/ChatList";
 import { FooterText } from "../../../components/FooterText";
 
 /* eslint-disable @typescript-eslint/quotes */

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useTransition } from "react";
 import Image from "next/image";
 import {
   type Session,
@@ -22,14 +22,21 @@ const getUserInitials = (name: string): string => {
 export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const menu = useMenuStore();
   const router = useRouter();
+  const [, startSignOut] = useTransition();
 
   // Create a Supabase client configured to use cookies
   const supabase = createClientComponentClient();
 
-  const signOut = async (): Promise<void> => {
-    await supabase.auth.signOut();
-    router.refresh();
-  };
+  const handleSignOut: React.MouseEventHandler = useCallback(
+    (e) => {
+      e.preventDefault();
+      startSignOut(async () => {
+        await supabase.auth.signOut();
+        router.refresh();
+      });
+    },
+    [router, supabase.auth]
+  );
 
   return (
     <div className="flex items-center justify-between">
@@ -60,7 +67,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           <div className="text-xs text-zinc-500">{user.email}</div>
         </MenuItem>
         <MenuSeparator />
-        <MenuItem onClick={signOut} className="text-xs">
+        <MenuItem onClick={handleSignOut} className="text-xs">
           Log Out
         </MenuItem>
       </Menu>
