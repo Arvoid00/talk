@@ -1,17 +1,11 @@
 "use client";
 
-import type { FC } from "react";
-import { memo } from "react";
+import React, { memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { useCopyToClipboard } from "../../hooks";
 import { IconCheck, IconCopy, IconDownload } from "./icons";
 import { Button } from "./Button";
-
-interface Props {
-  language: string;
-  value: string;
-}
 
 interface languageMap {
   [key: string]: string | undefined;
@@ -56,88 +50,96 @@ export const generateRandomString = (
   return lowercase ? result.toLowerCase() : result;
 };
 
-export const CodeBlock: FC<Props> = memo(({ language, value }) => {
-  const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
+interface CodeBlockProps {
+  language: string;
+  value: string;
+}
 
-  const downloadAsFile = (): void => {
-    if (typeof window === `undefined`) {
-      return;
-    }
-    const fileExtension = programmingLanguages[language] ?? `.file`;
-    const suggestedFileName = `file-${generateRandomString(
-      3,
-      true
-    )}${fileExtension}`;
-    const fileName = window.prompt(`Enter file name` || ``, suggestedFileName);
+export const CodeBlock: React.FC<CodeBlockProps> = memo(
+  ({ language, value }) => {
+    const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 });
 
-    if (!fileName) {
-      // User pressed cancel on prompt.
-      return;
-    }
+    const downloadAsFile = (): void => {
+      if (typeof window === `undefined`) {
+        return;
+      }
+      const fileExtension = programmingLanguages[language] ?? `.file`;
+      const suggestedFileName = `file-${generateRandomString(
+        3,
+        true
+      )}${fileExtension}`;
+      // eslint-disable-next-line no-alert
+      const fileName = window.prompt(`Enter file name`, suggestedFileName);
 
-    const blob = new Blob([value], { type: `text/plain` });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement(`a`);
-    link.download = fileName;
-    link.href = url;
-    link.style.display = `none`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+      if (!fileName) {
+        // User pressed cancel on prompt.
+        return;
+      }
 
-  const onCopy = (): void => {
-    if (isCopied) return;
-    copyToClipboard(value);
-  };
+      const blob = new Blob([value], { type: `text/plain` });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement(`a`);
+      link.download = fileName;
+      link.href = url;
+      link.style.display = `none`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
 
-  return (
-    <div className="codeblock relative w-full bg-zinc-950 font-sans">
-      <div className="flex w-full items-center justify-between bg-zinc-800 px-6 py-2 pr-4 text-zinc-100">
-        <span className="text-xs lowercase">{language}</span>
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            className="hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
-            onClick={downloadAsFile}
-            size="icon"
-          >
-            <IconDownload />
-            <span className="sr-only">Download</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-xs hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
-            onClick={onCopy}
-          >
-            {isCopied ? <IconCheck /> : <IconCopy />}
-            <span className="sr-only">Copy code</span>
-          </Button>
+    const onCopy = (): void => {
+      if (isCopied) return;
+      copyToClipboard(value);
+    };
+
+    return (
+      <div className="codeblock relative w-full bg-zinc-950 font-sans">
+        <div className="flex w-full items-center justify-between bg-zinc-800 px-6 py-2 pr-4 text-zinc-100">
+          <span className="text-xs lowercase">{language}</span>
+          <div className="flex items-center space-x-1">
+            <Button
+              variant="ghost"
+              className="hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+              onClick={downloadAsFile}
+              size="icon"
+            >
+              <IconDownload />
+              <span className="sr-only">Download</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-xs hover:bg-zinc-800 focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+              onClick={onCopy}
+            >
+              {isCopied ? <IconCheck /> : <IconCopy />}
+              <span className="sr-only">Copy code</span>
+            </Button>
+          </div>
         </div>
+        <SyntaxHighlighter
+          language={language}
+          style={coldarkDark}
+          PreTag="div"
+          showLineNumbers
+          customStyle={{
+            margin: 0,
+            width: `100%`,
+            background: `transparent`,
+            padding: `1.5rem 1rem`
+          }}
+          codeTagProps={{
+            style: {
+              fontSize: `0.9rem`,
+              fontFamily: `var(--font-mono)`
+            }
+          }}
+        >
+          {value}
+        </SyntaxHighlighter>
       </div>
-      <SyntaxHighlighter
-        language={language}
-        style={coldarkDark}
-        PreTag="div"
-        showLineNumbers
-        customStyle={{
-          margin: 0,
-          width: `100%`,
-          background: `transparent`,
-          padding: `1.5rem 1rem`
-        }}
-        codeTagProps={{
-          style: {
-            fontSize: `0.9rem`,
-            fontFamily: `var(--font-mono)`
-          }
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
-    </div>
-  );
-});
+    );
+  }
+);
 CodeBlock.displayName = `CodeBlock`;

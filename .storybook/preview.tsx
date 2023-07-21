@@ -1,8 +1,8 @@
-import React from "react"
+import React from "react";
 import type { Preview } from "@storybook/react";
-import { withThemeByClassName } from "@storybook/addon-styling"
-import { fontDisplay, fontBody, fontCode, fontInput } from "../src/theme"
-import "../src/theme/globals.css"
+import { withThemeByClassName } from "@storybook/addon-styling";
+import { display, body, code, input } from "../src/theme";
+import "../src/theme/globals.css";
 
 const preview: Preview = {
   parameters: {
@@ -18,13 +18,15 @@ const preview: Preview = {
     withThemeByClassName({
       themes: {
         light: "",
-        dark: "dark",
+        dark: "dark"
       },
-      defaultTheme: "light",
-    }), 
+      defaultTheme: "light"
+    }),
     (Story) => (
-      <div className={`font-body antialiased ${fontDisplay.variable} ${fontBody.variable} ${fontCode.variable} ${fontInput.variable}`}>
-       <Story />
+      <div
+        className={`font-body antialiased ${display.variable} ${body.variable} ${code.variable} ${input.variable}`}
+      >
+        <Story />
       </div>
     )
   ]

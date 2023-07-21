@@ -1,9 +1,10 @@
-import * as React from 'react';
-import type { StoryObj, Meta } from '@storybook/react';
-import { Button as Component } from './Button';
+import * as React from "react";
+import type { StoryObj, Meta } from "@storybook/react";
+import { Button as Component } from "./Button";
 
 export default {
-  title: `UI/Button`,
+  // eslint-disable-next-line @typescript-eslint/quotes
+  title: "UI/Button",
   component: Component
 } as Meta<typeof Component>;
 

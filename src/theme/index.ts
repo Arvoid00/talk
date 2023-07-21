@@ -1,2 +1,2 @@
-export { fontDisplay, fontBody, fontCode, fontInput } from "./fonts"
-export { Providers } from "./Providers"
+export { display, body, code, input } from "./fonts";
+export { Providers } from "./Providers";
