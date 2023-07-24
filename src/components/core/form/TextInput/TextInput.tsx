@@ -4,7 +4,7 @@ import {
   createElement
 } from "@ariakit/react-core/utils/system";
 import type { As, Options } from "@ariakit/react-core/utils/types";
-import { cn } from "../../../utils";
+import { cn } from "../../../../utils";
 import styles from "./styles.module.css";
 
 export type TextInputProps<T extends As = typeof FormInput> = Options<T>;

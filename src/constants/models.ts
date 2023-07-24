@@ -16,7 +16,7 @@ export interface Model<Type = string> {
   tokens: string;
 }
 
-export const models: Model<ModelType>[] = [
+export const models = [
   {
     id: `gpt-4`,
     name: `gpt-4`,
@@ -121,4 +121,4 @@ export const models: Model<ModelType>[] = [
     tokens: `8k tokens`,
     strengths: `Unsure`
   }
-];
+] as const satisfies readonly Model<ModelType>[];

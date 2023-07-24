@@ -3,7 +3,7 @@ import {
   createElement
 } from "@ariakit/react-core/utils/system";
 import type { As, Options } from "@ariakit/react-core/utils/types";
-import { Button as BaseButton } from "@ariakit/react"
+import { Button as BaseButton } from "@ariakit/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../../utils";
 import styles from "./styles.module.css";

@@ -1,0 +1,21 @@
+.frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.label {
+  color: var(--gray-700, #344054);
+  cursor: pointer;
+}
+
+.error {
+  display: none;
+  color: var(--error-500, #f04438);
+}
+
+.hint {
+  color: var(--gray-500, #667085);
+}

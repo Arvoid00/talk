@@ -1,0 +1,112 @@
+.trim {
+  leading-trim: both;
+  text-edge: cap;
+}
+
+.du {
+  font-family: var(--font-display);
+  font-size: var(--font-size-950);
+  line-height: var(--line-height-950);
+}
+
+.dh {
+  font-family: var(--font-display);
+  font-size: var(--font-size-900);
+  line-height: var(--line-height-900);
+}
+
+.dl {
+  font-family: var(--font-display);
+  font-size: var(--font-size-800);
+  line-height: var(--line-height-800);
+}
+
+.dm {
+  font-family: var(--font-display);
+  font-size: var(--font-size-700);
+  line-height: var(--line-height-700);
+}
+
+.ds {
+  font-family: var(--font-display);
+  font-size: var(--font-size-600);
+  line-height: var(--line-height-600);
+}
+
+.dt {
+  font-family: var(--font-display);
+  font-size: var(--font-size-500);
+  line-height: var(--line-height-500);
+}
+
+.bh {
+  font-family: var(--font-body);
+  font-size: var(--font-size-400);
+  line-height: var(--line-height-400);
+}
+
+.bl {
+  font-family: var(--font-body);
+  font-size: var(--font-size-300);
+  line-height: var(--line-height-300);
+}
+
+.bm {
+  font-family: var(--font-body);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+}
+
+.bs {
+  font-family: var(--font-body);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+}
+
+.bt {
+  font-family: var(--font-body);
+  font-size: var(--font-size-050);
+  line-height: var(--line-height-050);
+}
+
+.cl {
+  font-family: var(--font-code);
+  font-size: var(--font-size-300);
+  line-height: var(--line-height-300);
+}
+
+.cm {
+  font-family: var(--font-code);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+}
+
+.cs {
+  font-family: var(--font-code);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+}
+
+.il {
+  font-family: var(--font-input);
+  font-size: var(--font-size-300);
+  line-height: var(--line-height-300);
+}
+
+.im {
+  font-family: var(--font-input);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+}
+
+.is {
+  font-family: var(--font-input);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+}
+
+.it {
+  font-family: var(--font-input);
+  font-size: var(--font-size-050);
+  line-height: var(--line-height-050);
+}

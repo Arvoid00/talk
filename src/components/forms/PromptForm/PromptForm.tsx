@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import type { UseChatHelpers } from "ai/react";
-import { ModelSelector } from "./ModelSelector";
-import { Button } from "./core/Button";
-import { IconArrowElbow } from "./core/icons";
-import { useEnterSubmit } from "../hooks/useEnterSubmit";
-import type { Model } from "../constants/models";
+import { ModelSelector } from "../../ModelSelector/ModelSelector";
+import { Button } from "../../core/Button";
+import { IconArrowElbow } from "../../core/icons";
+import { useEnterSubmit } from "../../../hooks/useEnterSubmit";
+import type { Model } from "../../../constants/models";
 
 export interface PromptProps
   extends Pick<UseChatHelpers, "input" | "setInput"> {

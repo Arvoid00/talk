@@ -33,6 +33,30 @@
   --ring: 240 5% 64.9%;
 
   --radius: 0.5rem;
+
+  --font-size-950: 72px;
+  --font-size-900: 60px;
+  --font-size-800: 48px;
+  --font-size-700: 36px;
+  --font-size-600: 30px;
+  --font-size-500: 24px;
+  --font-size-400: 20px;
+  --font-size-300: 18px;
+  --font-size-200: 16px;
+  --font-size-100: 14px;
+  --font-size-050: 12px;
+
+  --line-height-950: 80px;
+  --line-height-900: 72px;
+  --line-height-800: 60px;
+  --line-height-700: 44px;
+  --line-height-600: 38px;
+  --line-height-500: 32px;
+  --line-height-400: 30px;
+  --line-height-300: 28px;
+  --line-height-200: 24px;
+  --line-height-100: 20px;
+  --line-height-050: 18px;
 }
 
 :root.dark {

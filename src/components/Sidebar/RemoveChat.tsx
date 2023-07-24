@@ -40,8 +40,8 @@ export const RemoveChat: React.FC<RemoveChatProps> = ({
   const router = useRouter();
 
   const handleDelete: React.MouseEventHandler = useCallback(
-    (event) => {
-      event.preventDefault();
+    (e) => {
+      e.preventDefault();
       startRemoveTransition(async () => {
         const result = await removeChat({
           id: chat.id as string,
