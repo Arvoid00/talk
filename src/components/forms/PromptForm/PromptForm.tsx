@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useTransition } from "react";
 import type { UseChatHelpers } from "ai/react";
+import { VisuallyHidden } from "@ariakit/react";
 import { ModelSelector } from "../../ModelSelector/ModelSelector";
 import { Button } from "../../core/Button";
 import { IconArrowElbow } from "../../core/icons";
@@ -10,7 +11,7 @@ export interface PromptProps
   extends Pick<UseChatHelpers, "input" | "setInput"> {
   onSubmit: (value: string) => Promise<void>;
   isLoading: boolean;
-  setModel: (model: Model) => void;
+  setModel: (id: string) => void;
   model: Model;
 }
 export const PromptForm: React.FC<PromptProps> = ({
@@ -22,6 +23,7 @@ export const PromptForm: React.FC<PromptProps> = ({
   isLoading
 }) => {
   const { formRef, onKeyDown } = useEnterSubmit();
+  const [, startSubmit] = useTransition();
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -31,15 +33,17 @@ export const PromptForm: React.FC<PromptProps> = ({
   }, []);
 
   const handleSubmit: React.FormEventHandler = useCallback(
-    async (e) => {
+    (e) => {
       e.preventDefault();
-      if (!input.trim()) {
-        return;
-      }
-      setInput(``);
-      await onSubmit(input);
+      startSubmit(async () => {
+        if (!input.trim()) {
+          return;
+        }
+        setInput(``);
+        await onSubmit(input);
+      });
     },
-    [input]
+    [input, onSubmit, setInput]
   );
 
   return (
@@ -70,14 +74,10 @@ export const PromptForm: React.FC<PromptProps> = ({
             disabled={isLoading || input === ``}
           >
             <IconArrowElbow />
-            <span className="sr-only">Send message</span>
+            <VisuallyHidden>Send message</VisuallyHidden>
           </Button>
 
-          <ModelSelector
-            setModel={setModel}
-            setInput={setInput}
-            model={model}
-          />
+          <ModelSelector setValue={setModel} value={model.id} />
         </div>
       </div>
     </form>

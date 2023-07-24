@@ -13,7 +13,7 @@ import {
   FormSubmit,
   type FormSubmitProps
 } from "@ariakit/react";
-import { Button, type ButtonProps } from "../Button";
+import { buttonVariants, type ButtonProps } from "../Button";
 import { cn } from "../../../utils/cn";
 import styles from "./styles.module.css";
 
@@ -42,17 +42,16 @@ export const Legend = createComponent<FormGroupLabelProps>(
 
 export const Submit = createComponent<ButtonProps & FormSubmitProps>(
   ({ className, ...props }) =>
-    createElement(Button, {
+    createElement(FormSubmit, {
       ...props,
-      as: FormSubmit
+      className: cn(buttonVariants(), className)
     })
 );
 
 export const Reset = createComponent<ButtonProps & FormSubmitProps>(
   ({ className, ...props }) =>
-    createElement(Button, {
+    createElement(FormReset, {
       ...props,
-      as: FormReset,
-      variant: `outline`
+      className: cn(buttonVariants({ variant: `outline` }), className)
     })
 );

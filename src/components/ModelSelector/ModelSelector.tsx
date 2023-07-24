@@ -1,31 +1,76 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
+import {
+  HovercardAnchor,
+  SelectArrow,
+  useHovercardStore,
+  useSelectStore
+} from "@ariakit/react";
+import { PiCaretUpDown } from "react-icons/pi";
 import { models, types } from "../../constants/models";
 import {
-  Select,
   type SelectProps,
   SelectGroup,
   SelectGroupLabel,
-  SelectItem
+  SelectItem,
+  SelectInput,
+  SelectOptions
 } from "../core/form/Select";
+import { HoverCard } from "../core/HoverCard";
 
-export const ModelSelector: React.FC<SelectProps> = (props) => (
-  <Select aria-label="Select a model" {...props}>
-    {types.map((modelType) => (
-      <SelectGroup key={modelType}>
-        <SelectGroupLabel>{modelType}</SelectGroupLabel>
-        {models.reduce((nodes, { id, name, type }) => {
-          if (modelType === type) {
-            nodes.push(
-              <SelectItem key={id} value={id}>
-                {name}
-              </SelectItem>
-            );
-          }
-          return nodes;
-        }, [] as React.ReactNode[])}
-      </SelectGroup>
-    ))}
-  </Select>
-);
+export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
+  const hovercard = useHovercardStore({ placement: `left` });
+  const portalRef = useRef<HTMLDivElement>(null);
+  const select = useSelectStore({ value });
+  const state = select.useState();
+  const peekedModel = models.find(
+    ({ id }) =>
+      id ===
+      state.items.find(({ id: itemID }) => itemID === state.activeId)?.value
+  );
+
+  return (
+    <>
+      <SelectInput store={select} {...props} aria-label="Select a model">
+        {state.value}
+        <SelectArrow>
+          <PiCaretUpDown />
+        </SelectArrow>
+      </SelectInput>
+      <SelectOptions store={select} portalRef={portalRef}>
+        {types.map((modelType) => (
+          <SelectGroup key={modelType}>
+            <SelectGroupLabel>{modelType}</SelectGroupLabel>
+            {models.reduce((nodes, { id, name, type }) => {
+              if (modelType === type) {
+                nodes.push(
+                  <HovercardAnchor key={id} store={hovercard}>
+                    <SelectItem value={id}>{name}</SelectItem>
+                  </HovercardAnchor>
+                );
+              }
+              return nodes;
+            }, [] as React.ReactNode[])}
+          </SelectGroup>
+        ))}
+      </SelectOptions>
+      {peekedModel ? (
+        <HoverCard store={hovercard} flip="right" gutter={8}>
+          <div className="grid gap-2">
+            <h4 className="font-medium leading-none">{peekedModel.name}</h4>
+            <div className="text-sm text-muted-foreground">
+              {peekedModel.description}
+            </div>
+            <div className="mt-4 grid gap-2">
+              <h5 className="text-sm font-medium leading-none">Strengths</h5>
+              <ul className="text-sm text-muted-foreground">
+                {peekedModel.strengths}
+              </ul>
+            </div>
+          </div>
+        </HoverCard>
+      ) : null}
+    </>
+  );
+};

@@ -11,5 +11,17 @@ export default {
 type Story = StoryObj<typeof Component>;
 
 export const ModelSelector: Story = {
-  render: (args) => <Component {...args} />
+  render: (args) => (
+    <div
+      style={{
+        display: `flex`,
+        width: `100%`,
+        height: `100%`,
+        justifyContent: `center`,
+        alignItems: `center`
+      }}
+    >
+      <Component {...args} />
+    </div>
+  )
 };

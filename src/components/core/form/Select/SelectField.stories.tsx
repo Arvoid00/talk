@@ -39,7 +39,7 @@ export default {
           <Legend>Select Field Example:</Legend>
           <Form store={form}>
             <Story />
-            <div className="flex gap-4">
+            <div style={{ display: `flex`, gap: `16px` }}>
               <Submit>Submit</Submit>
               <Reset>Clear</Reset>
             </div>
@@ -54,7 +54,7 @@ type Story = StoryObj<typeof SelectFieldComponent>;
 
 export const SelectField: Story = {
   render: (args) => (
-    <SelectFieldComponent {...args} name="genre">
+    <SelectFieldComponent {...args} label="Genre" name="genre">
       {Object.keys(Genres).map((genre) => (
         <SelectItem key={genre} value={genre}>
           {genre}
