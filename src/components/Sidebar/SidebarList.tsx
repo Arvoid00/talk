@@ -1,8 +1,10 @@
 import React from "react";
 import { SidebarItem } from "./SidebarItem";
-import { shareChat, removeChat, getChats } from "../../actions";
 import { ShareChat } from "./ShareChat";
 import { RemoveChat } from "./RemoveChat";
+import { getChats } from "../../actions/getChats";
+import { shareChat } from "../../actions/shareChat";
+import { removeChat } from "../../actions/removeChat";
 
 export interface SidebarListProps {
   userId?: string;

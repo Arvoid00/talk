@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { getChat } from "../../../actions";
+import { getChat } from "../../../actions/getChat";
 import { auth } from "../../../auth";
 import { Chat } from "../../../components/Chat/Chat";
 

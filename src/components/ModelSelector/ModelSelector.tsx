@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React from "react";
 import {
   HovercardAnchor,
   SelectArrow,
@@ -21,7 +21,6 @@ import { HoverCard } from "../core/HoverCard";
 
 export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
   const hovercard = useHovercardStore({ placement: `left` });
-  const portalRef = useRef<HTMLDivElement>(null);
   const select = useSelectStore({ value });
   const state = select.useState();
   const peekedModel = models.find(
@@ -38,7 +37,7 @@ export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
           <PiCaretUpDown />
         </SelectArrow>
       </SelectInput>
-      <SelectOptions store={select} portalRef={portalRef}>
+      <SelectOptions store={select}>
         {types.map((modelType) => (
           <SelectGroup key={modelType}>
             <SelectGroupLabel>{modelType}</SelectGroupLabel>

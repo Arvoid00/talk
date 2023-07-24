@@ -10,10 +10,7 @@ import { HoverCard as Component } from "./HoverCard";
 export default {
   // eslint-disable-next-line @typescript-eslint/quotes
   title: "UI/HoverCard",
-  component: Component,
-  argTypes: {
-    disabled: { control: `boolean`, defaultValue: false }
-  }
+  component: Component
 } as Meta<typeof Component>;
 
 type Story = StoryObj<typeof Component>;

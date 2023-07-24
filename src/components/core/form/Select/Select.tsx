@@ -1,3 +1,4 @@
+"use client";
 import { SelectArrow, useSelectStore } from "@ariakit/react";
 import React, { forwardRef, useCallback, useRef } from "react";
 import { PiCaretUpDown } from "react-icons/pi";

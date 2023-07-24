@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "../../auth";
 import { LoginButton } from "../../components/LoginButton";
 
-export default async function SignInPage() {
+const SignInPage = async () => {
   const session = await auth();
   // redirect to home if user is already logged in
   if (session?.user) {
@@ -13,4 +13,6 @@ export default async function SignInPage() {
       <LoginButton />
     </div>
   );
-}
+};
+
+export default SignInPage;

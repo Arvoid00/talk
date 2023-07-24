@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Link from "next/link";
 import { Button } from "./core/Button";
 import { Sidebar } from "./Sidebar/Sidebar";
@@ -12,7 +12,7 @@ import { SidebarFooter } from "./Sidebar/SidebarFooter";
 import { ThemeToggle } from "./ThemeToggle";
 import { ClearHistory } from "./Sidebar/ClearHistory";
 import { UserMenu } from "./UserMenu";
-import { clearChats } from "../actions";
+import { clearChats } from "../actions/clearChats";
 import { auth } from "../auth";
 
 export const Header: React.FC = async () => {

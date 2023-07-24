@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useCallback, useTransition } from "react";
 import {
   Dialog,

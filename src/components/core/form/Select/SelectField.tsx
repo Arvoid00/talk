@@ -1,3 +1,4 @@
+"use client";
 import type { StringLike } from "@ariakit/core/form/types";
 import type { FormFieldProps, FormStore } from "@ariakit/react";
 import { FormField } from "@ariakit/react";

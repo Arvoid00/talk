@@ -2,9 +2,10 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TooltipAnchor, useTooltipStore } from "@ariakit/react";
 import { buttonVariants } from "../core/Button";
 import { IconMessage, IconUsers } from "../core/icons";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../core/Tooltip";
+import { Tooltip } from "../core/Tooltip";
 import { cn } from "../../utils";
 import { type Chat } from "../../types";
 
@@ -14,6 +15,7 @@ interface SidebarItemProps {
 }
 
 export const SidebarItem: React.FC<SidebarItemProps> = ({ chat, children }) => {
+  const tooltip = useTooltipStore();
   const pathname = usePathname();
   const isActive = pathname === chat.path;
 
@@ -23,15 +25,15 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({ chat, children }) => {
     <div className="relative">
       <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
         {chat.sharePath ? (
-          <Tooltip delayDuration={1000}>
-            <TooltipTrigger
-              tabIndex={-1}
+          <>
+            <TooltipAnchor
+              store={tooltip}
               className="focus:bg-muted focus:ring-1 focus:ring-ring"
             >
               <IconUsers className="mr-2" />
-            </TooltipTrigger>
-            <TooltipContent>This is a shared chat.</TooltipContent>
-          </Tooltip>
+            </TooltipAnchor>
+            <Tooltip store={tooltip}>This is a shared chat.</Tooltip>
+          </>
         ) : (
           <IconMessage className="mr-2" />
         )}

@@ -1,3 +1,4 @@
+"use client";
 import type { FormStore } from "@ariakit/react";
 import { FormContext } from "@ariakit/react-core/form/form-context";
 import { useContext } from "react";

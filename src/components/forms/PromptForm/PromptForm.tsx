@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useEffect, useCallback, useTransition } from "react";
 import type { UseChatHelpers } from "ai/react";
 import { VisuallyHidden } from "@ariakit/react";

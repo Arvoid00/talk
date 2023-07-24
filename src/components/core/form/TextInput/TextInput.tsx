@@ -1,3 +1,4 @@
+"use client";
 import { FormInput } from "@ariakit/react";
 import {
   createComponent,
