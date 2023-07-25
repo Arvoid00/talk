@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/app/share/[id]/page.tsx
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSharedChat } from "../../../actions/getSharedChat";
@@ -9,6 +10,18 @@ import { FooterText } from "../../../components/FooterText";
 export const runtime = "edge";
 export const preferredRegion = "home";
 /* eslint-enable @typescript-eslint/quotes */
+=======
+import { type Metadata } from 'next'
+import { notFound } from 'next/navigation'
+
+import { formatDate } from '@/lib/utils'
+import { getSharedChat } from '@/app/actions'
+import { ChatList } from '@/components/chat-list'
+import { FooterText } from '@/components/footer'
+
+export const runtime = 'nodejs'
+export const preferredRegion = 'home'
+>>>>>>> minorFixes:app/share/[id]/page.tsx
 
 interface SharePageProps {
   params: {

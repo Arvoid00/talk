@@ -5,8 +5,10 @@ import {
   type Session,
   createClientComponentClient
 } from "@supabase/auth-helpers-nextjs";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MenuButton, useMenuStore } from "@ariakit/react";
+import Link from "next/link";
+import { HomeIcon } from "@radix-ui/react-icons";
 import { Button } from "./core/Button";
 import { Menu, MenuItem, MenuSeparator } from "./core/Menu";
 
@@ -22,6 +24,7 @@ const getUserInitials = (name: string): string => {
 export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const menu = useMenuStore();
   const router = useRouter();
+  const path = usePathname();
   const [, startSignOut] = useTransition();
 
   // Create a Supabase client configured to use cookies
@@ -62,6 +65,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         )}
       </Button>
       <Menu store={menu} className="w-[180px]">
+        <MenuItem className="cursor-pointer flex-col items-start">
+          <Link href="/profile" className="text-xs font-medium">
+            Profile
+          </Link>
+        </MenuItem>
         <MenuItem className="flex-col items-start">
           <div className="text-xs font-medium">{user.user_metadata.name}</div>
           <div className="text-xs text-zinc-500">{user.email}</div>
@@ -71,6 +79,16 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           Log Out
         </MenuItem>
       </Menu>
+      {path === `/profile` && (
+        <Button
+          as={Link}
+          variant={`default`}
+          href="/"
+          className="ml-4 flex flex-row items-center"
+        >
+          <HomeIcon className="mr-2 h-4 w-4" /> Home
+        </Button>
+      )}
     </div>
   );
 };

@@ -27,6 +27,9 @@ export const PreviewTokenDialog: React.FC = () => {
     dialog.hide();
   };
 
+  const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) =>
+    setPreviewTokenInput(e.target.value);
+
   return (
     <Dialog store={dialog}>
       <DialogHeader>
@@ -45,9 +48,9 @@ export const PreviewTokenDialog: React.FC = () => {
         </DialogDescription>
       </DialogHeader>
       <TextInput
-        value={previewTokenInput}
         placeholder="OpenAI API key"
-        onChange={(e) => setPreviewTokenInput(e.target.value)}
+        value={previewTokenInput}
+        onChange={handleInput}
       />
       <DialogFooter className="items-center">
         <Button onClick={handleSaveToken}>Save Token</Button>

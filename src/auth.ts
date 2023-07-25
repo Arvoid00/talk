@@ -1,3 +1,4 @@
+"use server";
 import type { Session } from "@supabase/auth-helpers-nextjs";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";

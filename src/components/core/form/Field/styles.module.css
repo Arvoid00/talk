@@ -2,20 +2,31 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-2, 8px);
   width: 100%;
 }
 
 .label {
-  color: var(--gray-700, #344054);
+  width: fit-content;
+  color: var(--neutral-slate-10, #787f85);
   cursor: pointer;
+
+  &:disabled {
+    color: var(--neutral-slate-9, #697177);
+  }
 }
 
 .error {
   display: none;
-  color: var(--error-500, #f04438);
+  width: fit-content;
+  color: var(--normal-red-10, #f2555a);
 }
 
 .hint {
-  color: var(--gray-500, #667085);
+  width: fit-content;
+  color: var(--neutral-slate-10, #787f85);
+
+  &:disabled {
+    color: var(--neutral-slate-8, #4c5155);
+  }
 }

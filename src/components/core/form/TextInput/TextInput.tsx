@@ -1,5 +1,4 @@
 "use client";
-import { FormInput } from "@ariakit/react";
 import {
   createComponent,
   createElement
@@ -7,13 +6,14 @@ import {
 import type { As, Options } from "@ariakit/react-core/utils/types";
 import { cn } from "../../../../utils";
 import styles from "./styles.module.css";
+import typography from "../../../../theme/typography.module.css";
 
-export type TextInputProps<T extends As = typeof FormInput> = Options<T>;
+export type TextInputProps<T extends As = "input"> = Options<T>;
 
 export const TextInput = createComponent<TextInputProps>(
   ({ className, ...props }) =>
-    createElement(FormInput, {
+    createElement(`input`, {
       ...props,
-      className: cn(styles.textinput, className)
+      className: cn(styles.textinput, typography.im, className)
     })
 );

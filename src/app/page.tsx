@@ -8,11 +8,12 @@ export const runtime = "edge";
 /* eslint-enable @typescript-eslint/quotes */
 
 const IndexPage: React.FC = async () => {
-  const session = await auth();
-  const userId = session?.user.id;
-  const id = nanoid();
+  console.log('IndexPage')
+  const session = await auth()
+  const userId = session?.user?.id
+  const id = nanoid()
 
-  return <Chat userId={userId} id={id} />;
+  return <Chat userId={userId} id={id} />
 };
 
 export default IndexPage;

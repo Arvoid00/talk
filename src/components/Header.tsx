@@ -16,6 +16,8 @@ import { clearChats } from "../actions/clearChats";
 import { auth } from "../auth";
 
 export const Header: React.FC = async () => {
+  // eslint-disable-next-line no-console
+  console.log(`Header`);
   const session = await auth();
 
   return (

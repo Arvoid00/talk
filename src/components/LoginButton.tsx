@@ -25,6 +25,8 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
     (e) => {
       e.preventDefault();
       startLogIn(async () => {
+        // eslint-disable-next-line no-console
+        console.log(`location.origin`, location.origin);
         await supabase.auth.signInWithOAuth({
           provider: `github`,
           options: { redirectTo: `${location.origin}/api/auth/callback` }

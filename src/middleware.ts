@@ -18,6 +18,8 @@ export const middleware: NextMiddleware = async (req) => {
   // If you want to allow anonymous users, simply remove the check below.
   if (!session && !req.url.includes(`/sign-in`)) {
     const redirectUrl = req.nextUrl.clone();
+    // eslint-disable-next-line no-console
+    console.log({ redirectUrl, session });
     redirectUrl.pathname = `/sign-in`;
     redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);

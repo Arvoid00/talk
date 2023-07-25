@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+// eslint-disable-next-line import/no-unresolved
 import { useChat } from "ai/react";
 import type { UseChatOptions, Message, UseChatHelpers } from "ai/react";
 import { toast } from "react-hot-toast";
@@ -66,13 +67,13 @@ export const Chat: React.FC<ChatProps> = ({
   return (
     <>
       <div className={cn(`pb-[200px] pt-4 md:pt-10`, className)}>
-        {messages.length > 0 ? (
+        {isLoading ? (
+          <EmptyScreen />
+        ) : messages.length > 0 ? (
           <>
             <ChatList messages={messages} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
-        ) : !isLoading ? (
-          <EmptyScreen setInput={setInput} />
         ) : null}
       </div>
       {isAuthError && <AlertAuth />}
@@ -85,7 +86,11 @@ export const Chat: React.FC<ChatProps> = ({
         messages={messages}
         input={input}
         setInput={setInput}
-        setModel={setModel}
+        setModel={(selected) =>
+          setModel(
+            models.find(({ id: modelId }) => modelId === selected) ?? models[0]
+          )
+        }
         model={model}
         userId={userId}
       />

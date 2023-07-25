@@ -8,6 +8,8 @@ export const clearChats = async (): Promise<{
   error: string;
 }> => {
   try {
+    // eslint-disable-next-line no-console
+    console.log(`clearChats`);
     const session = await auth();
     await supabase
       .from(`chats`)
@@ -17,6 +19,7 @@ export const clearChats = async (): Promise<{
     revalidatePath(`/`);
     return redirect(`/`);
   } catch (error: unknown) {
+    // eslint-disable-next-line no-console
     console.log(`clear chats error`, error);
     return {
       error: `Unauthorized`

@@ -3,6 +3,7 @@ import type { Preview } from "@storybook/react";
 import { withThemeByClassName } from "@storybook/addon-styling";
 import { display, body, code, input } from "../src/theme";
 import "../src/theme/globals.css";
+import "../src/theme/sizing.css";
 
 const preview: Preview = {
   parameters: {

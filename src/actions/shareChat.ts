@@ -10,7 +10,7 @@ export const shareChat = async (chat: Chat): Promise<Chat> => {
 
   await supabase
     .from(`chats`)
-    .update({ payload })
+    .update({ payload: payload as any })
     .eq(`id`, chat.id)
     .throwOnError();
 
