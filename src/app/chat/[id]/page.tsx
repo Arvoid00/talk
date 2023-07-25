@@ -5,7 +5,7 @@ import { auth } from "../../../auth";
 import { Chat } from "../../../components/Chat/Chat";
 
 /* eslint-disable @typescript-eslint/quotes */
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const preferredRegion = "home";
 /* eslint-enable @typescript-eslint/quotes */
 
@@ -18,6 +18,8 @@ export interface ChatPageProps {
 export const generateMetadata = async ({
   params
 }: ChatPageProps): Promise<Metadata> => {
+  // eslint-disable-next-line no-console
+  console.log(`generateMetadata`);
   const session = await auth();
 
   if (!session?.user) {
@@ -31,6 +33,8 @@ export const generateMetadata = async ({
 };
 
 export default async function ChatPage({ params }: ChatPageProps) {
+  // eslint-disable-next-line no-console
+  console.log(`ChatPage`);
   const session = await auth();
 
   if (!session?.user) {
