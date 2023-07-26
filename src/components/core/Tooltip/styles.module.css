@@ -1,3 +1,15 @@
 .tooltip {
-  @apply z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground shadow-md animate-in fade-in-50 data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1;
+  z-index: 50;
+  overflow: hidden;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--slate-4);
+  border-radius: var(--spacing-2);
+  background-color: var(--slate-2);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  color: var(--slate-11);
+  font: var(--it);
+  font-weight: 500;
+  @apply animate-in fade-in-50 data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1;
 }

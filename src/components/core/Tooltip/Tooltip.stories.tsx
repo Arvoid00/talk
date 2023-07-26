@@ -16,15 +16,7 @@ export const Tooltip: Story = {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const tooltip = useTooltipStore();
     return (
-      <div
-        style={{
-          display: `flex`,
-          width: `100%`,
-          height: `100vh`,
-          justifyContent: `center`,
-          alignItems: `center`
-        }}
-      >
+      <div className="flex h-screen w-full items-center justify-center">
         <TooltipAnchor store={tooltip}>Tooltip Anchor</TooltipAnchor>
         <Component {...args} store={tooltip}>
           This is a tooltip!
