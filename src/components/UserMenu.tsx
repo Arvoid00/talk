@@ -8,7 +8,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { MenuButton, useMenuStore } from "@ariakit/react";
 import Link from "next/link";
-import { HomeIcon } from "@radix-ui/react-icons";
+import { PiHouse } from "react-icons/pi";
 import { Button } from "./core/Button";
 import { Menu, MenuItem, MenuSeparator } from "./core/Menu";
 
@@ -86,7 +86,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
           href="/"
           className="ml-4 flex flex-row items-center"
         >
-          <HomeIcon className="mr-2 h-4 w-4" /> Home
+          <PiHouse className="mr-2 h-4 w-4" /> Home
         </Button>
       )}
     </div>
