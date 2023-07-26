@@ -1,43 +1,129 @@
 .button {
-  @apply font-input inline-flex items-center justify-center rounded-md text-sm font-medium shadow ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--spacing-1);
+  font: var(--im);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  box-shadow: var(--shadow-sm);
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+
+  &:focus {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .small {
-  @apply h-8 rounded-md px-3;
+  padding: 2px var(--spacing-3);
+  font: var(--is);
+  font-weight: 600;
 }
 
 .medium {
-  @apply h-8 px-4 py-2;
+  padding: var(--spacing-1) var(--spacing-5);
 }
 
 .large {
-  @apply h-11 rounded-md px-8;
+  padding: var(--spacing-2) var(--spacing-8);
+  font: var(--il);
+  font-weight: 600;
 }
 
 .icon {
-  @apply h-8 w-8 p-0;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  padding: unset;
 }
 
 .default {
-  @apply bg-primary text-primary-foreground shadow-md hover:bg-primary/90;
-}
+  background-color: var(--orange-9);
+  color: #fff;
 
-.destructive {
-  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
-}
+  &:hover {
+    background-color: var(--orange-10);
+  }
 
-.outline {
-  @apply border border-input hover:bg-accent hover:text-accent-foreground;
+  &:active {
+    background-color: var(--orange-11);
+  }
 }
 
 .secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  background-color: var(--slate-7);
+  color: var(--slate-12);
+
+  &:hover {
+    background-color: var(--slate-8);
+  }
+
+  &:active {
+    background-color: var(--slate-9);
+  }
+}
+
+.outline {
+  border: 1px solid var(--slate-9);
+  color: var(--slate-11);
+
+  &:hover {
+    border-color: var(--orange-8);
+    background-color: var(--slate-4);
+    color: var(--slate-12);
+  }
+
+  &:focus {
+    border-color: var(--orange-9);
+  }
+
+  &:active {
+    background-color: var(--slate-3);
+  }
 }
 
 .ghost {
-  @apply shadow-none hover:bg-accent hover:text-accent-foreground;
+  box-shadow: unset;
+  color: var(--slate-11);
+
+  &:hover {
+    background-color: var(--slate-4);
+    color: var(--slate-12);
+  }
+
+  &:active {
+    background-color: var(--slate-3);
+  }
+}
+
+.destructive {
+  background-color: var(--red-9);
+  color: #fff;
+
+  &:hover {
+    background-color: var(--red-10);
+  }
+
+  &:active {
+    background-color: var(--red-11);
+  }
 }
 
 .link {
-  @apply text-primary underline-offset-4 shadow-none hover:underline;
+  box-shadow: unset;
+  color: var(--orange-9);
+  text-decoration-line: underline;
+  text-underline-offset: 4px;
+
+  &:hover {
+    color: var(--orange-11);
+  }
 }

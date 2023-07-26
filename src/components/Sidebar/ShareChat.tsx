@@ -2,7 +2,6 @@
 
 import React, { useCallback, useTransition } from "react";
 import {
-  Dialog,
   DialogDisclosure,
   TooltipAnchor,
   VisuallyHidden,
@@ -14,6 +13,7 @@ import Link from "next/link";
 import type { Chat, ServerActionResult } from "../../types";
 import { Button } from "../core/Button";
 import {
+  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -100,7 +100,7 @@ export const ShareChat: React.FC<SidebarActionsProps> = ({
         <VisuallyHidden>Share</VisuallyHidden>
       </TooltipAnchor>
       <Tooltip store={tooltip}>Share chat</Tooltip>
-      <Dialog store={dialog} backdrop={<DialogOverlay />}>
+      <DialogContent store={dialog} backdrop={<DialogOverlay />}>
         <DialogHeader>
           <DialogTitle>Share link to chat</DialogTitle>
           <DialogDescription>
@@ -137,7 +137,7 @@ export const ShareChat: React.FC<SidebarActionsProps> = ({
             )}
           </Button>
         </DialogFooter>
-      </Dialog>
+      </DialogContent>
     </>
   );
 };

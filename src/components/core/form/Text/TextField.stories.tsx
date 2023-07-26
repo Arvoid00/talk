@@ -9,11 +9,7 @@ export default {
   title: "UI/Text Field",
   component: Component,
   argTypes: {
-    as: { control: false },
-    wrapElement: { control: false },
-    render: { control: false },
-    ref: { control: false },
-    icon: { control: true },
+    icon: { control: false },
     label: { control: `text` },
     hint: { control: `text` },
     required: { control: `boolean` },
@@ -24,9 +20,6 @@ export default {
     hint: `Please enter your email address.`,
     required: true,
     disabled: false
-  },
-  parameters: {
-    controls: { expanded: true }
   },
   decorators: [
     (Story) => {

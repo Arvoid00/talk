@@ -3,7 +3,6 @@
 import React, { useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Dialog,
   DialogDisclosure,
   TooltipAnchor,
   VisuallyHidden,
@@ -18,6 +17,7 @@ import { IconSpinner, IconTrash } from "../core/icons";
 import {
   DialogAction,
   DialogCancel,
+  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -81,7 +81,7 @@ export const RemoveChat: React.FC<RemoveChatProps> = ({
       </TooltipAnchor>
       <Tooltip store={tooltip}>Delete chat</Tooltip>
 
-      <Dialog store={dialog} backdrop={<DialogOverlay />}>
+      <DialogContent store={dialog} backdrop={<DialogOverlay />}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
@@ -96,7 +96,7 @@ export const RemoveChat: React.FC<RemoveChatProps> = ({
             Delete
           </DialogAction>
         </DialogFooter>
-      </Dialog>
+      </DialogContent>
     </>
   );
 };

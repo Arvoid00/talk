@@ -5,22 +5,23 @@ import { Alert as Component, AlertTitle, AlertDescription } from "./Alert";
 export default {
   // eslint-disable-next-line @typescript-eslint/quotes
   title: "UI/Alert",
-  component: Component
+  component: Component,
+  argTypes: {
+    variant: {
+      options: [`default`, `destructive`]
+    }
+  }
 } as Meta<typeof Component>;
 
 type Story = StoryObj<typeof Component>;
 
 export const Alert: Story = {
   render: (args) => (
-    <Component
-      variant="destructive"
-      className="mt-5 max-w-sm self-center "
-      {...args}
-    >
-      <AlertTitle className="text-center text-red-400 ">Auth Error</AlertTitle>
-      <AlertDescription className="text-red-400">
-        Your session Invalid or expired session. Please log in again or, if you
-        haven not done so yet, log in to continue.
+    <Component {...args}>
+      <AlertTitle>Alert Example</AlertTitle>
+      <AlertDescription>
+        This is a description of the alert to convey important information to
+        the user.
       </AlertDescription>
     </Component>
   )

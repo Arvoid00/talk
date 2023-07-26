@@ -6,13 +6,25 @@ import "../src/theme/globals.css";
 import "../src/theme/colors.css";
 
 const preview: Preview = {
+  argTypes: {
+    as: { control: false, table: { disable: true } },
+    store: { control: false, table: { disable: true } },
+    wrapElement: { control: false, table: { disable: true } },
+    render: { control: false, table: { disable: true } },
+    setValue: { control: false, table: { disable: true } },
+    className: { control: false, table: { disable: true } },
+    icon: { control: false, table: { disable: true } },
+    ref: { control: false, table: { disable: true } }
+  },
   parameters: {
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
+      expanded: true,
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/
-      }
+      },
+      exclude: `(?:\b|')(as|wrapElement|render)(?:\b|')`
     }
   },
   decorators: [

@@ -3,13 +3,14 @@
 import React, { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { Dialog, DialogDisclosure, useDialogStore } from "@ariakit/react";
+import { DialogDisclosure, useDialogStore } from "@ariakit/react";
 import { Button } from "../core/Button";
 import { IconSpinner } from "../core/icons";
 import type { ServerActionResult } from "../../types";
 import {
   DialogAction,
   DialogCancel,
+  DialogContent,
   DialogDescription,
   DialogHeader,
   DialogOverlay,
@@ -51,7 +52,7 @@ export const ClearHistory: React.FC<ClearHistoryProps> = ({ clearChats }) => {
         {isPending && <IconSpinner className="mr-2" />}
         Clear history
       </DialogDisclosure>
-      <Dialog store={dialog} backdrop={<DialogOverlay />}>
+      <DialogContent store={dialog} backdrop={<DialogOverlay />}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
@@ -66,7 +67,7 @@ export const ClearHistory: React.FC<ClearHistoryProps> = ({ clearChats }) => {
             Delete
           </DialogAction>
         </div>
-      </Dialog>
+      </DialogContent>
     </>
   );
 };

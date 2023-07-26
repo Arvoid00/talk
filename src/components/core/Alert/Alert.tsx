@@ -28,7 +28,7 @@ export const Alert = createComponent<AlertProps>(
     createElement(`div`, {
       ...props,
       role: `alert`,
-      className: cn(alertVariants({ variant, className }))
+      className: cn(alertVariants({ variant }), className)
     })
 );
 
@@ -37,7 +37,7 @@ export type AlertTitleProps<T extends As = "h5"> = Options<T> &
 
 export const AlertTitle = createComponent<AlertTitleProps>(
   ({ className, ...props }) =>
-    createElement(`div`, {
+    createElement(`h5`, {
       ...props,
       className: cn(styles.title, className)
     })
@@ -48,7 +48,7 @@ export type AlertDescriptionProps<T extends As = "p"> = Options<T> &
 
 export const AlertDescription = createComponent<AlertDescriptionProps>(
   ({ className, ...props }) =>
-    createElement(`div`, {
+    createElement(`p`, {
       ...props,
       className: cn(styles.description, className)
     })

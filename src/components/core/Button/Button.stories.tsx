@@ -5,7 +5,22 @@ import { Button as Component } from "./Button";
 export default {
   // eslint-disable-next-line @typescript-eslint/quotes
   title: "UI/Button",
-  component: Component
+  component: Component,
+  argTypes: {
+    variant: {
+      options: [
+        `default`,
+        `secondary`,
+        `destructive`,
+        `outline`,
+        `ghost`,
+        `link`
+      ]
+    },
+    size: {
+      options: [`sm`, `md`, `lg`, `icon`]
+    }
+  }
 } as Meta<typeof Component>;
 
 type Story = StoryObj<typeof Component>;

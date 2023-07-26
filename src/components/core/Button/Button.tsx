@@ -20,15 +20,15 @@ export const buttonVariants = cva(styles.button, {
       link: styles.link
     },
     size: {
-      default: styles.medium,
       sm: styles.small,
+      md: styles.medium,
       lg: styles.large,
       icon: styles.icon
     }
   },
   defaultVariants: {
     variant: `default`,
-    size: `default`
+    size: `md`
   }
 });
 
@@ -36,7 +36,7 @@ export type ButtonProps<T extends As = typeof BaseButton> = Options<T> &
   VariantProps<typeof buttonVariants> & { className?: string };
 
 export const Button = createComponent<ButtonProps>(
-  ({ className, variant = `default`, size = `default`, ...props }) =>
+  ({ className, variant = `default`, size = `md`, ...props }) =>
     createElement(BaseButton, {
       ...props,
       className: cn(buttonVariants({ variant, size }), className)
