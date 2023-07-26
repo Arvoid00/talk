@@ -1,13 +1,13 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-4);
   width: 100%;
 }
 
 .group {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 16px;
+  column-gap: var(--spacing-4);
   width: 100%;
 }

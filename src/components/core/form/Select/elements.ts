@@ -16,13 +16,12 @@ import {
 } from "@ariakit/react";
 import { cn } from "../../../../utils/cn";
 import styles from "./styles.module.css";
-import typography from "../../../../theme/typography.module.css";
 
 export const SelectInput = createComponent<SelectProps>(
   ({ className, ...props }) =>
     createElement(Select, {
       ...props,
-      className: cn(styles.input, typography.im, className)
+      className: cn(styles.input, className)
     })
 );
 
@@ -46,7 +45,7 @@ export const SelectGroupLabel = createComponent<SelectGroupLabelProps>(
   ({ className, ...props }) =>
     createElement(BaseSelectGroupLabel, {
       ...props,
-      className: cn(styles.label, typography.it, className)
+      className: cn(styles.label, className)
     })
 );
 
@@ -54,6 +53,6 @@ export const SelectItem = createComponent<SelectItemProps>(
   ({ className, ...props }) =>
     createElement(BaseSelectItem, {
       ...props,
-      className: cn(styles.item, typography.im, className)
+      className: cn(styles.item, className)
     })
 );

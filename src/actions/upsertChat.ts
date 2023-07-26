@@ -10,10 +10,8 @@ export const upsertChat = async (chat: Chat) => {
     payload: chat
   });
   if (error) {
+    // eslint-disable-next-line no-console
     console.log(`upsertChat error`, error);
-    return {
-      error: `Unauthorized`
-    };
+    throw Error(`Unauthorized`);
   }
-  return null;
 };

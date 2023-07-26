@@ -6,7 +6,7 @@ import { cn } from "../utils";
 import { TailwindIndicator } from "../components/TailwindIndicator";
 import { Header } from "../components/Header";
 import "../theme/globals.css";
-import "../theme/sizing.css";
+import "../theme/colors.css";
 
 /* eslint-disable @typescript-eslint/quotes */
 export const metadata: Metadata = {

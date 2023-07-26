@@ -8,7 +8,7 @@ import {
   DialogTitle
 } from "../core/Dialog";
 import { Button } from "../core/Button";
-import { TextInput } from "../core/form/TextInput";
+import { TextInput } from "../core/form/Text";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === `preview`;
 

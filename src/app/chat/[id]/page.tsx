@@ -1,3 +1,4 @@
+import React from "react";
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { getChat } from "../../../actions/getChat";
@@ -32,7 +33,7 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function ChatPage({ params }: ChatPageProps) {
+const ChatPage: React.FC<ChatPageProps> = async ({ params }) => {
   // eslint-disable-next-line no-console
   console.log(`ChatPage`);
   const session = await auth();
@@ -58,4 +59,6 @@ export default async function ChatPage({ params }: ChatPageProps) {
       initialMessages={chat.messages}
     />
   );
-}
+};
+
+export default ChatPage;

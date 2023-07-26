@@ -3,11 +3,6 @@ import Link from "next/link";
 import { Button } from "./core/Button";
 import { Sidebar } from "./Sidebar/Sidebar";
 import { SidebarList } from "./Sidebar/SidebarList";
-import {
-  // IconGitHub,
-  // IconNextChat,
-  IconSeparator
-} from "./core/icons";
 import { SidebarFooter } from "./Sidebar/SidebarFooter";
 import { ThemeToggle } from "./ThemeToggle";
 import { ClearHistory } from "./Sidebar/ClearHistory";
@@ -16,8 +11,6 @@ import { clearChats } from "../actions/clearChats";
 import { auth } from "../auth";
 
 export const Header: React.FC = async () => {
-  // eslint-disable-next-line no-console
-  console.log(`Header`);
   const session = await auth();
 
   return (
@@ -41,7 +34,6 @@ export const Header: React.FC = async () => {
           </Link>
         )}
         <div className="flex items-center">
-          <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           {session?.user ? (
             <UserMenu user={session.user} />
           ) : (

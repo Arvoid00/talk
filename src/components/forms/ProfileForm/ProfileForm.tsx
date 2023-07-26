@@ -5,28 +5,17 @@ import React from "react";
 import z from "zod";
 import { Form, useFormStore } from "@ariakit/react";
 import type { User } from "@supabase/supabase-js";
-import { updateUser } from "../../actions/updateUser";
-import { stringToColor, invertColorForText, getDefaults } from "../../utils";
-import { TextField, FieldFrame, TextAreaField, Submit } from "../core/form";
-import type { Prompt } from "../../types";
+import { updateUser } from "../../../actions/updateUser";
+import { stringToColor, invertColorForText, getDefaults } from "../../../utils";
+import { TextField, FieldFrame, TextAreaField, Submit } from "../../core/form";
+import type { Prompt } from "../../../types";
 
 export interface ProfileFormProps {
   user: User;
   prompts: Prompt[];
 }
 
-export const ProfileForm: React.FC<ProfileFormProps> = ({
-  user = {
-    id: `1234`,
-    app_metadata: {},
-    user_metadata: {
-      user_name: `Saeris`,
-      email: `drake@saeris.io`
-    },
-    aud: `fasdfdf`
-  },
-  prompts
-}) => {
+export const ProfileForm: React.FC<ProfileFormProps> = ({ user, prompts }) => {
   const formSchema = z.object(
     prompts.reduce<z.ZodRawShape>(
       (schema, prompt, i) =>
@@ -93,15 +82,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         hint="This is your public display name."
       />
       <TextField name="email" label="Email" placeholder="sama@openai.com" />
-      <div className="flex">
+      <div className="flex gap-4">
         <TextField
           name={`prompt_name_0`}
           label="Prompt Name"
           placeholder="Tech Guru"
           hint="Create a brief, descriptive title for your profile."
+          className="w-fit"
         />
 
-        <FieldFrame className="ml-4">
+        <FieldFrame className="w-fit">
           <span>Prompt Color</span>
           <span
             style={{

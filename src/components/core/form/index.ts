@@ -17,15 +17,13 @@ export {
   SelectField
 } from "./Select";
 export {
+  type TextInputProps,
+  TextInput,
+  type TextFieldProps,
+  TextField,
   type TextAreaProps,
   TextArea,
   type TextAreaFieldProps,
   TextAreaField
-} from "./TextArea";
-export {
-  type TextInputProps,
-  TextInput,
-  type TextFieldProps,
-  TextField
-} from "./TextInput";
+} from "./Text";
 export { Form, Group, Legend, Submit, Reset } from "./Form";

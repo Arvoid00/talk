@@ -3,7 +3,7 @@ import type { Preview } from "@storybook/react";
 import { withThemeByClassName } from "@storybook/addon-styling";
 import { display, body, code, input } from "../src/theme";
 import "../src/theme/globals.css";
-import "../src/theme/sizing.css";
+import "../src/theme/colors.css";
 
 const preview: Preview = {
   parameters: {
@@ -25,7 +25,7 @@ const preview: Preview = {
     }),
     (Story) => (
       <div
-        className={`font-body antialiased ${display.variable} ${body.variable} ${code.variable} ${input.variable}`}
+        className={`font-body antialiased typography ${display.variable} ${body.variable} ${code.variable} ${input.variable}`}
       >
         <Story />
       </div>

@@ -65,8 +65,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
         )}
       </Button>
       <Menu store={menu} className="w-[180px]">
-        <MenuItem className="cursor-pointer flex-col items-start">
-          <Link href="/profile" className="text-xs font-medium">
+        <MenuItem className="cursor-pointer flex-col items-start text-xs font-medium">
+          <Link href="/profile" className="h-full w-full">
             Profile
           </Link>
         </MenuItem>

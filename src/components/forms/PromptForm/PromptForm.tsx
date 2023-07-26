@@ -49,7 +49,7 @@ export const PromptForm: React.FC<PromptProps> = ({
 
   return (
     <form onSubmit={handleSubmit} ref={formRef}>
-      <div className="relative flex w-full grow flex-col-reverse gap-2 overflow-hidden bg-background sm:flex-col sm:rounded-md sm:border sm:px-4">
+      <div className="relative flex w-full grow flex-col-reverse gap-2  bg-background sm:flex-col sm:rounded-md sm:border sm:px-4">
         <textarea
           ref={inputRef}
           tabIndex={0}

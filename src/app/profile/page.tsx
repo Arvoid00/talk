@@ -1,21 +1,18 @@
+import React from "react";
 import { redirect } from "next/navigation";
 import { auth } from "../../auth";
 import { ProfileForm } from "../../components/forms/ProfileForm";
 import { getPrompts } from "../../actions/getPrompts";
+import type { Prompt } from "../../types";
 
-type Prompts = {
-  prompt_name: string;
-  prompt_body: string;
-}[];
-
-export default async function ProfilePage() {
+const ProfilePage: React.FC = async () => {
   const session = await auth();
   const user = session?.user;
   if (!user) {
     redirect(`/sign-in`);
   }
 
-  const prompts = (await getPrompts(user)) as Prompts;
+  const prompts = (await getPrompts(user)) as Prompt[];
 
   return (
     <div className="flex-1 space-y-6">
@@ -42,4 +39,6 @@ export default async function ProfilePage() {
       </div>
     </div>
   );
-}
+};
+
+export default ProfilePage;

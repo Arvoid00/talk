@@ -2,31 +2,34 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2, 8px);
+  gap: var(--spacing-2);
   width: 100%;
 }
 
 .label {
   width: fit-content;
-  color: var(--neutral-slate-10, #787f85);
+  font: var(--im);
+  color: var(--slate-10);
   cursor: pointer;
 
   &:disabled {
-    color: var(--neutral-slate-9, #697177);
+    color: var(--slate-9);
   }
 }
 
 .error {
   display: none;
   width: fit-content;
-  color: var(--normal-red-10, #f2555a);
+  font: var(--is);
+  color: var(--red-10);
 }
 
 .hint {
   width: fit-content;
-  color: var(--neutral-slate-10, #787f85);
+  font: var(--is);
+  color: var(--slate-10);
 
   &:disabled {
-    color: var(--neutral-slate-8, #4c5155);
+    color: var(--slate-8);
   }
 }

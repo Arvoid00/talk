@@ -101,6 +101,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           </SelectArrow>
         </SelectInput>
         <SelectOptions
+          gutter={8}
           store={select}
           portalRef={portalRef}
           onBlur={handleOptionsBlur}

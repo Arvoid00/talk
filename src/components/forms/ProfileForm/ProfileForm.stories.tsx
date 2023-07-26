@@ -10,6 +10,18 @@ export default {
     controls: { expanded: true }
   },
   args: {
+    user: {
+      id: `1234`,
+      aud: ``,
+      created_at: ``,
+      app_metadata: {
+        provider: `github`
+      },
+      user_metadata: {
+        user_name: `smol-developer`,
+        email: `sama@openai.com`
+      }
+    },
     prompts: [
       {
         id: 0,

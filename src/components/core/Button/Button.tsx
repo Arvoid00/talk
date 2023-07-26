@@ -33,12 +33,12 @@ export const buttonVariants = cva(styles.button, {
 });
 
 export type ButtonProps<T extends As = typeof BaseButton> = Options<T> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants> & { className?: string };
 
 export const Button = createComponent<ButtonProps>(
   ({ className, variant = `default`, size = `default`, ...props }) =>
     createElement(BaseButton, {
       ...props,
-      className: cn(buttonVariants({ variant, size, className }))
+      className: cn(buttonVariants({ variant, size }), className)
     })
 );

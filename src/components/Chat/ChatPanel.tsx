@@ -1,4 +1,5 @@
 import React from "react";
+// eslint-disable-next-line import/no-unresolved
 import { type UseChatHelpers } from "ai/react";
 import { Button } from "../core/Button";
 import { PromptForm } from "../forms/PromptForm";
@@ -20,7 +21,7 @@ export interface ChatPanelProps
     | "setInput"
   > {
   id?: string;
-  setModel: (model: Model) => void;
+  setModel: (id: string) => void;
   model: Model;
   userId?: string;
 }
@@ -36,26 +37,30 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   setModel,
   model,
   messages,
-  userId
+  userId = `unknown-user-id`
 }) => {
   const handleRegenerate = async () => reload();
 
-  const handleSubmit = async (value) => {
-    await append({
-      id,
-      content: value,
-      role: `user`
-    });
-    await upsertChat({
-      chat_id: id,
-      title: `TODO: make title: ${id}`,
-      userId: userId ?? `unknown-user-id`, // TODO: try to get rid of unknown user id, higher up
-      messages,
-      createdAt: new Date(),
-      path: `todo`,
-      sharePath: `todo`
-    });
+  const handleSubmit = async (content: string): Promise<void> => {
+    await append({ id, content, role: `user` });
+    try {
+      await upsertChat({
+        chat_id: id,
+        title: `TODO: make title: ${id}`,
+        userId,
+        messages,
+        createdAt: new Date(),
+        path: `todo`,
+        sharePath: `todo`
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
+    }
   };
+
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50%">
       <ButtonScrollToBottom />
@@ -74,6 +79,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             messages.length > 0 && (
               <Button
                 variant="outline"
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 onClick={handleRegenerate}
                 className="bg-background"
               >

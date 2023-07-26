@@ -13,7 +13,7 @@ export const initAnalytics = ({
   const endpoint = process.env.VERCEL_URL;
 
   return {
-    track: async (eventName: string, data?: unknown) => {
+    track: async (eventName: string, data?: unknown): Promise<void> => {
       try {
         if (!endpoint && process.env.NODE_ENV === `development`) {
           // eslint-disable-next-line no-console
@@ -25,10 +25,9 @@ export const initAnalytics = ({
           return;
         }
 
-        const headers: { [key: string]: string } = {};
-        Object.entries(request.headers).map(([key, value]) => {
-          headers[key] = value;
-        });
+        const headers = Object.entries(request.headers).reduce<{
+          [key: string]: string;
+        }>((hash, [key, value]) => Object.assign(hash, { [key]: value }), {});
 
         const body = {
           o: headers.referer,

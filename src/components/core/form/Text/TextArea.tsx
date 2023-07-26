@@ -14,6 +14,6 @@ export const TextArea = createComponent<TextAreaProps>(
     createElement(`textarea`, {
       as: `textarea`,
       ...props,
-      className: cn(styles.textarea, className)
+      className: cn(styles.input, className)
     })
 );

@@ -19,9 +19,9 @@ import {
 } from "../core/form/Select";
 import { HoverCard } from "../core/HoverCard";
 
-export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
+export const ModelSelector: React.FC<SelectProps> = (props) => {
   const hovercard = useHovercardStore({ placement: `left` });
-  const select = useSelectStore({ value });
+  const select = useSelectStore(props);
   const state = select.useState();
   const peekedModel = models.find(
     ({ id }) =>
@@ -31,13 +31,13 @@ export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
 
   return (
     <>
-      <SelectInput store={select} {...props} aria-label="Select a model">
+      <SelectInput store={select} aria-label="Select a model">
         {state.value}
         <SelectArrow>
           <PiCaretUpDown />
         </SelectArrow>
       </SelectInput>
-      <SelectOptions store={select}>
+      <SelectOptions store={select} gutter={8}>
         {types.map((modelType) => (
           <SelectGroup key={modelType}>
             <SelectGroupLabel>{modelType}</SelectGroupLabel>
@@ -55,7 +55,7 @@ export const ModelSelector: React.FC<SelectProps> = ({ value, ...props }) => {
         ))}
       </SelectOptions>
       {peekedModel ? (
-        <HoverCard store={hovercard} flip="right" gutter={8}>
+        <HoverCard store={hovercard} flip="right" gutter={16}>
           <div className="grid gap-2">
             <h4 className="font-medium leading-none">{peekedModel.name}</h4>
             <div className="text-sm text-muted-foreground">

@@ -2,6 +2,96 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design Tokens */
+:root {
+  /* Spacing Values */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 2px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 4px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 8px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  --spacing-40: 16px;
+  --spacing-48: 192px;
+  --spacing-56: 224px;
+  --spacing-64: 256px;
+
+  /* Container Sizes */
+  --container-sm: 64px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 128px;
+
+  /* Font Sizes */
+  --fs-11: 72px;
+  --fs-10: 60px;
+  --fs-9: 48px;
+  --fs-8: 36px;
+  --fs-7: 30px;
+  --fs-6: 24px;
+  --fs-5: 20px;
+  --fs-4: 18px;
+  --fs-3: 16px;
+  --fs-2: 14px;
+  --fs-1: 12px;
+
+  /* Line Heights */
+  --lh-11: 80px;
+  --lh-10: 72px;
+  --lh-9: 60px;
+  --lh-8: 44px;
+  --lh-7: 38px;
+  --lh-6: 32px;
+  --lh-5: 30px;
+  --lh-4: 28px;
+  --lh-3: 24px;
+  --lh-2: 20px;
+  --lh-1: 18px;
+
+  /* Shadows */
+  --shadow-sm: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-lg: 0px 4px 6px -2px rgba(16, 24, 40, 0.03),
+    0px 12px 16px -4px rgba(16, 24, 40, 0.08) --focus-ring: 0px 0px 0px 4px rgba(254, 98, 1, 0.22),
+    var(--shadow-sm);
+  --error-focus-ring: 0px 0px 0px 4px rgba(255, 53, 63, 0.24), var(--shadow-sm);
+}
+
+.typography {
+  /* Display Font Styles */
+  --du: var(--fs-11) / var(--lh-11) var(--font-display);
+  --dh: var(--fs-10) / var(--lh-10) var(--font-display);
+  --dl: var(--fs-9) / var(--lh-9) var(--font-display);
+  --dm: var(--fs-8) / var(--lh-8) var(--font-display);
+  --ds: var(--fs-7) / var(--lh-7) var(--font-display);
+  --dt: var(--fs-6) / var(--lh-6) var(--font-display);
+
+  /* Body Font Styles */
+  --bh: var(--fs-5) / var(--lh-5) var(--font-body);
+  --bl: var(--fs-4) / var(--lh-4) var(--font-body);
+  --bm: var(--fs-3) / var(--lh-3) var(--font-body);
+  --bs: var(--fs-2) / var(--lh-2) var(--font-body);
+  --bt: var(--fs-1) / var(--lh-1) var(--font-body);
+
+  /* Code Font Styles */
+  --cl: var(--fs-4) / var(--lh-4) var(--font-code);
+  --cm: var(--fs-3) / var(--lh-3) var(--font-code);
+  --cs: var(--fs-2) / var(--lh-2) var(--font-code);
+
+  /* Input Font Styles */
+  --il: var(--fs-4) / var(--lh-4) var(--font-input);
+  --im: var(--fs-3) / var(--lh-3) var(--font-input);
+  --is: var(--fs-2) / var(--lh-2) var(--font-input);
+  --it: var(--fs-1) / var(--lh-1) var(--font-input);
+}
+
+/* Variables included with Starter */
 :root {
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
@@ -33,30 +123,6 @@
   --ring: 240 5% 64.9%;
 
   --radius: 0.5rem;
-
-  --font-size-950: 72px;
-  --font-size-900: 60px;
-  --font-size-800: 48px;
-  --font-size-700: 36px;
-  --font-size-600: 30px;
-  --font-size-500: 24px;
-  --font-size-400: 20px;
-  --font-size-300: 18px;
-  --font-size-200: 16px;
-  --font-size-100: 14px;
-  --font-size-050: 12px;
-
-  --line-height-950: 80px;
-  --line-height-900: 72px;
-  --line-height-800: 60px;
-  --line-height-700: 44px;
-  --line-height-600: 38px;
-  --line-height-500: 32px;
-  --line-height-400: 30px;
-  --line-height-300: 28px;
-  --line-height-200: 24px;
-  --line-height-100: 20px;
-  --line-height-050: 18px;
 }
 
 :root.dark {

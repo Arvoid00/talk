@@ -10,8 +10,8 @@ import {
   DialogDescription as BaseDialogDescription,
   DialogDismiss as BaseDialogDismiss
 } from "@ariakit/react";
-import { cn } from "../../../utils";
 import { Button } from "../Button";
+import { cn } from "../../../utils";
 import styles from "./styles.module.css";
 
 export type DialogOverlayProps<T extends As = "div"> = Options<T>;
