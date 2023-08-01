@@ -33,6 +33,14 @@ export const FieldLabel = createComponent<FormLabelProps>(
     })
 );
 
+export const Label = createComponent<Options<'span'>>(
+  ({ className, ...props }) =>
+    createElement('span', {
+      ...props,
+      className: cn(styles.label, className)
+    })
+);
+
 export const FieldError = createComponent<FormErrorProps>(
   ({ className, ...props }) =>
     createElement(FormError, {

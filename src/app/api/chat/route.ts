@@ -90,6 +90,7 @@ export const POST = async (req: Request): Promise<Response> => {
   const stream = openAIStream(res, {
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100);
+      console.log({title, completion})
       const id = json.id ?? nanoid();
       const createdAt = Date.now();
       const path = `/chat/${id}`;

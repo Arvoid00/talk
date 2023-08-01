@@ -62,6 +62,7 @@ export const Chat: React.FC<ChatProps> = ({
       }
     });
 
+  console.log({messages})
   const isAuthError = error?.message.includes(`Unauthorized`);
 
   return (

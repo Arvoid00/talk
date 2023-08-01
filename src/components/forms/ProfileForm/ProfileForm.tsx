@@ -7,7 +7,7 @@ import { Form, useFormStore } from "@ariakit/react";
 import type { User } from "@supabase/supabase-js";
 import { updateUser } from "../../../actions/updateUser";
 import { stringToColor, invertColorForText, getDefaults } from "../../../utils";
-import { TextField, FieldFrame, TextAreaField, Submit } from "../../core/form";
+import { TextField, FieldFrame, Label, TextAreaField, Submit } from "../../core/form";
 import type { Prompt } from "../../../types";
 
 export interface ProfileFormProps {
@@ -92,7 +92,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ user, prompts }) => {
         />
 
         <FieldFrame className="w-fit">
-          <span>Prompt Color</span>
+          <Label>Prompt Color</Label>
           <span
             style={{
               backgroundColor: stringToColor(promptName),

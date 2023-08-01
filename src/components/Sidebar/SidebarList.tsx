@@ -16,15 +16,15 @@ export const SidebarList: React.FC<SidebarListProps> = async ({ userId }) => {
   return (
     <div className="flex-1 overflow-auto">
       {chats.length ? (
-        <div className="space-y-2 px-2">
-          {chats.map((chat) => (
+        <div className="px-2 space-y-2">
+          {/* {chats.map((chat) => (
             <SidebarItem key={chat.id as string} chat={chat}>
               <div className="space-x-1">
                 <ShareChat chat={chat} onShareChat={shareChat} />
                 <RemoveChat chat={chat} onRemove={removeChat} />
               </div>
             </SidebarItem>
-          ))}
+          ))} */}
         </div>
       ) : (
         <div className="p-8 text-center">
