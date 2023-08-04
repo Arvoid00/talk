@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const envsSchema = z.object({
   OPENAI_API_KEY: z.string(),
+  METAPHOR_API_KEY: z.string(),
   AUTH_GITHUB_ID: z.string(),
   AUTH_GITHUB_SECRET: z.string(),
   // KV_URL: z.string(),
@@ -18,6 +19,7 @@ if (!_env.success) {
 
 export const envs = {
   OPENAI_API_KEY: _env.data.OPENAI_API_KEY,
+  METAPHOR_API_KEY: _env.data.METAPHOR_API_KEY,
   AUTH_GITHUB_ID: _env.data.AUTH_GITHUB_ID,
   AUTH_GITHUB_SECRET: _env.data.AUTH_GITHUB_SECRET,
   // KV_URL: _env.data.KV_URL,
