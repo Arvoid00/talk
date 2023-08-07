@@ -23,3 +23,4 @@ export type ServerActionResult<Result> = Promise<
     }
 >
 
+export type PromptTemplateValues = Record<string, string | number>;
