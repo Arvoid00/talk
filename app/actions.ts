@@ -1,9 +1,8 @@
 'use server'
-
+import 'server-only'
 import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
-
 import { cookies } from 'next/headers'
-import { Database } from '@/lib/db_types';
+import { Database } from '@/lib/db_types'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { type User } from '@supabase/auth-helpers-nextjs'
@@ -11,14 +10,16 @@ import { type User } from '@supabase/auth-helpers-nextjs'
 import { type Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
-// Create Auth helper client
-const supabase = createServerActionClient<Database>({ cookies })
-
 function nanoid() {
   return Math.random().toString(36).slice(2) // random id up to 11 chars
 }
 
 export async function upsertChat(chat: Chat) {
+  const cookieStore = cookies()
+  const supabase = createServerActionClient<Database>({
+    cookies: () => cookieStore
+  })
+
   const { error } = await supabase.from('chats').upsert({
     id: chat.chat_id || nanoid(),
     user_id: chat.userId,
@@ -38,12 +39,16 @@ export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
   }
-
   try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
     const { data } = await supabase
       .from('chats')
       .select('payload')
       .order('payload->createdAt', { ascending: false })
+      .eq('user_id', userId)
       .throwOnError()
 
     return (data?.map(entry => entry.payload) as Chat[]) ?? []
@@ -53,6 +58,10 @@ export async function getChats(userId?: string | null) {
 }
 
 export async function getChat(id: string) {
+  const cookieStore = cookies()
+  const supabase = createServerActionClient<Database>({
+    cookies: () => cookieStore
+  })
   const { data } = await supabase
     .from('chats')
     .select('payload')
@@ -64,6 +73,10 @@ export async function getChat(id: string) {
 
 export async function removeChat({ id, path }: { id: string; path: string }) {
   try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
     await supabase.from('chats').delete().eq('id', id).throwOnError()
 
     revalidatePath('/')
@@ -77,13 +90,11 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 
 export async function clearChats() {
   try {
-    console.log('clearChats')
-    const session = await auth()
-    await supabase
-      .from('chats')
-      .delete()
-      .eq('user_id', session?.user.id)
-      .throwOnError()
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+    await supabase.from('chats').delete().throwOnError()
     revalidatePath('/')
     return redirect('/')
   } catch (error) {
@@ -95,6 +106,10 @@ export async function clearChats() {
 }
 
 export async function getSharedChat(id: string) {
+  const cookieStore = cookies()
+  const supabase = createServerActionClient<Database>({
+    cookies: () => cookieStore
+  })
   const { data } = await supabase
     .from('chats')
     .select('payload')
@@ -111,6 +126,10 @@ export async function shareChat(chat: Chat) {
     sharePath: `/share/${chat.id}`
   }
 
+  const cookieStore = cookies()
+  const supabase = createServerActionClient<Database>({
+    cookies: () => cookieStore
+  })
   await supabase
     .from('chats')
     .update({ payload: payload as any })
@@ -122,15 +141,19 @@ export async function shareChat(chat: Chat) {
 
 export async function getPrompts(user: User) {
   try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
     const { data, error } = await supabase
       .from('prompts')
-      .select('id, prompt_name, prompt_body')
+      .select('id, prompt_name, prompt_body, emoji')
+      .order('created_at', { ascending: true })
       .eq('user_id', user.id)
+      .is('deleted_at', null)
 
-    const prompts: Prompt[] =
-      data && data.length > 0
-        ? data
-        : [{ id: null, prompt_name: '', prompt_body: '' }]
+    const prompts: Prompt[] = data || []
 
     return prompts
   } catch (error) {
@@ -142,9 +165,11 @@ export async function getPrompts(user: User) {
 }
 
 export type Prompt = {
-  id: number | null;
-  prompt_name: string;
-  prompt_body: string;
+  id: number | null
+  prompt_name: string
+  prompt_body: string
+  emoji: string | null
+  deleted_at?: Date | null
 }
 
 export type PromptGroups = {
@@ -152,6 +177,103 @@ export type PromptGroups = {
     id?: string
     name?: string
     body?: string
+    emoji?: string
+  }
+}
+
+export async function createOrUpdatePersona({
+  values,
+  user
+}: {
+  values: { [x: string]: any }
+  user: User
+}) {
+  try {
+    // userData will update auth.users table
+    const personaData = {
+      prompt_id: values.prompt_id,
+      prompt_name: values.prompt_name,
+      prompt_body: values.prompt_body,
+      prompt_emoji: values.prompt_emoji
+    }
+
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
+    let result
+
+    if (personaData.prompt_id) {
+      console.log('update persona', personaData)
+      result = await supabase
+        .from('prompts')
+        .update({
+          user_id: user.id,
+          prompt_name: personaData.prompt_name,
+          prompt_body: personaData.prompt_body,
+          emoji: personaData.prompt_emoji
+        })
+        .eq('id', personaData.prompt_id)
+        .is('deleted_at', null)
+        .select()
+    } else {
+      result = await supabase
+        .from('prompts')
+        .insert({
+          user_id: user.id,
+          prompt_name: personaData.prompt_name,
+          prompt_body: personaData.prompt_body,
+          emoji: personaData.prompt_emoji
+        })
+        .eq('user_id', user.id)
+        .select()
+    }
+    const { data: personaResponse, error } = result
+
+    if (error) {
+      console.log('Error updating or adding persona:', error)
+    }
+
+    return {
+      data: {
+        prompts: personaResponse
+      }
+    }
+  } catch (error) {
+    console.log('update persona error', error)
+    return {
+      error: 'Unauthorized'
+    }
+  }
+}
+
+export async function removePersona({ id, user }: { id: string; user: User }) {
+  try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
+    const { data: personaResponse, error } = await supabase
+      .from('prompts')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      console.log('Error deleting persona:', error)
+    }
+
+    return {
+      data: {
+        prompts: personaResponse
+      }
+    }
+  } catch (error) {
+    console.log('remove persona error', error)
+    return {
+      error: 'Unauthorized'
+    }
   }
 }
 
@@ -169,81 +291,33 @@ export async function updateUser({
       email: values.email
     }
 
-    // promptData will update public.prompts table
-    const promptData = Object.keys(values).reduce((result, key) => {
-      if (key.startsWith('prompt_')) {
-        result[key] = values[key]
-      }
-      return result
-    }, {} as { [key: string]: string })
-
-
-    // Un-flatten the prompt data
-    let promptGroups: PromptGroups = {}
-
-    for (let key in promptData) {
-      const [tempField, index] = key.split('_').slice(1)
-      const field: 'id' | 'name' | 'body' = tempField as 'id' | 'name' | 'body'
-
-      if (!promptGroups[index]) {
-        promptGroups[index] = {}
-      }
-
-      promptGroups[index][field] = promptData[key]
-    }
-    // console.log('promptGroups', promptGroups)
-    for (let index in promptGroups) {
-      let prompt = promptGroups[index]
-      if (prompt.id) {
-        const { data, error } = await supabase
-          .from('prompts')
-          .update({
-            prompt_name: prompt.name,
-            prompt_body: prompt.body
-          })
-          .eq('id', prompt.id)
-
-        if (error) {
-          console.log('Error updating prompt:', error)
-        } else {
-          console.log('Updated prompt:', data)
-        }
-      } else {
-        const { data, error } = await supabase.from('prompts').insert({
-          user_id: user.id,
-          prompt_name: prompt.name,
-          prompt_body: prompt.body
-        })
-
-        if (error) {
-          console.log('Error inserting prompt:', error)
-        } else {
-          console.log('Inserted prompt:', data)
-        }
-      }
-    }
-
     if (userData.email) {
-      await supabase
-        .from('auth.users')
-        .update({ email: userData.email })
-        .eq('id', user.id)
+      const cookieStore = cookies()
+      const supabase = createServerActionClient<Database>({
+        cookies: () => cookieStore
+      })
+
+      await supabase.auth.updateUser({ email: userData.email })
     }
 
-    if (userData.username) {
-      await supabase
-        .from('auth.users')
-        .update({ user_name: userData.username })
-        .eq('id', user.id)
-    }
+    // TODO: update username
+    // if (userData.username) {
+    //   const cookieStore = cookies()
+    //   const supabase = createServerActionClient<Database>({
+    //     cookies: () => cookieStore
+    //   })
+
+    //   await supabase.auth.updateUser({
+    //     data: { user_name: userData.username }
+    //   })
+    // }
 
     return {
       data: {
         user: {
           ...user,
           ...userData
-        },
-        prompts: promptData
+        }
       }
     }
   } catch (error) {
