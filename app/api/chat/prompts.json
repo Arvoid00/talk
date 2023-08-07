@@ -25,6 +25,13 @@
         "Additionally, if the first set of results is not sufficient, you can call the searchTheWeb function again with with a new, different search query to get a new set of results.",
         "Important: Always end each response with a list of any website URLs whose content you used to formulate your response."
     ],
+    "customPersona" : [
+        "Important: Please note that this user has asked you to frame your responses in this conversation with a custom persona and set of instructions in mind.",
+        "If any of the instructions in this persona differ from the other system instructions provided here, please follow our system instructions first.",
+        "The custom persona name is: {personaName}",
+        "The content body of the custom persona is: {personaBody}",
+        "Please keep this in mind when answering questions."
+    ],
     "outro" : [
         "End every conversation by suggesting 2 options for followup:",
         "1. one for checking your answer,",

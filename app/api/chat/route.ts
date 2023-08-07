@@ -1,30 +1,33 @@
-import { auth } from '@/auth';
-import { Database } from '@/lib/db_types';
-import { ServerActionResult } from '@/lib/types';
-import { nanoid } from '@/lib/utils';
-import { createRouteHandlerClient, type User } from '@supabase/auth-helpers-nextjs';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { cookies } from 'next/headers';
-import { Configuration, OpenAIApi } from 'smolai';
-import { Prompt, getPrompts } from '../../actions';
+import { auth } from '@/auth'
+import { Database } from '@/lib/db_types'
+import { ServerActionResult } from '@/lib/types'
+import { nanoid } from '@/lib/utils'
+import {
+  createRouteHandlerClient,
+  type User
+} from '@supabase/auth-helpers-nextjs'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { cookies } from 'next/headers'
+import { Configuration, OpenAIApi } from 'smolai'
+import { Prompt, getPrompts } from '../../actions'
 
-import { envs } from '@/constants/envs';
-import Metaphor from 'metaphor-node';
+import { envs } from '@/constants/envs'
+import Metaphor from 'metaphor-node'
 
-import { processSearchResult, processSearchResultSchema } from "./functions/process-search-results";
-import { searchTheWeb, searchTheWebSchema } from "./functions/search-the-web";
+import {
+  processSearchResult,
+  processSearchResultSchema
+} from './functions/process-search-results'
+import { searchTheWeb, searchTheWebSchema } from './functions/search-the-web'
 
-import PromptBuilder from './prompt-builder';
+import PromptBuilder from './prompt-builder'
 
 export const runtime = 'edge'
 
 const metaphorKey = envs.METAPHOR_API_KEY
 export const metaphor = new Metaphor(metaphorKey)
 
-const functionSchema = [
-  searchTheWebSchema,
-  processSearchResultSchema
-]
+const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
 export async function POST(req: Request) {
   const cookieStore = cookies()
@@ -34,33 +37,39 @@ export async function POST(req: Request) {
 
   const json = await req.json()
   const { messages, previewToken, model } = json
-  const currentDate = new Date();
+  const currentDate = new Date()
 
   console.log('chat/route POST', json)
 
   const userId = (await auth({ cookieStore }))?.user.id
 
+  /*
+   * Create the system prompt from modular templates in prompts.json.
+   */
   const promptBuilder = new PromptBuilder()
-  const systemPrompt = {
-    role: 'system',
-    content: promptBuilder
-      .addTemplate('intro')
-      .addTemplate('tone')
-      .addTemplate('webSearch', { date: currentDate.toISOString() })
-      .addTemplate('outro')
-      .build()
-  }
+    .addTemplate('intro')
+    .addTemplate('tone')
+    .addTemplate('webSearch', { date: currentDate.toISOString() })
+    .addTemplate('outro')
 
   let storedPrompts: Awaited<ServerActionResult<Prompt[]>>
   if (userId) {
     // @ts-ignore
     storedPrompts = await getPrompts({ id: userId } as User)
+
     // @ts-ignore
     if (storedPrompts[0].id !== null || storedPrompts.error === undefined) {
       // @ts-ignore
       console.log('storedPrompts', storedPrompts)
+
+      // Add first custom persona prompt to the system prompt.
       // @ts-ignore
-      systemPrompt = storedPrompts?.[0]?.prompt_body
+      promptBuilder.addTemplate('customPersona', {
+        // @ts-ignore
+        personaName: storedPrompts[0].prompt_name,
+        // @ts-ignore
+        personaBody: storedPrompts[0].prompt_body
+      })
     }
   }
 
@@ -68,6 +77,10 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', {
       status: 401
     })
+  }
+  const systemPrompt = {
+    role: 'system',
+    content: promptBuilder.build()
   }
 
   const configuration = new Configuration({
@@ -77,7 +90,7 @@ export async function POST(req: Request) {
   const openai = new OpenAIApi(configuration)
 
   const res = await openai.createChatCompletion({
-    model: model.id || 'gpt-3.5-turbo',
+    model: model.id || 'gpt-4-0613',
     messages: [
       systemPrompt,
       // personaPrompts,
@@ -87,7 +100,6 @@ export async function POST(req: Request) {
     temperature: 0.5,
     stream: true
   })
-
 
   for (const [key, value] of Object.entries(res.headers)) {
     console.log(key + ': ' + value)
@@ -130,9 +142,9 @@ export async function POST(req: Request) {
         console.log('🟢 results: ', results)
 
         try {
-          JSON.stringify(results);
+          JSON.stringify(results)
         } catch (e) {
-          console.error('Serialization error: ', e);
+          console.error('Serialization error: ', e)
         }
 
         if (results === undefined) {
@@ -160,7 +172,6 @@ export async function POST(req: Request) {
         // Generate function messages to keep conversation context.
         // @ts-ignore
         const newMessages = createFunctionCallMessages(processedResults)
-        console.log('🟠 newMessages: ', newMessages)
 
         return openai.createChatCompletion({
           messages: [...messages, ...newMessages],
