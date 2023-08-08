@@ -9,14 +9,12 @@ import { ChatCompletionFunctions, Configuration, OpenAIApi } from 'smolai'
 import { Prompt, getPrompts } from '../../actions'
 
 import { envs } from '@/constants/envs'
-import Metaphor from 'metaphor-node'
+
 
 import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
 
-const metaphorKey = envs.METAPHOR_API_KEY
-export const metaphor = new Metaphor(metaphorKey)
 
 const processSearchResultSchema: ChatCompletionFunctions  = {
   name: 'processSearchResult',

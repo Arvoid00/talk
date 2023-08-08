@@ -1,5 +1,8 @@
-import { metaphor } from '../../app/api/chat/route';
+import { envs } from '@/constants/envs';
+import Metaphor from 'metaphor-node'
 
+const metaphorKey = envs.METAPHOR_API_KEY
+export const metaphor = new Metaphor(metaphorKey as string)
 
 export async function searchTheWeb(query: string) {
 	try {
@@ -19,4 +22,4 @@ export async function searchTheWeb(query: string) {
 		console.error(`Failed to get content: ${err}`);
     return { results: undefined }
 	}
-} 
+}
