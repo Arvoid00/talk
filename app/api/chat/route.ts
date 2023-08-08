@@ -2,30 +2,72 @@ import { auth } from '@/auth'
 import { Database } from '@/lib/db_types'
 import { ServerActionResult } from '@/lib/types'
 import { nanoid } from '@/lib/utils'
-import {
-  createRouteHandlerClient,
-  type User
-} from '@supabase/auth-helpers-nextjs'
+import { createRouteHandlerClient, type User } from '@supabase/auth-helpers-nextjs'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
-import { Configuration, OpenAIApi } from 'smolai'
+import { ChatCompletionFunctions, Configuration, OpenAIApi } from 'smolai'
 import { Prompt, getPrompts } from '../../actions'
 
 import { envs } from '@/constants/envs'
 import Metaphor from 'metaphor-node'
 
-import {
-  processSearchResult,
-  processSearchResultSchema
-} from './functions/process-search-results'
-import { searchTheWeb, searchTheWebSchema } from './functions/search-the-web'
-
 import PromptBuilder from './prompt-builder'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 const metaphorKey = envs.METAPHOR_API_KEY
 export const metaphor = new Metaphor(metaphorKey)
+
+const processSearchResultSchema: ChatCompletionFunctions  = {
+  name: 'processSearchResult',
+  description: 'Read the contents of the first or next search result and return it along with the remaining search results.',
+  parameters: {
+      type: 'object',
+      properties: {
+          title: {
+              type: 'string',
+              description: 'The title of the search result.',
+          },
+          url: {
+              type: 'string',
+              description: 'The URL of the search result.',
+          },
+          publishedDate: {
+              type: 'string',
+              description: 'The date the search result was published.',
+          },
+          author: {
+              type: 'string',
+              description: 'The author of the search result.',
+          },
+          score: {
+              type: 'number',
+              descripion: 'Relevance score of the search result on a scale of 0 to 1, with 1 being the most relevant.',
+          },
+          id: {
+              type: 'string',
+              description: 'Unique identifier for the search result.',
+          }
+      },
+      required: ['title', 'url', 'id'],
+  }
+}
+
+const searchTheWebSchema: ChatCompletionFunctions  = {
+  name: 'searchTheWeb',
+  description:
+    'Perform a web search and returns the top 20 search results based on the search query.',
+  parameters: {
+    type: 'object',
+    properties: {
+      query: {
+        type: 'string',
+        description: 'The query to search for.',
+      },
+    },
+    required: ['query'],
+  },
+}
 
 const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
@@ -49,7 +91,7 @@ export async function POST(req: Request) {
   const promptBuilder = new PromptBuilder()
     .addTemplate('intro')
     .addTemplate('tone')
-    .addTemplate('webSearch', { date: currentDate.toISOString() })
+    .addTemplate('webSearch', { date: currentDate })
     .addTemplate('outro')
 
   let storedPrompts: Awaited<ServerActionResult<Prompt[]>>
@@ -64,12 +106,7 @@ export async function POST(req: Request) {
 
       // Add first custom persona prompt to the system prompt.
       // @ts-ignore
-      promptBuilder.addTemplate('customPersona', {
-        // @ts-ignore
-        personaName: storedPrompts[0].prompt_name,
-        // @ts-ignore
-        personaBody: storedPrompts[0].prompt_body
-      })
+      promptBuilder.addTemplate('customPersona', { personaName: storedPrompts[0].prompt_name, personaBody: storedPrompts[0].prompt_body })
     }
   }
 
@@ -82,6 +119,8 @@ export async function POST(req: Request) {
     role: 'system',
     content: promptBuilder.build()
   }
+
+  console.log('🔴 systemPrompt: ', systemPrompt)
 
   const configuration = new Configuration({
     apiKey: previewToken || envs.OPENAI_API_KEY
@@ -128,60 +167,63 @@ export async function POST(req: Request) {
       console.log('🔴 payload: ', payload)
       // Insert chat into database.
       await supabase.from('chats').upsert({ id, payload }).throwOnError()
-    },
-    experimental_onFunctionCall: async (
-      { name, arguments: args },
-      createFunctionCallMessages
-    ) => {
-      // if you skip the function call and return nothing, the `function_call`
-      // message will be sent to the client for it to handle
-      if (name === 'searchTheWeb') {
-        console.log('🔵 called searchTheWeb: ', args)
-
-        const results = await searchTheWeb(args.query as string)
-        console.log('🟢 results: ', results)
-
-        try {
-          JSON.stringify(results)
-        } catch (e) {
-          console.error('Serialization error: ', e)
-        }
-
-        if (results === undefined) {
-          return 'Sorry, I could not find anything on the internet about that.'
-        }
-
-        // Generate function messages to keep in conversation context.
-        // @ts-ignore
-        const newMessages = createFunctionCallMessages(results)
-
-        return openai.createChatCompletion({
-          messages: [...messages, ...newMessages],
-          stream: true,
-          model: 'gpt-4-0613',
-          functions: functionSchema
-        })
-      }
-      if (name === 'processSearchResult') {
-        console.log('🔵 called processSearchResult: ', args)
-
-        // @ts-ignore
-        const processedResults = await processSearchResult(args)
-        console.log('🟢 processedResults: ', processedResults)
-
-        // Generate function messages to keep conversation context.
-        // @ts-ignore
-        const newMessages = createFunctionCallMessages(processedResults)
-
-        return openai.createChatCompletion({
-          messages: [...messages, ...newMessages],
-          stream: true,
-          model: 'gpt-4-0613',
-          functions: functionSchema
-        })
-      }
     }
+  //   experimental_onFunctionCall: async (
+  //     { name, arguments: args },
+  //     createFunctionCallMessages
+  //   ) => {
+  //     // if you skip the function call and return nothing, the `function_call`
+  //     // message will be sent to the client for it to handle
+  //     if (name === 'searchTheWeb') {
+  //       console.log('🔵 called searchTheWeb: ', args)
+
+  //       const results = await searchTheWeb(args.query as string)
+  //       console.log('🟢 results: ', results)
+
+  //       try {
+  //         JSON.stringify(results)
+  //       } catch (e) {
+  //         console.error('Serialization error: ', e)
+  //       }
+
+  //       if (results === undefined) {
+  //         return 'Sorry, I could not find anything on the internet about that.'
+  //       }
+
+  //       // Generate function messages to keep in conversation context.
+  //       // @ts-ignore
+  //       const newMessages = createFunctionCallMessages(results)
+  //       console.log('🟠 newMessages: ', newMessages)
+
+  //       return openai.createChatCompletion({
+  //         messages: [...messages, ...newMessages],
+  //         stream: true,
+  //         model: 'gpt-4-0613',
+  //         functions: functionSchema
+  //       })
+  //     }
+  //     if (name === 'processSearchResult') {
+  //       console.log('🔵 called processSearchResult: ', args)
+
+  //       // @ts-ignore
+  //       const processedResults = await processSearchResult(args)
+  //       console.log('🟢 processedResults: ', processedResults)
+
+  //       // Generate function messages to keep conversation context.
+  //       // @ts-ignore
+  //       const newMessages = createFunctionCallMessages(processedResults)
+  //       console.log('🟠 newMessages: ', newMessages)
+
+  //       return openai.createChatCompletion({
+  //         messages: [...messages, ...newMessages],
+  //         stream: true,
+  //         model: 'gpt-4-0613',
+  //         functions: functionSchema
+  //       })
+  //     }
+  //   }
   })
 
   return new StreamingTextResponse(stream)
 }
+
