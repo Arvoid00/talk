@@ -17,6 +17,7 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
+
   const renderFunctionCall = () => {
     if (message.function_call) {
       const functionCallString =
