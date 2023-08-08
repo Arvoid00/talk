@@ -17,6 +17,24 @@ export interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
+  const renderFunctionCall = () => {
+    if (message.function_call) {
+      const functionCallString =
+        typeof message.function_call === 'string'
+          ? message.function_call
+          : JSON.stringify(message.function_call)
+
+      return (
+        <>
+          {functionCallString.split('\\n').map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </>
+      )
+    }
+    return null
+  }
+
   return (
     <div
       className={cn('group relative mb-4 flex items-start md:-ml-12')}
@@ -33,64 +51,55 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {message.role === 'user' && <IconUser />}
         {message.role === 'assistant' && <IconOpenAI />}
         {message.role === 'function' && <IconExternalLink />}
-        {props.functionCallString && (
-            <>
-            {props.functionCallString.split('\\n').map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
-          </>
-        )}
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
-        <MemoizedReactMarkdown
-          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
-          remarkPlugins={[remarkGfm, remarkMath]}
-          components={{
-            p({ children }) {
-              return <p className="mb-2 last:mb-0">{children}</p>
-            },
-            code({ node, inline, className, children, ...props }) {
-              if (children.length) {
-                if (children[0] == '▍') {
+        {message.role === 'function' && message.function_call ? (
+          renderFunctionCall()
+        ) : (
+          <MemoizedReactMarkdown
+            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+            remarkPlugins={[remarkGfm, remarkMath]}
+            components={{
+              p({ children }) {
+                return <p className="mb-2 last:mb-0">{children}</p>
+              },
+              code({ node, inline, className, children, ...props }) {
+                if (children.length) {
+                  if (children[0] == '▍') {
+                    return (
+                      <span className="mt-1 animate-pulse cursor-default">
+                        ▍
+                      </span>
+                    )
+                  }
+
+                  children[0] = (children[0] as string).replace('`▍`', '▍')
+                }
+
+                const match = /language-(\w+)/.exec(className || '')
+
+                if (inline) {
                   return (
-                    <span className="mt-1 animate-pulse cursor-default">▍</span>
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
                   )
                 }
 
-                children[0] = (children[0] as string).replace('`▍`', '▍')
-              }
-
-              const match = /language-(\w+)/.exec(className || '')
-
-              {
-                message.role === 'function' && message.function_call && (
-                  <div>
-                    <p>Function name: {message.function_call.name}</p>
-                    <p>Function arguments: {message.function_call.arguments}</p>
-                  </div>
-                )
-              }
-              if (inline) {
                 return (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
+                  <CodeBlock
+                    key={Math.random()}
+                    language={(match && match[1]) || ''}
+                    value={String(children).replace(/\n$/, '')}
+                    {...props}
+                  />
                 )
               }
-
-              return (
-                <CodeBlock
-                  key={Math.random()}
-                  language={(match && match[1]) || ''}
-                  value={String(children).replace(/\n$/, '')}
-                  {...props}
-                />
-              )
-            }
-          }}
-        >
-          {message.content}
-        </MemoizedReactMarkdown>
+            }}
+          >
+            {message.content}
+          </MemoizedReactMarkdown>
+        )}
         <ChatMessageActions message={message} />
       </div>
     </div>
