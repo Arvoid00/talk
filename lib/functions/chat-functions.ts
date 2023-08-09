@@ -14,7 +14,6 @@ export const searchTheWeb = async (query: string) => {
     })
 
     if (!response.ok) {
-      // Handle the error response
       console.error('Error response:', response)
       return
     }
@@ -40,10 +39,8 @@ export const processSearchResult = async (id: string) => {
         'content-type': 'application/json',
       }
     })
-    console.log('🟢 response: ', res)
 
     if (!res.ok) {
-      // Handle the error response
       console.error('Error response:', res)
       return
     }
