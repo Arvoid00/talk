@@ -177,11 +177,14 @@ export function Chat({ userId, id, initialMessages, className }: ChatProps) {
         model={model}
         userId={userId}
       />
-
+      {/* @ts-ignore */}
       <Dialog open={previewTokenDialog} onOpenChange={setPreviewTokenDialog}>
+        {/* @ts-ignore */}
         <DialogContent>
           <DialogHeader>
+            {/* @ts-ignore */}
             <DialogTitle>Enter your OpenAI Key</DialogTitle>
+            {/* @ts-ignore */}
             <DialogDescription>
               If you have not obtained your OpenAI API key, you can do so by{' '}
               <a
