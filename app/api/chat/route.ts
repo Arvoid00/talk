@@ -7,10 +7,7 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
 import { ChatCompletionFunctions, Configuration, OpenAIApi } from 'smolai'
 import { Prompt, getPrompts } from '../../actions'
-
 import { envs } from '@/constants/envs'
-
-
 import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
@@ -79,8 +76,6 @@ export async function POST(req: Request) {
   const { messages, previewToken, model } = json
   const currentDate = new Date()
 
-  console.log('chat/route POST', json)
-
   const userId = (await auth({ cookieStore }))?.user.id
 
   /*
@@ -100,7 +95,6 @@ export async function POST(req: Request) {
     // @ts-ignore
     if (storedPrompts[0].id !== null || storedPrompts.error === undefined) {
       // @ts-ignore
-      console.log('storedPrompts', storedPrompts)
 
       // Add first custom persona prompt to the system prompt.
       // @ts-ignore
@@ -117,8 +111,6 @@ export async function POST(req: Request) {
     role: 'system',
     content: promptBuilder.build()
   }
-
-  console.log('🔴 systemPrompt: ', systemPrompt)
 
   const configuration = new Configuration({
     apiKey: previewToken || envs.OPENAI_API_KEY
@@ -162,7 +154,7 @@ export async function POST(req: Request) {
           }
         ]
       }
-      console.log('🔴 payload: ', payload)
+
       // Insert chat into database.
       await supabase.from('chats').upsert({ id, payload }).throwOnError()
     }
