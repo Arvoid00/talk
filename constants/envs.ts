@@ -14,6 +14,8 @@ export const envsSchema = z.object({
 const _env = envsSchema.safeParse(process.env)
 
 if (!_env.success) {
+  console.error('Zod validation failed:', _env.error)
+  console.log('process.env', process.env)
   throw new Error('Invalid environment variables')
 }
 
