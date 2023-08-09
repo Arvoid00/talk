@@ -1,17 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { envs } from '@/constants/envs'
 
 export const runtime = 'nodejs'
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const metaphorKey = envs.METAPHOR_API_KEY
-    const json = await req.json()
-		console.log('json', json)
-
-		const id = JSON.stringify(json.id)
-		console.log('process/route GET REQUEST id', id)
-
+    const id = req.nextUrl.searchParams.get('id')
     const res = await fetch(
       `https://api.metaphor.systems/contents?ids=${id}`,
       {
@@ -23,10 +18,7 @@ export async function GET(req: Request) {
         }
       }
     )
-
     const data = await res.json()
-    console.log('process/route GET RESPONSE', data)
-
     const content = data.contents[0]
     return NextResponse.json(content)
   } catch (err) {

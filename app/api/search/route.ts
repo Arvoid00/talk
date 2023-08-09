@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   try {
     const metaphorKey = envs.METAPHOR_API_KEY
     const json = await req.json()
-
     const res = await fetch(
       'https://api.metaphor.systems/search',
       {
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
       }
     )
     const data = await res.json()
-
     return NextResponse.json(data)
   } catch (err) {
     console.error(`Failed to get content: ${err}`)
