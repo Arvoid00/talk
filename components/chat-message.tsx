@@ -1,21 +1,20 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 
-import { Message } from 'ai'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
+import { Message } from 'ai';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 
-import { cn } from '@/lib/utils'
-import { CodeBlock } from '@/components/ui/codeblock'
-import { MemoizedReactMarkdown } from '@/components/markdown'
+import { ChatMessageActions } from '@/components/chat-message-actions';
+import { MemoizedReactMarkdown } from '@/components/markdown';
+import { CodeBlock } from '@/components/ui/codeblock';
 import {
   IconCheck,
-  IconExternalLink,
   IconOpenAI,
   IconSpinner,
   IconUser
-} from '@/components/ui/icons'
-import { ChatMessageActions } from '@/components/chat-message-actions'
+} from '@/components/ui/icons';
+import { cn } from '@/lib/utils';
 
 export interface ChatMessageProps {
   message: Message
@@ -29,33 +28,17 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         typeof message.function_call === 'string'
           ? message.function_call
           : JSON.stringify(message.function_call)
-
-      // return (
-      //   <>
-      //     {console.log('🔵 functionCallString: ', functionCallString)}
-      //     {message.role === 'function' && message.function_call && (
-      //       <div>
-      //         <p>Function name: {message.function_call.name}</p>
-      //         <p>Function arguments: {message.function_call.arguments}</p>
-      //       </div>
-      //     )}
-      //     {functionCallString.split('\\n').map((line, index) => (
-      //       <p key={index}>{line}</p>
-      //     ))}
-      //   </>
-      // )
     }
     return null
   }
 
   let content = message.content
 
-  if (message.role === 'assistant' && message.function_call) {
+  if (message.function_call) {
     if (message.function_call.name === 'searchTheWeb') {
       content = 'Searching the web...'
     } else if (message.function_call.name === 'processSearchResult') {
-      console.log('🔴 message.function_call.arguments: ', message)
-      content = `${message}`
+      content = 'Reading a result...'
     }
   }
 
@@ -76,9 +59,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {message.role === 'assistant' && !message.function_call && (
           <IconOpenAI />
         )}
-        {message.role === 'assistant' && message.function_call && (
-          <IconCheck />
-        )}
+        {message.role === 'assistant' && message.function_call && <IconCheck />}
         {message.role === 'function' && <IconSpinner />}
       </div>
       <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">

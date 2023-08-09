@@ -25,8 +25,10 @@ import { AlertAuth } from './alert-auth'
 import { SmolTalkMessage } from '@/lib/types'
 import { ChatRequest, FunctionCallHandler } from 'ai'
 import { nanoid } from '@/lib/utils'
-import { searchTheWeb, processSearchResult } from '@/lib/functions/chat-functions';
-
+import {
+  searchTheWeb,
+  processSearchResult
+} from '@/lib/functions/chat-functions'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -34,6 +36,10 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   id?: string
   userId?: string
 }
+
+/* ========================================================================== */
+/* SmolTalk useChat wrapper                                                   */
+/* ========================================================================== */
 
 function useSmolTalkChat(
   opts: UseChatOptions & {
@@ -57,15 +63,16 @@ const functionCallHandler: FunctionCallHandler = async (
   chatMessages,
   functionCall
 ) => {
-  console.log('🔴 functionCallHandler: ', functionCall)
   let functionResponse: ChatRequest
-  // TODO: Cleanup comments and console logs
+
+  /* ========================================================================== */
+  /* Handle searchTheWeb function call                                          */
+  /* ========================================================================== */
 
   if (functionCall.name === 'searchTheWeb') {
     if (functionCall.arguments) {
       const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
       const results = await searchTheWeb(parsedFunctionCallArguments.query)
-
       return (functionResponse = {
         messages: [
           ...chatMessages,
@@ -83,36 +90,40 @@ const functionCallHandler: FunctionCallHandler = async (
         ]
       })
     }
-    if (functionCall.name === 'processSearchResult') {
-      const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
-      const processedContent = await processSearchResult(parsedFunctionCallArguments.id)
-      console.log('🟢 processedResults: ', processedContent)
+  }
 
-      const { title, url, id, publishedDate, author, score } =
-        functionCall.arguments
+  /* ========================================================================== */
+  /* Handle processSearchResult function call                                   */
+  /* ========================================================================== */
 
-      return (functionResponse = {
-        messages: [
-          ...chatMessages,
-          {
-            id: nanoid(),
-            name: 'processSearchResult',
-            role: 'function' as const,
-            content: JSON.stringify({
-              link: {
-                title: title,
-                url: url,
-                publishedDate: publishedDate || null,
-                author: author || null,
-                score: score || null,
-                id: id
-              },
-              results: processedContent
-            })
-          }
-        ]
-      })
-    }
+  if (functionCall.name === 'processSearchResult') {
+    const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
+    const processedContent = await processSearchResult(parsedFunctionCallArguments.id)
+
+    const { title, url, id, publishedDate, author, score } =
+      functionCall.arguments
+
+    return (functionResponse = {
+      messages: [
+        ...chatMessages,
+        {
+          id: nanoid(),
+          name: 'processSearchResult',
+          role: 'function' as const,
+          content: JSON.stringify({
+            link: {
+              title: title,
+              url: url,
+              publishedDate: publishedDate || null,
+              author: author || null,
+              score: score || null,
+              id: id
+            },
+            results: processedContent
+          })
+        }
+      ]
+    })
   }
 }
 
@@ -136,7 +147,6 @@ export function Chat({ userId, id, initialMessages, className }: ChatProps) {
       id,
       body: {
         id,
-        //   previewToken
         previewToken,
         model: model
       },
