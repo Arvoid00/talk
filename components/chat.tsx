@@ -37,10 +37,6 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   userId?: string
 }
 
-/* ========================================================================== */
-/* SmolTalk useChat wrapper                                                   */
-/* ========================================================================== */
-
 function useSmolTalkChat(
   opts: UseChatOptions & {
     initialMessages?: SmolTalkMessage[] // overriding just to fit our needs
