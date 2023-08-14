@@ -1,54 +1,57 @@
+import { getPersonaById } from '@/app/actions'
 import { auth } from '@/auth'
+import { Persona } from '@/constants/personas'
 import { Database } from '@/lib/db_types'
-import { ServerActionResult } from '@/lib/types'
 import { nanoid } from '@/lib/utils'
-import { createRouteHandlerClient, type User } from '@supabase/auth-helpers-nextjs'
+import {
+  createRouteHandlerClient,
+  type User
+} from '@supabase/auth-helpers-nextjs'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
 import { ChatCompletionFunctions, Configuration, OpenAIApi } from 'smolai'
-import { Prompt, getPrompts } from '../../actions'
-import { envs } from '@/constants/envs'
 import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
 
-
-const processSearchResultSchema: ChatCompletionFunctions  = {
+const processSearchResultSchema: ChatCompletionFunctions = {
   name: 'processSearchResult',
-  description: 'Read the contents of the first or next search result and return it along with the remaining search results.',
+  description:
+    'Read the contents of the first or next search result and return it along with the remaining search results.',
   parameters: {
-      type: 'object',
-      properties: {
-          title: {
-              type: 'string',
-              description: 'The title of the search result.',
-          },
-          url: {
-              type: 'string',
-              description: 'The URL of the search result.',
-          },
-          publishedDate: {
-              type: 'string',
-              description: 'The date the search result was published.',
-          },
-          author: {
-              type: 'string',
-              description: 'The author of the search result.',
-          },
-          score: {
-              type: 'number',
-              descripion: 'Relevance score of the search result on a scale of 0 to 1, with 1 being the most relevant.',
-          },
-          id: {
-              type: 'string',
-              description: 'Unique identifier for the search result.',
-          }
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string',
+        description: 'The title of the search result.'
       },
-      required: ['title', 'url', 'id'],
+      url: {
+        type: 'string',
+        description: 'The URL of the search result.'
+      },
+      publishedDate: {
+        type: 'string',
+        description: 'The date the search result was published.'
+      },
+      author: {
+        type: 'string',
+        description: 'The author of the search result.'
+      },
+      score: {
+        type: 'number',
+        descripion:
+          'Relevance score of the search result on a scale of 0 to 1, with 1 being the most relevant.'
+      },
+      id: {
+        type: 'string',
+        description: 'Unique identifier for the search result.'
+      }
+    },
+    required: ['title', 'url', 'id']
   }
 }
 
-const searchTheWebSchema: ChatCompletionFunctions  = {
+const searchTheWebSchema: ChatCompletionFunctions = {
   name: 'searchTheWeb',
   description:
     'Perform a web search and returns the top 20 search results based on the search query.',
@@ -57,11 +60,11 @@ const searchTheWebSchema: ChatCompletionFunctions  = {
     properties: {
       query: {
         type: 'string',
-        description: 'The query to search for.',
-      },
+        description: 'The query to search for.'
+      }
     },
-    required: ['query'],
-  },
+    required: ['query']
+  }
 }
 
 const functionSchema = [searchTheWebSchema, processSearchResultSchema]
@@ -73,10 +76,17 @@ export async function POST(req: Request) {
   })
 
   const json = await req.json()
-  const { messages, previewToken, model } = json
+
+  const { messages, previewToken, model, persona } = json
   const currentDate = new Date()
 
   const userId = (await auth({ cookieStore }))?.user.id
+
+  if (!userId) {
+    return new Response('Unauthorized', {
+      status: 401
+    })
+  }
 
   /*
    * Create the system prompt from modular templates in prompts.json.
@@ -87,33 +97,37 @@ export async function POST(req: Request) {
     .addTemplate('webSearch', { date: currentDate })
     .addTemplate('outro')
 
-  let storedPrompts: Awaited<ServerActionResult<Prompt[]>>
-  if (userId) {
-    // @ts-ignore
-    storedPrompts = await getPrompts({ id: userId } as User)
+  if (userId && persona?.id) {
+    const storedPersona = await getPersonaById(
+      { id: userId } as User,
+      { id: persona.id } as Persona
+    )
 
     // @ts-ignore
-    if (storedPrompts[0].id !== null || storedPrompts.error === undefined) {
+    if (storedPersona?.error) {
       // @ts-ignore
+      console.error(storedPersona.error)
+      return
+    }
 
-      // Add first custom persona prompt to the system prompt.
-      // @ts-ignore
-      promptBuilder.addTemplate('customPersona', { personaName: storedPrompts[0].prompt_name, personaBody: storedPrompts[0].prompt_body })
+    // @ts-ignore
+    if (storedPersona?.id !== null) {
+      promptBuilder.addTemplate('customPersona', {
+        // @ts-ignore
+        personaName: storedPersona.prompt_name,
+        // @ts-ignore
+        personaBody: storedPersona.prompt_body
+      })
     }
   }
 
-  if (!userId) {
-    return new Response('Unauthorized', {
-      status: 401
-    })
-  }
   const systemPrompt = {
     role: 'system',
     content: promptBuilder.build()
   }
 
   const configuration = new Configuration({
-    apiKey: previewToken || envs.OPENAI_API_KEY
+    apiKey: previewToken || process.env.OPENAI_API_KEY
   })
 
   const openai = new OpenAIApi(configuration)
@@ -158,62 +172,63 @@ export async function POST(req: Request) {
       // Insert chat into database.
       await supabase.from('chats').upsert({ id, payload }).throwOnError()
     }
-  //   experimental_onFunctionCall: async (
-  //     { name, arguments: args },
-  //     createFunctionCallMessages
-  //   ) => {
-  //     // if you skip the function call and return nothing, the `function_call`
-  //     // message will be sent to the client for it to handle
-  //     if (name === 'searchTheWeb') {
-  //       console.log('🔵 called searchTheWeb: ', args)
 
-  //       const results = await searchTheWeb(args.query as string)
-  //       console.log('🟢 results: ', results)
+    //   experimental_onFunctionCall: async (
+    //     { name, arguments: args },
+    //     createFunctionCallMessages
+    //   ) => {
+    //     // if you skip the function call and return nothing, the `function_call`
+    //     // message will be sent to the client for it to handle
+    //     if (name === 'searchTheWeb') {
+    //       console.log('🔵 called searchTheWeb: ', args)
 
-  //       try {
-  //         JSON.stringify(results)
-  //       } catch (e) {
-  //         console.error('Serialization error: ', e)
-  //       }
+    //       const results = await searchTheWeb(args.query as string)
+    //       console.log('🟢 results: ', results)
 
-  //       if (results === undefined) {
-  //         return 'Sorry, I could not find anything on the internet about that.'
-  //       }
+    //       try {
+    //         JSON.stringify(results)
+    //       } catch (e) {
+    //         console.error('Serialization error: ', e)
+    //       }
 
-  //       // Generate function messages to keep in conversation context.
-  //       // @ts-ignore
-  //       const newMessages = createFunctionCallMessages(results)
-  //       console.log('🟠 newMessages: ', newMessages)
+    //       if (results === undefined) {
+    //         return 'Sorry, I could not find anything on the internet about that.'
+    //       }
 
-  //       return openai.createChatCompletion({
-  //         messages: [...messages, ...newMessages],
-  //         stream: true,
-  //         model: 'gpt-4-0613',
-  //         functions: functionSchema
-  //       })
-  //     }
-  //     if (name === 'processSearchResult') {
-  //       console.log('🔵 called processSearchResult: ', args)
+    //       // Generate function messages to keep in conversation context.
+    //       // @ts-ignore
+    //       const newMessages = createFunctionCallMessages(results)
+    //       console.log('🟠 newMessages: ', newMessages)
 
-  //       // @ts-ignore
-  //       const processedResults = await processSearchResult(args)
-  //       console.log('🟢 processedResults: ', processedResults)
+    //       return openai.createChatCompletion({
+    //         messages: [...messages, ...newMessages],
+    //         stream: true,
+    //         model: 'gpt-4-0613',
+    //         functions: functionSchema
+    //       })
+    //     }
+    //     if (name === 'processSearchResult') {
+    //       console.log('🔵 called processSearchResult: ', args)
 
-  //       // Generate function messages to keep conversation context.
-  //       // @ts-ignore
-  //       const newMessages = createFunctionCallMessages(processedResults)
-  //       console.log('🟠 newMessages: ', newMessages)
+    //       // @ts-ignore
+    //       const processedResults = await processSearchResult(args)
+    //       console.log('🟢 processedResults: ', processedResults)
 
-  //       return openai.createChatCompletion({
-  //         messages: [...messages, ...newMessages],
-  //         stream: true,
-  //         model: 'gpt-4-0613',
-  //         functions: functionSchema
-  //       })
-  //     }
-  //   }
+    //       // Generate function messages to keep conversation context.
+    //       // @ts-ignore
+    //       const newMessages = createFunctionCallMessages(processedResults)
+    //       console.log('🟠 newMessages: ', newMessages)
+
+    //       return openai.createChatCompletion({
+    //         messages: [...messages, ...newMessages],
+    //         stream: true,
+    //         model: 'gpt-4-0613',
+    //         functions: functionSchema
+    //       })
+    //     }
+    //   }
   })
+  console.log(stream)
 
   return new StreamingTextResponse(stream)
 }
-

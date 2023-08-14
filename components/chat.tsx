@@ -1,13 +1,13 @@
 'use client'
 
-import { useChat, type Message, UseChatOptions } from 'ai/react'
+import { UseChatOptions, useChat, type Message } from 'ai/react'
 
-import { cn } from '@/lib/utils'
+import { getPersonas } from '@/app/actions'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
-import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import { EmptyScreen } from '@/components/empty-screen'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -16,25 +16,27 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { useState } from 'react'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { toast } from 'react-hot-toast'
+import { Input } from '@/components/ui/input'
 import { Model, models } from '@/constants/models'
-import { AlertAuth } from './alert-auth'
-import { SmolTalkMessage } from '@/lib/types'
-import { ChatRequest, FunctionCallHandler } from 'ai'
-import { nanoid } from '@/lib/utils'
+import { Persona } from '@/constants/personas'
 import {
-  searchTheWeb,
-  processSearchResult
+  processSearchResult,
+  searchTheWeb
 } from '@/lib/functions/chat-functions'
+import { useLocalStorage } from '@/lib/hooks/use-local-storage'
+import { SmolTalkMessage } from '@/lib/types'
+import { usePersonaStore } from '@/lib/usePersonaStore'
+import { cn, nanoid } from '@/lib/utils'
+import { ChatRequest, FunctionCallHandler } from 'ai'
+import { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { AlertAuth } from './alert-auth'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
-  userId?: string
+  user: any
 }
 
 function useSmolTalkChat(
@@ -94,7 +96,9 @@ const functionCallHandler: FunctionCallHandler = async (
 
   if (functionCall.name === 'processSearchResult') {
     const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
-    const processedContent = await processSearchResult(parsedFunctionCallArguments.id)
+    const processedContent = await processSearchResult(
+      parsedFunctionCallArguments.id
+    )
 
     const { title, url, id, publishedDate, author, score } =
       functionCall.arguments
@@ -127,7 +131,8 @@ const functionCallHandler: FunctionCallHandler = async (
 /* Chat Component                                                             */
 /* ========================================================================== */
 
-export function Chat({ userId, id, initialMessages, className }: ChatProps) {
+export function Chat({ user, id, initialMessages, className }: ChatProps) {
+  const { persona, setPersonas } = usePersonaStore()
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
@@ -144,7 +149,8 @@ export function Chat({ userId, id, initialMessages, className }: ChatProps) {
       body: {
         id,
         previewToken,
-        model: model
+        model: model,
+        persona: persona
       },
       // SWYXTODO: check this 401 issue?
       onResponse(response) {
@@ -154,6 +160,14 @@ export function Chat({ userId, id, initialMessages, className }: ChatProps) {
       },
       experimental_onFunctionCall: functionCallHandler
     })
+
+  useEffect(() => {
+    const fetchPersonas = async () => {
+      const result = (await getPersonas(user)) as Persona[]
+      setPersonas(result)
+    }
+    fetchPersonas()
+  }, [setPersonas, user])
 
   const isAuthError = error?.message.includes('Unauthorized')
 
@@ -181,7 +195,7 @@ export function Chat({ userId, id, initialMessages, className }: ChatProps) {
         setInput={setInput}
         setModel={setModel}
         model={model}
-        userId={userId}
+        user={user}
       />
       {/* @ts-ignore */}
       <Dialog open={previewTokenDialog} onOpenChange={setPreviewTokenDialog}>

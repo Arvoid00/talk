@@ -1,34 +1,29 @@
 import { NextResponse } from 'next/server'
-import { envs } from '@/constants/envs'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: Request) {
   try {
-    const metaphorKey = envs.METAPHOR_API_KEY
+    const metaphorKey = process.env.METAPHOR_API_KEY || ''
     const json = await req.json()
-    const res = await fetch(
-      'https://api.metaphor.systems/search',
-      {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'content-type': 'application/json',
-          'x-api-key': metaphorKey
-        },
-        body: JSON.stringify({
-          query: json.query,
-          useAutoprompt: true
-        })
-      }
-    )
+    const res = await fetch('https://api.metaphor.systems/search', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'x-api-key': metaphorKey
+      },
+      body: JSON.stringify({
+        query: json.query,
+        useAutoprompt: true
+      })
+    })
     const data = await res.json()
     return NextResponse.json(data)
   } catch (err) {
     console.error(`Failed to get content: ${err}`)
-    return NextResponse.json({ results: undefined });
+    return NextResponse.json({ results: undefined })
   }
-
 }
 
 // METAPHOR API RETURN
