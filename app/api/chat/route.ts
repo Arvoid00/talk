@@ -1,15 +1,18 @@
 import { getPersonaById } from '@/app/actions'
-import { auth } from '@/auth'
-import { Persona } from '@/constants/personas'
 import { Database } from '@/lib/db_types'
-import { nanoid } from '@/lib/utils'
 import {
   createRouteHandlerClient,
   type User
 } from '@supabase/auth-helpers-nextjs'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
-import { ChatCompletionFunctions, Configuration, OpenAIApi } from 'smolai'
+import 'server-only'
+import { Configuration, OpenAIApi } from 'smolai'
+
+import { auth } from '@/auth'
+import { Persona } from '@/constants/personas'
+import { nanoid } from '@/lib/utils'
+import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
@@ -76,8 +79,8 @@ export async function POST(req: Request) {
   })
 
   const json = await req.json()
-
   const { messages, previewToken, model, persona } = json
+
   const currentDate = new Date()
 
   const userId = (await auth({ cookieStore }))?.user.id
