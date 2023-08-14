@@ -9,9 +9,10 @@ import { cookies } from 'next/headers'
 import NextTopLoader from 'nextjs-toploader'
 import { Toaster } from 'react-hot-toast'
 import { auth } from '../auth'
+import { getURL } from '../lib/helpers'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.VERCEL_URL || 'http://localhost:3000'),
+  metadataBase: new URL(getURL()),
   title: {
     default: '🐣 Smol Talk',
     template: `%s - Smol Talk`
