@@ -25,6 +25,14 @@ export interface ChatMessageProps {
   functionCallString?: string
 }
 
+const ShowMoreButton = ({ onClick }: { onClick: () => void }) => (
+  <div className="absolute inset-x-0 bottom-0 flex h-40 items-end justify-center bg-gradient-to-t from-[#18181a] to-transparent shadow-lg">
+    <Button onClick={onClick} className="mb-4">
+      Show more <ArrowDownIcon className="ml-1" />
+    </Button>
+  </div>
+)
+
 const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -32,47 +40,52 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
     const parsedContent = JSON.parse(message.content)?.results
 
     return (
-      <ul className="list-decimal space-y-4 list-inside">
-        {parsedContent?.results?.map((result: any) => (
-          <li key={result.id}>
-            <span className="font-medium">{result.title}</span>:{' '}
-            <Link target="_blank" className="underline" href={result.url}>
-              {result.url}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="prose dark:prose-invert">
+        <div
+          className={cn(
+            `overflow-hidden transition-all duration-300`,
+            isOpen ? 'max-h-screen' : 'max-h-72'
+          )}
+        >
+          <div>These are the top search results:</div>
+          <ul className="list-decimal">
+            {parsedContent?.results?.map((result: any) => (
+              <li key={result.id}>
+                <span className="font-medium">{result.title}</span>:{' '}
+                <Link target="_blank" className="underline" href={result.url}>
+                  {result.url}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {!isOpen && <ShowMoreButton onClick={() => setIsOpen(true)} />}
+      </div>
     )
   } else if (message.name === 'processSearchResult') {
     const result = JSON.parse(message.content)?.results
     const link = JSON.parse(message.content)?.link
 
     return (
-      <div className="">
+      <div className="prose dark:prose-invert">
         <div
           className={cn(
-            `transition-all duration-300 overflow-hidden`,
-            isOpen ? 'max-h-screen' : 'max-h-36'
+            `overflow-hidden transition-all duration-300`,
+            isOpen ? 'max-h-screen' : 'max-h-72'
           )}
         >
           <Link href={result.url} target="_blank" className="font-medium">
             {result?.title}
           </Link>
           :
-          <p className="whitespace-pre-line text-muted-foreground">
+          <p className="whitespace-pre-line">
             {result.extract
               .replace(/(<([^>]+)>)/gi, ' ')
               .trim()
               .replace(/\n\s*\n\s*\n/g, '\n\n')}
           </p>
         </div>
-        {!isOpen && (
-          <div className="absolute -mb-8 h-24 justify-center shadow-lg from-[#18181a] bg-gradient-to-t to-transparent bg-opacity-0 items-end bottom-0 left-0 right-0 flex">
-            <Button onClick={() => setIsOpen(!isOpen)} className="mb-4">
-              Show more <ArrowDownIcon className="ml-1" />
-            </Button>
-          </div>
-        )}
+        {!isOpen && <ShowMoreButton onClick={() => setIsOpen(true)} />}
       </div>
     )
   }
@@ -121,7 +134,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {message.role === 'assistant' && message.function_call && <IconCheck />}
         {message.role === 'function' && <IconSpinner />}
       </div>
-      <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1">
+      <div className="relative ml-4 flex-1 space-y-2 overflow-hidden px-1">
         {message.role === 'function' && message.function_call ? (
           renderFunctionCall()
         ) : message.role === 'function' ? (
