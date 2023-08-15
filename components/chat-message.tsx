@@ -27,7 +27,10 @@ export interface ChatMessageProps {
 }
 
 const ShowMoreButton = ({ onClick }: { onClick: () => void }) => (
-  <div className="absolute inset-x-0 bottom-0 flex h-40 items-end justify-center bg-gradient-to-t from-[#18181a] to-transparent shadow-lg">
+  <div
+    onClick={onClick}
+    className="absolute inset-x-0 bottom-0 flex h-40 items-end justify-center bg-gradient-to-t from-[#18181a] to-transparent shadow-lg"
+  >
     <Button onClick={onClick} className="mb-4">
       Show more <ArrowDownIcon className="ml-1" />
     </Button>
