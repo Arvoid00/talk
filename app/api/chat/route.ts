@@ -231,7 +231,6 @@ export async function POST(req: Request) {
     //     }
     //   }
   })
-  console.log(stream)
 
   return new StreamingTextResponse(stream)
 }
