@@ -1,18 +1,12 @@
 import '@/app/globals.css'
-import { auth } from '@/auth'
-import { Header } from '@/components/header'
 import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { getURL } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
 import { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import NextTopLoader from 'nextjs-toploader'
 import { Toaster } from 'react-hot-toast'
-import { getChats } from './actions'
-import MainLayout from './(main)/chat-layout'
-import { useEffect } from 'react'
 
 export const metadata: Metadata = {
   metadataBase: new URL(getURL()),

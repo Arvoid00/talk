@@ -12,8 +12,8 @@ import { Configuration, OpenAIApi } from 'smolai'
 import { auth } from '@/auth'
 import { Persona } from '@/constants/personas'
 import { nanoid } from '@/lib/utils'
-// import { z } from 'zod'
-// import { zValidateReq } from '@/lib/validate'
+
+import { getURL } from '@/lib/helpers'
 import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
 
@@ -179,14 +179,19 @@ export async function POST(req: Request) {
     return data?.id ? true : false
   }
 
-  const extractFirstUrl = async (content: string) => {
+  const extractUrlArray = async (content: string) => {
     const regex = /(https?:\/\/[^\s]+)/g
     const found = messages[0]?.content?.match(regex)
+    console.log(found)
 
     if (found && found.length > 0) {
       const firstUrl = found[0]
-      console.log('✅', firstUrl) // Output the first URL found
-      return firstUrl
+
+      found.map((url: string) => {
+        console.log('✅', url) // Output the first URL found
+      })
+
+      return found
     } else {
       console.log('No URL found')
       return null
@@ -210,18 +215,33 @@ export async function POST(req: Request) {
     await supabase.from('chats').insert({ id, payload }).throwOnError()
 
     // extract the first url from the first message
-    const extractedUrl = await extractFirstUrl(messages[0]?.content)
+    const extractedUrls = await extractUrlArray(messages[0]?.content)
 
-    if (extractedUrl) {
-      await supabase
-        .from('submissions')
-        .insert({
-          chat_id: id,
-          submitted_url: extractedUrl
-          //TODO add metadata from open graph
-          // meta: {}
+    if (extractedUrls) {
+      // create multiple submissions
+      extractedUrls.map(async (url: string) => {
+        //
+        // ANALYZE URL WITH CHEERIO
+        //
+
+        const formData = JSON.stringify({
+          url: url,
+          chatId: id
         })
-        .throwOnError()
+        await fetch(`${getURL()}/api/scrape`, {
+          method: 'POST',
+          headers: {
+            cookie: req.headers.get('cookie'),
+            'Content-Type': 'application/json'
+          } as HeadersInit,
+          body: formData
+        })
+          .then(res => res.json())
+          .then(data => data)
+          .catch(err => console.error(err))
+
+        // length of string divided by 4 is the number of tokens
+      })
     }
   } else {
     await supabase.from('chats').update({ payload }).eq('id', id).throwOnError()

@@ -11,5 +11,10 @@ module.exports = {
         hostname: '**.githubusercontent.com'
       }
     ]
+  },
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    config.externals = [...config.externals, 'chrome-aws-lambda']
+
+    return config
   }
 }

@@ -1,11 +1,9 @@
 'use client'
 
-import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import * as React from 'react'
 import { toast } from 'react-hot-toast'
 
-import { type Chat, ServerActionResult } from '@/lib/types'
-import { cn, formatDate } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
+import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -31,14 +30,14 @@ import {
   IconTrash,
   IconUsers
 } from '@/components/ui/icons'
-import Link from 'next/link'
-import { badgeVariants } from '@/components/ui/badge'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { Pencil1Icon } from '@radix-ui/react-icons'
+import { ServerActionResult, type Chat } from '@/lib/types'
+import { cn, formatDate } from '@/lib/utils'
+import Link from 'next/link'
 
 interface SidebarActionsProps {
   chat: Chat
@@ -162,7 +161,7 @@ export function SidebarActions({
                     return
                   }
 
-                  const result = await shareChat(chat)
+                  const result = (await shareChat(chat)) as Chat
 
                   if (result && 'error' in result) {
                     toast.error(result.error)

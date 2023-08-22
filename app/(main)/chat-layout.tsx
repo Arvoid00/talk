@@ -26,7 +26,14 @@ import { User } from '@supabase/supabase-js'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition
+} from 'react'
 import { SidebarActions } from '../../components/sidebar-actions'
 import { SidebarItem } from '../../components/sidebar-item'
 import { removeChat, shareChat } from '../actions'
@@ -53,9 +60,12 @@ export default function ChatLayout({
   const { setTheme, theme } = useTheme()
   const [_, startTransition] = useTransition()
 
-  const onNavigate = (route: string) => {
-    router.push(route)
-  }
+  const onNavigate = useCallback(
+    (route: string) => {
+      router.push(route)
+    },
+    [router]
+  )
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -84,7 +94,7 @@ export default function ChatLayout({
           })
       }
     ],
-    [theme]
+    [theme, onNavigate, setTheme]
   )
 
   useEffect(() => {
@@ -121,7 +131,7 @@ export default function ChatLayout({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [pathname])
+  }, [pathname, supabase])
 
   return (
     <>

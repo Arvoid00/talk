@@ -15,24 +15,30 @@ export interface Database {
           canonical_url: string | null
           created_at: string | null
           deleted_at: string | null
+          favicon: string | null
           id: number
           text_content: string | null
+          title: string | null
         }
         Insert: {
           ai_score?: number | null
           canonical_url?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          favicon?: string | null
           id?: number
           text_content?: string | null
+          title?: string | null
         }
         Update: {
           ai_score?: number | null
           canonical_url?: string | null
           created_at?: string | null
           deleted_at?: string | null
+          favicon?: string | null
           id?: number
           text_content?: string | null
+          title?: string | null
         }
         Relationships: []
       }
