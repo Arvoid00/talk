@@ -20,12 +20,6 @@ import puppeteer from 'puppeteer-core'
  via https://www.contentful.com/blog/2021/03/17/puppeteer-node-open-graph-screenshot-for-socials/
 */
 
-export const config = {
-  api: {
-    externalResolver: true
-  }
-}
-
 const exePath =
   process.platform === 'win32'
     ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
