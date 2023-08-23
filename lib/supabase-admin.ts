@@ -179,11 +179,11 @@ const insertArtifact = async (artifact: Partial<Artifact>): Promise<any> => {
   const { data, error } = await supabaseAdmin
     .from('artifacts')
     .insert(artifact)
-    .single()
+    .select()
     .throwOnError()
 
   if (error) throw error
-  console.log(`Artifact inserted:`, data)
+  console.log(`Inserted artifact: ${data}`)
 
   return data
 }

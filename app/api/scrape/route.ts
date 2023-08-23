@@ -135,7 +135,7 @@ export async function POST(req: Request) {
         .throwOnError()
 
       console.log('done.')
-      return new Response(JSON.stringify({ statusCode: 200, html }), {
+      return new Response(JSON.stringify({ statusCode: 200, success: true }), {
         status: 200
       })
     } catch (error) {
