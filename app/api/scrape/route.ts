@@ -31,10 +31,22 @@ export async function POST(req: Request) {
 
   console.log('scraping...')
 
-  const json = await req.json()
-
-  const url = json.url
-  const chatId = json.chatId
+  let json, url, chatId
+  try {
+    json = await req.json()
+    url = json.url
+    chatId = json.chatId
+    // rest of your code
+  } catch (error) {
+    // Handle or log the error appropriately
+    console.error(error)
+    return new Response(
+      JSON.stringify({ statusCode: 400, error: 'Malformed JSON' }),
+      {
+        status: 400
+      }
+    )
+  }
 
   console.log(url)
   if (!url) {
