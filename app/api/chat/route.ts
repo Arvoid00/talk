@@ -180,13 +180,11 @@ export async function POST(req: Request) {
   }
 
   const extractUrlArray = async (content: string) => {
-    const regex = /(https?:\/\/[^\s]+)/g
+    const regex = /https?:\/\/\S+/gi
     const found = messages[0]?.content?.match(regex)
     console.log(found)
 
     if (found && found.length > 0) {
-      const firstUrl = found[0]
-
       found.map((url: string) => {
         console.log('✅', url) // Output the first URL found
       })

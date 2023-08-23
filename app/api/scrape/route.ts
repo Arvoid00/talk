@@ -1,49 +1,11 @@
+import axios from 'axios'
 const cheerio = require('cheerio')
 import { auth } from '@/auth'
 import { Database } from '@/lib/db_types'
 import { insertArtifact } from '@/lib/supabase-admin'
 import { Artifact } from '@/lib/types'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import chrome from 'chrome-aws-lambda'
 import { cookies } from 'next/headers'
-import puppeteer from 'puppeteer-core'
-
-/** The code below determines the executable location for Chrome to
- * start up and take the screenshot when running a local development environment.
- *
- * If the code is running on Windows, find chrome.exe in the default location.
- * If the code is running on Linux, find the Chrome installation in the default location.
- * If the code is running on MacOS, find the Chrome installation in the default location.
- * You may need to update this code when running it locally depending on the location of
- * your Chrome installation on your operating system.
-
- via https://www.contentful.com/blog/2021/03/17/puppeteer-node-open-graph-screenshot-for-socials/
-*/
-
-const exePath =
-  process.platform === 'win32'
-    ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
-    : process.platform === 'linux'
-    ? '/usr/bin/google-chrome'
-    : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-
-const getOptions = async () => {
-  let options
-  if (process.env.NODE_ENV === 'production') {
-    options = {
-      args: chrome.args,
-      executablePath: await chrome.executablePath,
-      headless: chrome.headless
-    }
-  } else {
-    options = {
-      args: [],
-      executablePath: exePath,
-      headless: true
-    }
-  }
-  return options
-}
 
 const sleep = (ms: number) => {
   return new Promise(resolve => {
@@ -73,8 +35,6 @@ export async function POST(req: Request) {
 
   const url = json.url
   const chatId = json.chatId
-  const properties = json.properties || []
-  const delay = json.delay || 4000
 
   console.log(url)
   if (!url) {
@@ -85,75 +45,55 @@ export async function POST(req: Request) {
 
   if (req.method === 'POST') {
     try {
-      console.log('configuring chrome...')
-      const options = await getOptions()
+      // Fetching the HTML
+      const { data } = await axios.get(url)
 
-      console.log('launching browser...')
-      const browser = await puppeteer.launch(options)
+      // Loading HTML to Cheerio
+      const $ = cheerio.load(data)
 
-      console.log('opening new page...')
-      const page = await browser.newPage()
-
-      console.log('setting request interception...')
-      await page.setRequestInterception(true)
-      page.on('request', request => {
-        const reqType = request.resourceType()
-        if (reqType === 'document') {
-          request.continue()
-        } else if (process.env.NODE_ENV === 'development') {
-          request.continue()
-        } else {
-          console.log('block request type: ' + request.resourceType())
-          request.abort()
-        }
-      })
-
-      console.log('navigating to ' + url + '...')
-      await page
-        .goto(url, { timeout: 10000, waitUntil: 'networkidle0' })
-        .then(async response => {
-          console.log('url loaded') //WORKS FINE
-        })
-        .catch(async err => {
-          console.log('url not loaded') //WORKS FINE
-          console.log(err)
-        })
-
-      if (process.env.NODE_ENV === 'development') {
-        await sleep(4000)
-        console.log('add delay for javascript update')
-      }
-
-      console.log('get page content...')
-
-      const html =
-        process.env.NODE_ENV === 'development'
-          ? await page.content()
-          : await page.evaluate(() => {
-              return document.querySelector('body')?.innerHTML
-            })
-
-      console.log('parse html...')
-      const $ = cheerio.load(html)
+      // console log the response in a pretty way for the console
+      const html = $.html()
+      console.log(html)
 
       console.log('analyzing page data...')
       // get opengraph data
       const ogTitle = $('meta[property="og:title"]').attr('content')
-      const ogDescription = $('meta[property="og:description"]').attr('content')
-      const ogImage = $('meta[property="og:image"]').attr('content')
-      const ogUrl = $('meta[property="og:url"]').attr('content')
-      const title = $('title').text()
-      const favicon = $('link[rel="shortcut icon"]').attr('href')
+      const ogDescription =
+        $('meta[property="og:description"]').attr('content') ||
+        $('meta[name="description"]').attr('content')
+      const ogImage =
+        $('meta[property="og:image"]').attr('content') ||
+        $('meta[name="image"]').attr('content')
+      const ogUrl =
+        $('meta[property="og:url"]').attr('content') ||
+        $('meta[name="url"]').attr('content')
+      const title = $('title').text() || ogTitle
+      const favicon =
+        $('link[rel="shortcut icon"]').attr('href') ||
+        $('link[rel="icon"]').attr('href') ||
+        new URL(url).origin + '/favicon.ico'
 
-      // strip out html tags, convert to newlines when necessary and only export text and href links
+      // strip out html tags, javascript and convert to newlines when necessary and only export text
       const body = $('body')
         .text()
-        .replace(/(<([^>]+)>)/gi, '\n')
-        .replace(/\n{3,}/g, '\n')
+        .replace(/<script[^>]*>([\S\s]*?)<\/script>/gim, '')
+        .replace(/<\/div>/gm, '\n')
+        .replace(/<\/li>/gm, '\n')
+        .replace(/<li>/gm, '  *  ')
+        .replace(/<\/ul>/gm, '\n')
+        .replace(/<\/p>/gm, '\n')
+        .replace(/<br\s*[\/]?>/gi, '\n')
+        .replace(/<[^>]+>/gm, '')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&quot;/gi, '"')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&#39;/gi, "'")
+        .replace(/(.)\n(?!\n)/g, '$1 ')
+        // replace many tabs and spaces in a row into 1 tab
+        .replace(/\s\s+/g, '\t')
         .trim()
-
-      console.log('closing browser...')
-      await browser.close()
 
       const metadata = {
         title: title,
