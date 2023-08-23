@@ -16,6 +16,7 @@ import { nanoid } from '@/lib/utils'
 import { getURL } from '@/lib/helpers'
 import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
+import { scrapePage } from '@/app/api/chat/scrape'
 
 export const runtime = 'nodejs'
 
@@ -218,22 +219,7 @@ export async function POST(req: Request) {
     if (extractedUrls) {
       // create multiple submissions
       extractedUrls.map(async (url: string) => {
-        //
-        // ANALYZE URL WITH CHEERIO
-        //
-
-        const formData = JSON.stringify({
-          url: url,
-          chatId: id
-        })
-        await fetch(`${getURL()}/api/scrape`, {
-          method: 'POST',
-          headers: {
-            cookie: req.headers.get('cookie'),
-            'Content-Type': 'application/json'
-          } as HeadersInit,
-          body: formData
-        })
+        await scrapePage(url, id)
           .then(res => res.json())
           .then(data => data)
           .catch(err => console.error(err))

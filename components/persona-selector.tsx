@@ -173,7 +173,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
             </HoverCard>
 
             <div className="flex flex-col items-start space-y-2 rounded-b-2xl border-t-2 border-t-foreground bg-background px-2 py-4 text-foreground">
-              <Link href="/settings/persona" className="h-auto p-0 text-sm">
+              <Link href="/settings/personas" className="h-auto p-0 text-sm">
                 <Button variant="link" className="h-auto p-0 text-sm">
                   <IconPlus className="mr-2 text-muted-foreground" />
                   Add New
