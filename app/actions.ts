@@ -10,7 +10,7 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
 import { Persona } from '@/constants/personas'
-import { type Chat } from '@/lib/types'
+import { Artifact, type Chat } from '@/lib/types'
 
 function nanoid() {
   return Math.random().toString(36).slice(2) // random id up to 11 chars
@@ -35,6 +35,40 @@ export async function upsertChat(chat: Chat) {
   } else {
     return null
   }
+}
+
+export async function getArtifacts() {
+  try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
+    const { data } = await supabase.from('artifacts').select()
+    // .order('created_at', { ascending: false })
+    // .throwOnError()
+
+    console.log(data)
+
+    return (data as Artifact[]) ?? []
+  } catch (error) {
+    console.log('get artifacts error', error)
+    return []
+  }
+}
+
+export async function getArtifact(id: string) {
+  const cookieStore = cookies()
+  const supabase = createServerActionClient<Database>({
+    cookies: () => cookieStore
+  })
+  const { data } = await supabase
+    .from('artifacts')
+    .select('title, favicon, canonical_url, text_content')
+    .eq('id', id)
+    .maybeSingle()
+
+  return (data as Artifact) ?? null
 }
 
 export async function getChats(userId?: string | null) {
