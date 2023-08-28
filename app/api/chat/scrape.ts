@@ -27,6 +27,7 @@ export async function scrapePage(url: string, chatId: string) {
 
   try {
     // Fetching the HTML
+    console.log('fetching website metadata...')
     const { data } = await axios.get(url)
 
     // Loading HTML to Cheerio
@@ -34,10 +35,8 @@ export async function scrapePage(url: string, chatId: string) {
 
     // console log the response in a pretty way for the console
     const html = $.html()
-    console.log(html)
 
-    console.log('analyzing page data...')
-    // get opengraph data
+    console.log('parsing page metadata...')
     const ogTitle = $('meta[property="og:title"]').attr('content')
     const ogDescription =
       $('meta[property="og:description"]').attr('content') ||
@@ -54,28 +53,6 @@ export async function scrapePage(url: string, chatId: string) {
       $('link[rel="icon"]').attr('href') ||
       new URL(url).origin + '/favicon.ico'
 
-    // strip out html tags, javascript and convert to newlines when necessary and only export text
-    const body = $('body')
-      .text()
-      .replace(/<script[^>]*>([\S\s]*?)<\/script>/gim, '')
-      .replace(/<\/div>/gm, '\n')
-      .replace(/<\/li>/gm, '\n')
-      .replace(/<li>/gm, '  *  ')
-      .replace(/<\/ul>/gm, '\n')
-      .replace(/<\/p>/gm, '\n')
-      .replace(/<br\s*[\/]?>/gi, '\n')
-      .replace(/<[^>]+>/gm, '')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/&amp;/gi, '&')
-      .replace(/&quot;/gi, '"')
-      .replace(/&lt;/gi, '<')
-      .replace(/&gt;/gi, '>')
-      .replace(/&#39;/gi, "'")
-      .replace(/(.)\n(?!\n)/g, '$1 ')
-      // replace many tabs and spaces in a row into 1 tab
-      .replace(/\s\s+/g, '\t')
-      .trim()
-
     const metadata = {
       title: title,
       og: {
@@ -87,9 +64,27 @@ export async function scrapePage(url: string, chatId: string) {
       favicon: favicon
     }
 
-    console.log(metadata)
+    console.log('metadata:', metadata)
 
-    console.log(body)
+    console.log('scraping website text...')
+    const { body } = await axios
+      .get('https://app.scrapingbee.com/api/v1', {
+        params: {
+          extract_rules: JSON.stringify({
+            text: 'body'
+          }),
+          json_response: 'true',
+          api_key:
+            '8TF7ZT2URZNJ5B3WAJHQ4WW9ZTIUHW54C0TDABUACDL4UGNB6BIJ29SDQQDVKWN7ZZ5TMI4RZDSATZZH',
+          url: url
+        }
+      })
+      .then(res => {
+        return res.data
+      })
+      .catch(err => {
+        console.error('🛑', err)
+      })
 
     // strip any analytics and social media tracking tags from url
     const parsedUrl = new URL(url)
@@ -98,7 +93,7 @@ export async function scrapePage(url: string, chatId: string) {
 
     const artifact: Artifact = await insertArtifact({
       canonical_url: cleanUrl,
-      text_content: body,
+      text_content: body?.text,
       ai_score: 1,
       title: title,
       favicon: favicon
