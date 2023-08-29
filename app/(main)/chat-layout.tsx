@@ -330,7 +330,7 @@ const Sidebar = ({
                       chat && (
                         <SidebarItem
                           onClick={() => setOpen(false)}
-                          key={chat.id}
+                          key={`${chat.id}-${i}`}
                           chat={chat}
                         >
                           <SidebarActions

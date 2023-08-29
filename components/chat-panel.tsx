@@ -5,6 +5,8 @@ import { PromptForm } from '@/components/prompt-form'
 import { Button } from '@/components/ui/button'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { Model } from '@/constants/models'
+import { toast } from 'react-hot-toast'
+import { kv } from '@vercel/kv';
 
 export interface ChatPanelProps
   extends Pick<
@@ -21,6 +23,7 @@ export interface ChatPanelProps
   setModel: (model: Model) => void
   model: Model
   user?: any
+  atLimit?: boolean
 }
 
 export function ChatPanel({
@@ -34,8 +37,10 @@ export function ChatPanel({
   setModel,
   model,
   messages,
-  user
+  user,
+  atLimit
 }: ChatPanelProps) {
+
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50% lg:pl-72">
       <ButtonScrollToBottom />
@@ -64,30 +69,15 @@ export function ChatPanel({
           )}
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
+          {atLimit && <p className='text-xs text-red-500'>You&apos;ve reached the rate limit for this model. Please try again later.</p>}
           <PromptForm
             user={user}
             onSubmit={async value => {
-              await append({
+              const response = await append({
                 id,
                 content: value,
                 role: 'user'
               })
-              // FIXME: FYI this was breaking a couple of things with the chat history:
-              // - Overwriting the path and sharePath with invalid strings
-              // - Not setting `id`, but instead assigning a new id to `chat_id` which kept the items from appearing in the sidebar
-              // - For some reason doing this is also emptied the `messages` array which otherwise includes message objects
-              // All of this is being handled by the `append` function which is a helper we get from the next `ai` package
-              //
-              // id = id ?? Math.random().toString(36).slice(2) // random id up to 11 chars
-              // await upsertChat({
-              //   chat_id: id,
-              //   title: 'TODO: make title: '+ id,
-              //   userId: userId || 'unknown-user-id', // TODO: try to get rid of unknown user id, higher up
-              //   messages,
-              //   createdAt: new Date(),
-              //   path: "todo",
-              //   sharePath: "todo"
-              // })
             }}
             input={input}
             setInput={setInput}

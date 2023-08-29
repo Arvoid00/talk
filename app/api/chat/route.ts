@@ -8,10 +8,12 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
 import 'server-only'
 import { Configuration, OpenAIApi } from 'smolai'
+import { functionSchema, type RequestData } from 'lib/types'
 
 import { auth } from '@/auth'
 import { Persona } from '@/constants/personas'
 import { nanoid } from '@/lib/utils'
+import { kv } from '@vercel/kv'
 // import { z } from 'zod'
 // import { zValidateReq } from '@/lib/validate'
 import { ChatCompletionFunctions } from 'smolai'
@@ -19,60 +21,12 @@ import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
 
-const processSearchResultSchema: ChatCompletionFunctions = {
-  name: 'processSearchResult',
-  description:
-    'Read the contents of the first or next search result and return it along with the remaining search results.',
-  parameters: {
-    type: 'object',
-    properties: {
-      title: {
-        type: 'string',
-        description: 'The title of the search result.'
-      },
-      url: {
-        type: 'string',
-        description: 'The URL of the search result.'
-      },
-      publishedDate: {
-        type: 'string',
-        description: 'The date the search result was published.'
-      },
-      author: {
-        type: 'string',
-        description: 'The author of the search result.'
-      },
-      score: {
-        type: 'number',
-        descripion:
-          'Relevance score of the search result on a scale of 0 to 1, with 1 being the most relevant.'
-      },
-      id: {
-        type: 'string',
-        description: 'Unique identifier for the search result.'
-      }
-    },
-    required: ['title', 'url', 'id']
-  }
-}
+// Constants for rate limiting
+const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
+const MAX_REQUESTS = 5              // Requests per hour
+const MAX_REQUESTS_FREE = 5         // Requests per hour
+const now = Date.now()
 
-const searchTheWebSchema: ChatCompletionFunctions = {
-  name: 'searchTheWeb',
-  description:
-    'Perform a web search and returns the top 20 search results based on the search query.',
-  parameters: {
-    type: 'object',
-    properties: {
-      query: {
-        type: 'string',
-        description: 'The query to search for.'
-      }
-    },
-    required: ['query']
-  }
-}
-
-const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
 export async function POST(req: Request) {
   const cookieStore = cookies()
@@ -92,6 +46,23 @@ export async function POST(req: Request) {
       status: 401
     })
   }
+
+  const requestData: RequestData | null = await kv.get(userId);
+  let newRequestData: RequestData | null = null;
+  console.log('requestData', requestData)
+
+  const isWithinWindow = requestData && now - requestData.timestamp < WINDOW_SIZE;
+
+  if (isWithinWindow && requestData.count >= MAX_REQUESTS) {
+    return new Response('Too many requests', { status: 429 });
+  }
+
+  newRequestData = {
+    count: isWithinWindow ? requestData.count + 1 : 1,
+    timestamp: isWithinWindow ? requestData.timestamp : now
+  };
+
+  await kv.set(userId, newRequestData);
 
   /*
    * Create the system prompt from modular templates in prompts.json.
@@ -142,7 +113,7 @@ export async function POST(req: Request) {
     messages: [
       systemPrompt,
       // personaPrompts,
-      ...messages
+      ...messages``
     ],
     functions: functionSchema,
     temperature: 0.5,
@@ -248,61 +219,6 @@ export async function POST(req: Request) {
       // Insert chat into database.
       await supabase.from('chats').upsert({ id, payload }).throwOnError()
     }
-
-    //   experimental_onFunctionCall: async (
-    //     { name, arguments: args },
-    //     createFunctionCallMessages
-    //   ) => {
-    //     // if you skip the function call and return nothing, the `function_call`
-    //     // message will be sent to the client for it to handle
-    //     if (name === 'searchTheWeb') {
-    //       console.log('🔵 called searchTheWeb: ', args)
-
-    //       const results = await searchTheWeb(args.query as string)
-    //       console.log('🟢 results: ', results)
-
-    //       try {
-    //         JSON.stringify(results)
-    //       } catch (e) {
-    //         console.error('Serialization error: ', e)
-    //       }
-
-    //       if (results === undefined) {
-    //         return 'Sorry, I could not find anything on the internet about that.'
-    //       }
-
-    //       // Generate function messages to keep in conversation context.
-    //       // @ts-ignore
-    //       const newMessages = createFunctionCallMessages(results)
-    //       console.log('🟠 newMessages: ', newMessages)
-
-    //       return openai.createChatCompletion({
-    //         messages: [...messages, ...newMessages],
-    //         stream: true,
-    //         model: 'gpt-4-0613',
-    //         functions: functionSchema
-    //       })
-    //     }
-    //     if (name === 'processSearchResult') {
-    //       console.log('🔵 called processSearchResult: ', args)
-
-    //       // @ts-ignore
-    //       const processedResults = await processSearchResult(args)
-    //       console.log('🟢 processedResults: ', processedResults)
-
-    //       // Generate function messages to keep conversation context.
-    //       // @ts-ignore
-    //       const newMessages = createFunctionCallMessages(processedResults)
-    //       console.log('🟠 newMessages: ', newMessages)
-
-    //       return openai.createChatCompletion({
-    //         messages: [...messages, ...newMessages],
-    //         stream: true,
-    //         model: 'gpt-4-0613',
-    //         functions: functionSchema
-    //       })
-    //     }
-    //   }
   })
 
   return new StreamingTextResponse(stream)

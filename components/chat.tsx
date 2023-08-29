@@ -31,6 +31,7 @@ import { Persona } from '../constants/personas'
 import { usePersonaStore } from '../lib/usePersonaStore'
 import { AlertAuth } from './alert-auth'
 import { Input } from './ui/input'
+import { kv } from '@vercel/kv';
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -133,6 +134,7 @@ const functionCallHandler: FunctionCallHandler = async (
 
 export function Chat({ user, id, initialMessages, className }: ChatProps) {
   const { persona, setPersonas } = usePersonaStore()
+  const [atLimit, setAtLimit] = useState(false)
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
@@ -142,6 +144,11 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
 
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
+
+  // useEffect(() => {
+
+  // }, [atLimit])
+
   const { messages, append, reload, stop, isLoading, input, setInput, error } =
     useSmolTalkChat({
       initialMessages,
@@ -156,6 +163,10 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
       onResponse(response) {
         if (response.status === 401) {
           toast.error(response.statusText)
+        }
+        if (response.status === 429) {
+          setAtLimit(true)
+          // TODO: Implement show rate limit error in the UI
         }
       },
       experimental_onFunctionCall: functionCallHandler
@@ -196,6 +207,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
         setModel={setModel}
         model={model}
         user={user}
+        atLimit={atLimit}
       />
       {/* @ts-ignore */}
       <Dialog open={previewTokenDialog} onOpenChange={setPreviewTokenDialog}>
