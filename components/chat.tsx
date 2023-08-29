@@ -145,10 +145,6 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
 
-  // useEffect(() => {
-
-  // }, [atLimit])
-
   const { messages, append, reload, stop, isLoading, input, setInput, error } =
     useSmolTalkChat({
       initialMessages,

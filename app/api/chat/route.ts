@@ -21,13 +21,6 @@ import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
 
-// Constants for rate limiting
-const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
-const MAX_REQUESTS = 5              // Requests per hour
-const MAX_REQUESTS_FREE = 5         // Requests per hour
-const now = Date.now()
-
-
 export async function POST(req: Request) {
   const cookieStore = cookies()
   const supabase = createRouteHandlerClient<Database>({
@@ -47,6 +40,16 @@ export async function POST(req: Request) {
     })
   }
 
+  /* ========================================================================== */
+  /* Rate Limiter                                                               */
+  /* ========================================================================== */
+
+  // Constants for rate limiting
+  const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
+  const MAX_REQUESTS = 5              // Requests per hour
+  const MAX_REQUESTS_FREE = 5         // Requests per hour
+  const now = Date.now()
+
   const requestData: RequestData | null = await kv.get(userId);
   let newRequestData: RequestData | null = null;
   console.log('requestData', requestData)
@@ -63,6 +66,8 @@ export async function POST(req: Request) {
   };
 
   await kv.set(userId, newRequestData);
+
+  /* End Rate Limiter --------------------------------------------------------- */
 
   /*
    * Create the system prompt from modular templates in prompts.json.
@@ -113,7 +118,7 @@ export async function POST(req: Request) {
     messages: [
       systemPrompt,
       // personaPrompts,
-      ...messages``
+      ...messages
     ],
     functions: functionSchema,
     temperature: 0.5,

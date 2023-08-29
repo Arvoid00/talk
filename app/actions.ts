@@ -144,6 +144,28 @@ export async function shareChat(chat: Chat) {
   return payload
 }
 
+export async function getIsSubscribed(user: User) {
+  try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', user.id)
+      .filter('status', 'in', '("active", "trialing")')
+      .is('deleted_at', null)
+      .maybeSingle()
+  } catch (error) {
+    console.log('get is subscribed error', error)
+    return {
+      error: 'Unauthorized'
+    }
+  }
+}
+
 export async function getPersonas(user: User) {
   try {
     const cookieStore = cookies()
