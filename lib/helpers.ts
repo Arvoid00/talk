@@ -59,3 +59,38 @@ export const toDateTime = (secs: number) => {
   t.setSeconds(secs)
   return t
 }
+
+export function extractUniqueUrls(text: string): any[] {
+  // Container for final URLs
+  let finalUrls = new Set()
+
+  // Look for Markdown links and extract URLs
+  const markdownUrls: any = text.match(/\[.*?\]\((https?:\/\/[^\s\)]+)\)/g)
+
+  if (markdownUrls) {
+    for (let url of markdownUrls) {
+      // Extract the URL part between parentheses
+      let extractedUrl = url.match(/\((https?:\/\/[^\s\)]+)\)/)[1]
+      // Remove trailing slash if it's the last character
+      extractedUrl = extractedUrl.replace(/\/$/, '')
+      finalUrls.add(extractedUrl)
+    }
+  }
+
+  // Look for plain text URLs
+  const plainUrls = text.match(/https?:\/\/[^\s]+/g)
+  if (plainUrls) {
+    for (let url of plainUrls) {
+      // Remove trailing characters like ':' or ')'
+      let cleanedUrl = url.replace(/[):]+$/, '')
+      // Remove trailing slash if it's the last character
+      cleanedUrl = cleanedUrl.replace(/\/$/, '')
+      // Only add if not already in finalUrls (avoids duplication)
+      if (!finalUrls.has(cleanedUrl)) {
+        finalUrls.add(cleanedUrl)
+      }
+    }
+  }
+
+  return Array.from(finalUrls)
+}

@@ -1,4 +1,7 @@
+import { Database } from '@/lib/db_types'
 import { APIOutput, getMetadata } from '@/lib/link-preview'
+import { createServerActionClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
@@ -7,9 +10,14 @@ export async function GET(req: Request) {
   // check if GET request
   if (req.method === 'GET') {
     try {
-      console.log('hi')
+      const cookieStore = cookies()
+      const supabase = createServerActionClient<Database>({
+        cookies: () => cookieStore
+      })
+
       const { searchParams } = new URL(req.url)
       let url = searchParams.get('url') || ''
+
       console.log(url)
       url = url.toLowerCase()
       url = url.indexOf('://') === -1 ? 'http://' + url : url
@@ -24,6 +32,27 @@ export async function GET(req: Request) {
       }
 
       if (url && isUrlValid) {
+        const { data: linkExists } = await supabase
+          .from('linkPreviews')
+          .select()
+          .eq('url', url)
+          .order('created_at', { ascending: false }) // Sort by created_at in descending order
+          .limit(1)
+          .maybeSingle()
+          .throwOnError()
+
+        if (linkExists) {
+          return NextResponse.json({
+            metadata: {
+              title: linkExists.title,
+              description: linkExists.description,
+              image: linkExists.image,
+              siteName: linkExists.site_name,
+              hostname: linkExists.hostname
+            }
+          })
+        }
+
         const { hostname } = new URL(url)
 
         let output: APIOutput
@@ -37,8 +66,6 @@ export async function GET(req: Request) {
 
         const { images, og, meta } = metadata!
 
-        console.log(metadata)
-
         let image = og.image
           ? og.image
           : images && images.length > 0
@@ -51,6 +78,7 @@ export async function GET(req: Request) {
           : null
         const title = (og.title ? og.title : meta.title) || ''
         const siteName = og.site_name || og.title || ''
+        // const favicon = og.site_name || og.title || ''
 
         output = {
           title,
@@ -58,8 +86,17 @@ export async function GET(req: Request) {
           image,
           siteName,
           hostname
+          // favicon
         }
-        console.log(output)
+
+        const { error } = await supabase.from('linkPreviews').insert({
+          url,
+          title,
+          description,
+          image,
+          site_name: siteName,
+          hostname
+        })
 
         return NextResponse.json({ metadata: output })
       }

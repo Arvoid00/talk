@@ -89,6 +89,42 @@ export interface Database {
           }
         ]
       }
+      linkPreviews: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          favicon: string | null
+          hostname: string | null
+          id: number
+          image: string | null
+          site_name: string | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          favicon?: string | null
+          hostname?: string | null
+          id?: number
+          image?: string | null
+          site_name?: string | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          favicon?: string | null
+          hostname?: string | null
+          id?: number
+          image?: string | null
+          site_name?: string | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       prices: {
         Row: {
           active: boolean | null

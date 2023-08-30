@@ -17,10 +17,11 @@ import {
 } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { ArrowDownIcon } from '@radix-ui/react-icons'
 import LinkPreview from '@/components/link-preview'
+import { extractUniqueUrls } from '@/lib/helpers'
 
 export interface ChatMessageProps {
   message: Message
@@ -30,6 +31,9 @@ export interface ChatMessageProps {
 const ShowMoreButton = ({ onClick }: { onClick: () => void }) => (
   <div
     onClick={onClick}
+    style={{
+      boxShadow: '0 4px 2px -2px transparent'
+    }}
     className="absolute inset-x-0 bottom-0 flex h-40 items-end justify-center bg-gradient-to-t from-[#f9f9fa] to-transparent shadow-lg dark:from-[#18181a]"
   >
     <Button
@@ -125,9 +129,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     }
   }
 
-  const urls = content
-    ?.match(/https?:\/\/\S+/gi)
-    ?.map(url => url.trim().toLowerCase())
+  const urls = useMemo(() => extractUniqueUrls(content), [])
 
   return (
     <div
