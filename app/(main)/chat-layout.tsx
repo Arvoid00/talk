@@ -83,8 +83,8 @@ export default function ChatLayout({
         onClick: () => onNavigate('/settings')
       },
       {
-        label: 'My Plan',
-        onClick: () => onNavigate('/settings/plan')
+        label: 'Billing',
+        onClick: () => onNavigate('/settings/billing')
       },
       {
         label: 'Settings',

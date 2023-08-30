@@ -100,28 +100,27 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
                   <h4 className="font-medium leading-none">
                     {peekedPersona?.emoji} {peekedPersona?.prompt_name}
                   </h4>
-                  <div className="text-sm text-muted-foreground">
+                  <p className="line-clamp-6 text-sm text-muted-foreground">
                     {/* truncate for readbility */}
-                    {peekedPersona?.prompt_body
-                      ?.split(' ')
-                      .slice(0, 30)
-                      .join(' ') + '...'}
-                  </div>
-                  <Link
-                    href="/settings/personas"
-                    className="flex h-auto grow-0 p-0 text-sm"
-                  >
-                    <Button
-                      onClick={e => {
-                        e.preventDefault()
-                        router.push('/settings/personas')
-                      }}
-                      variant="link"
-                      className="h-auto p-0 text-sm"
+                    {peekedPersona?.prompt_body}
+                  </p>
+                  {!!peekedPersona?.id && (
+                    <Link
+                      href="/settings/personas"
+                      className="flex h-auto grow-0 p-0 text-sm"
                     >
-                      Edit
-                    </Button>
-                  </Link>
+                      <Button
+                        onClick={e => {
+                          e.preventDefault()
+                          router.push('/settings/personas')
+                        }}
+                        variant="link"
+                        className="h-auto p-0 text-sm"
+                      >
+                        Edit
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </HoverCardContent>
               <Command loop>
