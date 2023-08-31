@@ -13,7 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Database } from '@/lib/db_types'
 import { getUserInitials } from '@/lib/helpers'
-import { Chat } from '@/lib/types'
+import { Artifact, Chat } from '@/lib/types'
 import { Dialog, Transition } from '@headlessui/react'
 import {
   Cross1Icon,
@@ -26,26 +26,37 @@ import { User } from '@supabase/supabase-js'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useState, useTransition } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition
+} from 'react'
 import { SidebarActions } from '../../components/sidebar-actions'
 import { SidebarItem } from '../../components/sidebar-item'
 import { removeChat, shareChat } from '../actions'
 import Link from 'next/link'
+import { ArtifactItem } from '@/components/artifact-item'
 
 type ChatLayoutProps = {
   serverChats: Chat[]
+  serverArtifacts: Artifact[]
   user?: User
   children: any
 }
 
 export default function ChatLayout({
   serverChats,
+  serverArtifacts,
   user,
   children
 }: ChatLayoutProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [chats, setChats] = useState<Chat[]>(serverChats)
+  const [artifacts, setArtifacts] = useState<Artifact[]>(serverArtifacts)
 
   const supabase = createClientComponentClient<Database>()
   const router = useRouter()
@@ -53,9 +64,12 @@ export default function ChatLayout({
   const { setTheme, theme } = useTheme()
   const [_, startTransition] = useTransition()
 
-  const onNavigate = (route: string) => {
-    router.push(route)
-  }
+  const onNavigate = useCallback(
+    (route: string) => {
+      router.push(route)
+    },
+    [router]
+  )
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -84,7 +98,7 @@ export default function ChatLayout({
           })
       }
     ],
-    [theme]
+    [theme, onNavigate, setTheme]
   )
 
   useEffect(() => {
@@ -94,7 +108,7 @@ export default function ChatLayout({
         // @ts-ignore
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'chats'
         },
@@ -121,7 +135,7 @@ export default function ChatLayout({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [pathname])
+  }, [pathname, supabase])
 
   return (
     <>
@@ -178,12 +192,13 @@ export default function ChatLayout({
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto overscroll-none">
                   <Sidebar
                     onSignOut={signOut}
                     setOpen={setMobileSidebarOpen}
                     profileOptions={profileOptions}
                     chats={chats}
+                    artifacts={artifacts}
                     user={user}
                   />
                 </div>
@@ -200,11 +215,12 @@ export default function ChatLayout({
           isOpen={sidebarOpen}
           setOpen={setSidebarOpen}
           chats={chats}
+          artifacts={artifacts}
           user={user}
         />
       </div>
 
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 border-b p-4 sm:px-6">
+      <div className="sticky top-0 z-40 flex items-center gap-x-6 border-b bg-background p-4 sm:px-6">
         <button
           type="button"
           className="-m-2.5 p-2.5 lg:hidden"
@@ -277,6 +293,7 @@ const Sidebar = ({
   isOpen,
   setOpen,
   chats,
+  artifacts,
   user,
   profileOptions,
   onSignOut
@@ -284,6 +301,7 @@ const Sidebar = ({
   isOpen?: boolean
   setOpen?: any
   chats: Chat[]
+  artifacts: Artifact[]
   user?: User
   profileOptions: any[]
   onSignOut: any
@@ -350,12 +368,30 @@ const Sidebar = ({
                 </div>
               )}
             </TabsContent>
-            <TabsContent value="discover">
-              <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Nothing to discover yet ;)
-                </p>
-              </div>
+            <TabsContent
+              value="discover"
+              className="h-full overflow-y-scroll px-4"
+            >
+              {artifacts?.length ? (
+                <div className="space-y-2">
+                  {artifacts.map(
+                    (artifact: any, i: number) =>
+                      artifact && (
+                        <ArtifactItem
+                          onClick={() => setOpen(false)}
+                          key={artifact.id}
+                          artifact={artifact}
+                        />
+                      )
+                  )}
+                </div>
+              ) : (
+                <div className="p-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Nothing to discover yet ;)
+                  </p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

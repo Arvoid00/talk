@@ -1,7 +1,7 @@
 import type { Database } from '@/lib/db_types'
 import { toDateTime } from '@/lib/helpers'
 import { stripe } from '@/lib/stripe'
-import { Price, Product } from '@/lib/types'
+import { Artifact, Price, Product } from '@/lib/types'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
@@ -175,9 +175,23 @@ const manageSubscriptionStatusChange = async (
     )
 }
 
+const insertArtifact = async (artifact: Partial<Artifact>): Promise<any> => {
+  const { data, error } = await supabaseAdmin
+    .from('artifacts')
+    .insert(artifact)
+    .select()
+    .throwOnError()
+
+  if (error) throw error
+  console.log(`Inserted artifact: ${data}`)
+
+  return data
+}
+
 export {
   createOrRetrieveCustomer,
   manageSubscriptionStatusChange,
   upsertPriceRecord,
-  upsertProductRecord
+  upsertProductRecord,
+  insertArtifact
 }

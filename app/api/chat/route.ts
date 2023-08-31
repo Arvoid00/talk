@@ -16,9 +16,12 @@ import { nanoid } from '@/lib/utils'
 import { kv } from '@vercel/kv'
 // import { z } from 'zod'
 // import { zValidateReq } from '@/lib/validate'
+
+import { getURL } from '@/lib/helpers'
 import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
 import { TransformStream } from 'stream/web'
+import { scrapePage } from '@/app/api/chat/scrape'
 
 export const runtime = 'nodejs'
 
@@ -168,14 +171,17 @@ export async function POST(req: Request) {
     return data?.id ? true : false
   }
 
-  const extractFirstUrl = async (content: string) => {
-    const regex = /(https?:\/\/[^\s]+)/g
+  const extractUrlArray = async (content: string) => {
+    const regex = /https?:\/\/\S+/gi
     const found = messages[0]?.content?.match(regex)
+    console.log(found)
 
     if (found && found.length > 0) {
-      const firstUrl = found[0]
-      console.log('✅', firstUrl) // Output the first URL found
-      return firstUrl
+      found.map((url: string) => {
+        console.log('✅', url) // Output the first URL found
+      })
+
+      return found
     } else {
       console.log('No URL found')
       return null
@@ -199,18 +205,18 @@ export async function POST(req: Request) {
     await supabase.from('chats').insert({ id, payload }).throwOnError()
 
     // extract the first url from the first message
-    const extractedUrl = await extractFirstUrl(messages[0]?.content)
+    const extractedUrls = await extractUrlArray(messages[0]?.content)
 
-    if (extractedUrl) {
-      await supabase
-        .from('submissions')
-        .insert({
-          chat_id: id,
-          submitted_url: extractedUrl
-          //TODO add metadata from open graph
-          // meta: {}
-        })
-        .throwOnError()
+    if (extractedUrls) {
+      // create multiple submissions
+      extractedUrls.map(async (url: string) => {
+        await scrapePage(url, id)
+          .then(res => res.json())
+          .then(data => data)
+          .catch(err => console.error(err))
+
+        // length of string divided by 4 is the number of tokens
+      })
     }
   } else {
     await supabase.from('chats').update({ payload }).eq('id', id).throwOnError()

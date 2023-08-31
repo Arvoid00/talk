@@ -11,7 +11,7 @@ export const envsSchema = z.object({
   KV_REST_API_READ_ONLY_TOKEN: z.string()
 })
 
-const _env = envsSchema.safeParse(process.env)
+const _env: any = envsSchema.safeParse(process.env)
 
 if (!_env.success) {
   console.error('Zod validation failed:', _env.error)
