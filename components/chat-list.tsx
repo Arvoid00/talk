@@ -18,21 +18,23 @@ const limitMessage: SmolTalkMessage = {
   content: 'You have reached the rate limit for your plan level. Please try again later.'
 }
 
-
 export function ChatList({ messages, atLimit }: ChatList) {
-  console.log('/components/chat-list.tsx atLimit', atLimit)
-  console.log('/components/chat-list.tsx messages', messages)
+  // console.log('/components/chat-list.tsx > ChatList > atLt)
+  // console.log('/components/chat-list.tsx > ChatList > messages', messages)imit', atLimi
   if (!messages.length) {
     return null
   }
 
   if (atLimit) {
-    return (
-      <div className="relative mx-auto max-w-2xl px-4 md:px-8">
-          <ChatMessage message={limitMessage} />
-      </div>
-    )
+    messages = [...messages, limitMessage]
   }
+  // if (atLimit) {
+  //   return (
+  //     <div className="relative mx-auto max-w-2xl px-4 md:px-8">
+  //         <ChatMessage message={limitMessage} />
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="relative mx-auto max-w-2xl px-4 md:px-8">

@@ -40,6 +40,13 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   user: any
 }
 
+const limitMessage: SmolTalkMessage = {
+  id: nanoid(),
+  role: 'assistant',
+  name: 'rate-limit',
+  content: 'You have reached the rate limit for your plan level. Please try again later.'
+}
+
 function useSmolTalkChat(
   opts: UseChatOptions & {
     initialMessages?: SmolTalkMessage[] // overriding just to fit our needs
@@ -63,6 +70,8 @@ const functionCallHandler: FunctionCallHandler = async (
   functionCall
 ) => {
   let functionResponse: ChatRequest
+
+  console.log('/components/chat.tsx > functionCallHelper > functionCall', functionCall)
 
   /* ========================================================================== */
   /* Handle searchTheWeb function call                                          */
@@ -94,7 +103,7 @@ const functionCallHandler: FunctionCallHandler = async (
   /* ========================================================================== */
   /* Handle processSearchResult function call                                   */
   /* ========================================================================== */
-  console.log('🔴 functionCall', functionCall)
+
   if (functionCall.name === 'processSearchResult') {
     const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
     const processedContent = await processSearchResult(
@@ -141,13 +150,14 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
     'ai-token',
     null
   )
+  console.log('/components/chat.tsx > Chat > previewToken >', previewToken)
+  console.log('/components/chat.tsx > Chat > persona >', persona)
 
   const [model, setModel] = useState<Model>(models[0])
 
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
-
-  let atLimit = false;
+  const [atLimit, setAtLimit] = useState(false)
 
   const { messages, append, reload, stop, isLoading, input, setInput, error } =
     useSmolTalkChat({
@@ -165,7 +175,8 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
           toast.error(response.statusText)
         }
         if (response.status === 429) {
-          atLimit = true;
+          setAtLimit(true)
+          initialMessages = [...initialMessages as SmolTalkMessage[], limitMessage]
         }
       },
       experimental_onFunctionCall: functionCallHandler

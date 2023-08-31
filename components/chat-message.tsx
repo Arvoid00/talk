@@ -46,7 +46,7 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   if (message.name === 'searchTheWeb') {
-    console.log('🟣 RenderFunctionMessage message', message)
+    // console.log('/components/chat-message.tsx > RenderFunctionMessage > message >', message)
     const parsedContent = JSON.parse(message.content)?.results
 
     return (
