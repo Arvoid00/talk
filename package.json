@@ -20,7 +20,7 @@
     "format:check": "prettier --check \"{app,lib,components}**/*.{ts,tsx,mdx}\" --cache"
   },
   "engines": {
-    "node": "20.x.x"
+    "node": "18.x.x"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
