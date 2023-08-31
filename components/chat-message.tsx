@@ -11,13 +11,14 @@ import { MemoizedReactMarkdown } from '@/components/markdown'
 import { CodeBlock } from '@/components/ui/codeblock'
 import {
   IconCheck,
+  IconClose,
   IconOpenAI,
   IconSpinner,
   IconUser
 } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { ArrowDownIcon } from '@radix-ui/react-icons'
 
@@ -103,7 +104,33 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
   return <></>
 }
 
+type MessageAuthor = 'user' | 'assistant' | 'fnCall' | 'fnResponse' | 'error'
+
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
+  const [messageAuthor, setMessageAuthor] = useState<MessageAuthor>()
+  const [content, setContent] = useState<string>('')
+
+  const getAuthorByMessage = (message: Message) => {
+    if (message.role === 'assistant') {
+      if (message.name === 'rate-limit') return 'error'
+      if (message.function_call) return 'fnCall'
+      return 'assistant'
+    }
+
+    if (message.role === 'user') return 'user'
+    if (message.role === 'function') return 'fnResponse'
+
+    return 'assistant'
+  };
+
+  const authorIcon = {
+    user: <IconUser />,
+    assistant: <IconOpenAI />,
+    fnCall: <IconSpinner />,
+    fnResponse: <IconCheck />,
+    error: <IconClose />
+  }
+
   const renderFunctionCall = () => {
     if (message.function_call) {
       const functionCallString =
@@ -114,15 +141,19 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     return null
   }
 
-  let content = message.content
-
-  if (message.function_call) {
-    if (message.function_call.name === 'searchTheWeb') {
-      content = 'Searching the web...'
-    } else if (message.function_call.name === 'processSearchResult') {
-      content = 'Reading top result...'
+  useEffect(() => {
+    if (messageAuthor === 'fnCall') {
+      if (message.function_call.name === 'searchTheWeb') setContent('Doing some research...')
+      if (message.function_call.name === 'processSearchResult') setContent('Reading something I found...')
+    } else {
+      setContent(message.content)
     }
-  }
+
+  }, [message, messageAuthor])
+
+  useEffect(() => {
+    setMessageAuthor(getAuthorByMessage(message))
+  }, [message])
 
   return (
     <div
@@ -137,8 +168,10 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             : 'bg-primary text-primary-foreground'
         )}
       >
+        {/* Render Icon */}
+        {message.role === 'assistant' && message.name === 'rate-limit' && <IconClose />}
         {message.role === 'user' && <IconUser />}
-        {message.role === 'assistant' && !message.function_call && (
+        {message.role === 'assistant' && !message.function_call && message.name !== 'rate-limit' && (
           <IconOpenAI />
         )}
         {message.role === 'assistant' && message.function_call && <IconCheck />}

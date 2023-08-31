@@ -18,6 +18,7 @@ import { kv } from '@vercel/kv'
 // import { zValidateReq } from '@/lib/validate'
 import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
+import { TransformStream } from 'stream/web'
 
 export const runtime = 'nodejs'
 
@@ -47,37 +48,37 @@ export async function POST(req: Request) {
 
   // Constants for rate limiting
   const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
-  const FREE_LIMIT = 1              // Requests per hour
+  const FREE_LIMIT = 0              // Requests per hour
   const PAID_LIMIT = 50         // Requests per hour
   const now = Date.now()
 
   const defaultKvData: UserKvData = {
-    userRateLimit: await getIsSubscribed(user) ? PAID_LIMIT : FREE_LIMIT,
     userWindowStart: now,
     userMsgCount: 0
   }
 
-  let atLimit = false;
+  const userRateLimit = await getIsSubscribed(user)
+    ? PAID_LIMIT
+    : FREE_LIMIT
 
-  const isAtRateLimit = async (user: User) => {
-    let userKvData: UserKvData | null = await kv.get(userId);
-    if (userKvData === null) userKvData = defaultKvData;
+  // Hack to reset kv data for testing
+  // let userKvData = defaultKvData;
 
-    const isWithinWindow = now - userKvData.userWindowStart < WINDOW_SIZE;
+  let userKvData: UserKvData | null = await kv.get(userId);
+  if (userKvData === null) userKvData = defaultKvData;
 
-    if (isWithinWindow && userKvData.userMsgCount >= userKvData.userRateLimit) {
-      return true;
-      // return new Response('Too many requests', { status: 429 });
-    } else {
-      userKvData.userMsgCount++;
-      await kv.set(userId, userKvData);
-      return false;
-    }
+  console.log('/api/chat/route.tsx > userKvData', userKvData)
 
-    console.log('/api/chat/route.tsx > userKvData', userKvData)
+  const isWithinWindow = now - userKvData.userWindowStart < WINDOW_SIZE;
+
+  if (isWithinWindow && userKvData.userMsgCount >= userRateLimit) {
+    return new Response('Too many requests', { status: 429 });
+  } else {
+    userKvData.userMsgCount++;
+    await kv.set(userId, userKvData);
   }
 
-  // await updateRateLimit(user)
+  console.log('/api/chat/route.tsx > userKvData', userKvData)
 
   /* End Rate Limiter --------------------------------------------------------- */
 

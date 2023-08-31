@@ -108,7 +108,6 @@ export const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
 
 export interface UserKvData {
-  userRateLimit: number;
   userMsgCount: number;
   userWindowStart: number;
 }

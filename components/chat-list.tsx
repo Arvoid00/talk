@@ -2,14 +2,36 @@ import { type Message } from 'ai'
 
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
+import { SmolTalkMessage } from '@/lib/types';
+import { nanoid } from 'nanoid';
 
 export interface ChatList {
   messages: Message[]
+  atLimit?: boolean
 }
 
-export function ChatList({ messages }: ChatList) {
+// TODO: Put this somewhere else
+const limitMessage: SmolTalkMessage = {
+  id: nanoid(),
+  role: 'assistant',
+  name: 'rate-limit',
+  content: 'You have reached the rate limit for your plan level. Please try again later.'
+}
+
+
+export function ChatList({ messages, atLimit }: ChatList) {
+  console.log('/components/chat-list.tsx atLimit', atLimit)
+  console.log('/components/chat-list.tsx messages', messages)
   if (!messages.length) {
     return null
+  }
+
+  if (atLimit) {
+    return (
+      <div className="relative mx-auto max-w-2xl px-4 md:px-8">
+          <ChatMessage message={limitMessage} />
+      </div>
+    )
   }
 
   return (

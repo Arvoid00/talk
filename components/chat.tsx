@@ -134,7 +134,7 @@ const functionCallHandler: FunctionCallHandler = async (
 
 export function Chat({ user, id, initialMessages, className }: ChatProps) {
   const { persona, setPersonas } = usePersonaStore()
-  const [atLimit, setAtLimit] = useState(false)
+  // const [atLimit, setAtLimit] = useState(false)
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
@@ -144,6 +144,8 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
 
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
+
+  let atLimit = false;
 
   const { messages, append, reload, stop, isLoading, input, setInput, error } =
     useSmolTalkChat({
@@ -161,8 +163,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
           toast.error(response.statusText)
         }
         if (response.status === 429) {
-          setAtLimit(true)
-          // TODO: Implement show rate limit error in the UI
+          atLimit = true;
         }
       },
       experimental_onFunctionCall: functionCallHandler
@@ -183,7 +184,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length > 0 ? (
           <>
-            <ChatList messages={messages} />
+            <ChatList messages={messages} atLimit={atLimit} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : !isLoading ? (
