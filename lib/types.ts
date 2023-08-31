@@ -106,7 +106,9 @@ export const searchTheWebSchema: ChatCompletionFunctions = {
  */
 export const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
-export type RequestData = {
-  count: number
-  timestamp: number
+
+export interface UserKvData {
+  userRateLimit: number;
+  userMsgCount: number;
+  userWindowStart: number;
 }

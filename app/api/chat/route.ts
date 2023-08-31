@@ -1,4 +1,4 @@
-import { getPersonaById } from '@/app/actions'
+import { getIsSubscribed, getPersonaById } from '@/app/actions'
 import { Database } from '@/lib/db_types'
 import {
   createRouteHandlerClient,
@@ -8,7 +8,7 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
 import 'server-only'
 import { Configuration, OpenAIApi } from 'smolai'
-import { functionSchema, type RequestData } from 'lib/types'
+import { functionSchema, SmolTalkMessage, type UserKvData } from 'lib/types'
 
 import { auth } from '@/auth'
 import { Persona } from '@/constants/personas'
@@ -32,7 +32,8 @@ export async function POST(req: Request) {
 
   const currentDate = new Date()
 
-  const userId = (await auth({ cookieStore }))?.user.id
+  const user = (await auth({ cookieStore }))?.user
+  const userId = user?.id
 
   if (!userId) {
     return new Response('Unauthorized', {
@@ -46,26 +47,37 @@ export async function POST(req: Request) {
 
   // Constants for rate limiting
   const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
-  const MAX_REQUESTS = 5              // Requests per hour
-  const MAX_REQUESTS_FREE = 5         // Requests per hour
+  const FREE_LIMIT = 1              // Requests per hour
+  const PAID_LIMIT = 50         // Requests per hour
   const now = Date.now()
 
-  const requestData: RequestData | null = await kv.get(userId);
-  let newRequestData: RequestData | null = null;
-  console.log('requestData', requestData)
-
-  const isWithinWindow = requestData && now - requestData.timestamp < WINDOW_SIZE;
-
-  if (isWithinWindow && requestData.count >= MAX_REQUESTS) {
-    return new Response('Too many requests', { status: 429 });
+  const defaultKvData: UserKvData = {
+    userRateLimit: await getIsSubscribed(user) ? PAID_LIMIT : FREE_LIMIT,
+    userWindowStart: now,
+    userMsgCount: 0
   }
 
-  newRequestData = {
-    count: isWithinWindow ? requestData.count + 1 : 1,
-    timestamp: isWithinWindow ? requestData.timestamp : now
-  };
+  let atLimit = false;
 
-  await kv.set(userId, newRequestData);
+  const isAtRateLimit = async (user: User) => {
+    let userKvData: UserKvData | null = await kv.get(userId);
+    if (userKvData === null) userKvData = defaultKvData;
+
+    const isWithinWindow = now - userKvData.userWindowStart < WINDOW_SIZE;
+
+    if (isWithinWindow && userKvData.userMsgCount >= userKvData.userRateLimit) {
+      return true;
+      // return new Response('Too many requests', { status: 429 });
+    } else {
+      userKvData.userMsgCount++;
+      await kv.set(userId, userKvData);
+      return false;
+    }
+
+    console.log('/api/chat/route.tsx > userKvData', userKvData)
+  }
+
+  // await updateRateLimit(user)
 
   /* End Rate Limiter --------------------------------------------------------- */
 
