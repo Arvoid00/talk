@@ -7,6 +7,7 @@ export interface APIOutput {
   image: string | null
   siteName: string | null
   hostname: string | null
+  // favicon: string | null
 }
 
 const TWITTER_API_URL = 'https://api.twitter.com/2'
