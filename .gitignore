@@ -38,3 +38,6 @@ yarn-error.log*
 .env*.local
 
 tsconfig.tsbuildinfo
+
+# Sean Stuff
+notes.md

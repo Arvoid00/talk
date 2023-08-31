@@ -48,8 +48,8 @@ export async function POST(req: Request) {
 
   // Constants for rate limiting
   const WINDOW_SIZE = 60 * 60 * 1000  // 1 hour in milliseconds
-  const FREE_LIMIT = 0              // Requests per hour
-  const PAID_LIMIT = 50         // Requests per hour
+  const FREE_LIMIT = 20               // Requests per hour
+  const PAID_LIMIT = 100              // Requests per hour
   const now = Date.now()
 
   const defaultKvData: UserKvData = {
