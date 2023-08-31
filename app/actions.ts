@@ -48,8 +48,6 @@ export async function getArtifacts() {
     // .order('created_at', { ascending: false })
     // .throwOnError()
 
-    console.log(data)
-
     return (data as Artifact[]) ?? []
   } catch (error) {
     console.log('get artifacts error', error)
