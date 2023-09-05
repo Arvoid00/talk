@@ -20,7 +20,7 @@ import { Model, models } from '@/constants/models'
 import {
   processSearchResult,
   searchTheWeb
-} from '@/lib/functions/chat-functions'
+} from '@/app/chat-functions'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { SmolTalkMessage } from '@/lib/types'
 import { cn, nanoid } from '@/lib/utils'
@@ -93,7 +93,7 @@ const functionCallHandler: FunctionCallHandler = async (
   /* ========================================================================== */
   /* Handle processSearchResult function call                                   */
   /* ========================================================================== */
-
+  console.log('🔴 functionCall', functionCall)
   if (functionCall.name === 'processSearchResult') {
     const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
     const processedContent = await processSearchResult(
@@ -125,6 +125,8 @@ const functionCallHandler: FunctionCallHandler = async (
       ]
     })
   }
+
+
 }
 
 /* ========================================================================== */
