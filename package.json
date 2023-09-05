@@ -54,6 +54,7 @@
     "date-fns": "^2.30.0",
     "emoji-mart": "^5.5.2",
     "focus-trap-react": "^10.2.1",
+    "html-metadata-parser": "^2.0.4",
     "metaphor-node": "^1.0.18",
     "nanoid": "^4.0.2",
     "next": "13.4.15",
