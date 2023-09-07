@@ -2,12 +2,26 @@ import { type Message } from 'ai'
 
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
+import { SmolTalkMessage } from '@/lib/types';
+import { nanoid } from 'nanoid';
 
 export interface ChatList {
   messages: Message[]
+  atLimit?: boolean
+}
+
+// TODO: Put this somewhere else
+const limitMessage: SmolTalkMessage = {
+  id: nanoid(),
+  role: 'assistant',
+  assistantMessageType: 'error',
+  assistantMessageDetails: 'rate-limit',
+  content:
+    'You have reached the rate limit for your plan level. Please try again later.'
 }
 
 export function ChatList({ messages }: ChatList) {
+
   if (!messages.length) {
     return null
   }
@@ -18,9 +32,9 @@ export function ChatList({ messages }: ChatList) {
         return (
           <div key={index}>
             <ChatMessage message={message} />
-            {index < messages.length - 1 && (
+            {/* {index < messages.length - 1 && (
               <Separator className="my-4 md:my-8" />
-            )}
+            )} */}
           </div>
         )
       })}

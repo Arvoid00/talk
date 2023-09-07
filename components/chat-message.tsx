@@ -7,21 +7,23 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 
 import { ChatMessageActions } from '@/components/chat-message-actions'
+import LinkPreview from '@/components/link-preview'
 import { MemoizedReactMarkdown } from '@/components/markdown'
+import { Card } from '@/components/ui/card'
 import { CodeBlock } from '@/components/ui/codeblock'
 import {
   IconCheck,
+  IconClose,
   IconOpenAI,
   IconSpinner,
   IconUser
 } from '@/components/ui/icons'
-import { cn } from '@/lib/utils'
-import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { Button } from './ui/button'
-import { ArrowDownIcon } from '@radix-ui/react-icons'
-import LinkPreview from '@/components/link-preview'
 import { extractUniqueUrls } from '@/lib/helpers'
+import { cn } from '@/lib/utils'
+import { ArrowDownIcon } from '@radix-ui/react-icons'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
+import { Button } from './ui/button'
 
 export interface ChatMessageProps {
   message: Message
@@ -50,7 +52,7 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   if (message.name === 'searchTheWeb') {
-    console.log('🟣 RenderFunctionMessage message', message)
+    // console.log('/components/chat-message.tsx > RenderFunctionMessage > message >', message)
     const parsedContent = JSON.parse(message.content)?.results
 
     return (
@@ -109,7 +111,34 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
   return <></>
 }
 
+type MessageAuthor = 'user' | 'assistant' | 'fnCall' | 'fnResponse' | 'error'
+
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
+  const [messageAuthor, setMessageAuthor] = useState<MessageAuthor>()
+  const [content, setContent] = useState<string>('')
+  const [messageIcon, setMessageIcon] = useState<JSX.Element>()
+
+  const getAuthorType = (message: Message) => {
+    if (message.role === 'assistant') {
+      if (message.name === 'rate-limit') return 'error'
+      if (message.function_call) return 'fnCall'
+      return 'assistant'
+    }
+
+    if (message.role === 'user') return 'user'
+    if (message.role === 'function') return 'fnResponse'
+
+    return 'assistant'
+  }
+
+  const authorIcon = {
+    user: <IconUser />,
+    assistant: <IconOpenAI />,
+    fnCall: <IconSpinner />,
+    fnResponse: <IconCheck />,
+    error: <IconClose />
+  } as const
+
   const renderFunctionCall = () => {
     if (message.function_call) {
       const functionCallString =
@@ -120,21 +149,50 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     return null
   }
 
-  let content = message.content
+  useEffect(() => {
+    let parsedMessage = null
 
-  if (message.function_call) {
-    if (message.function_call.name === 'searchTheWeb') {
-      content = 'Searching the web...'
-    } else if (message.function_call.name === 'processSearchResult') {
-      content = 'Reading top result...'
+    try {
+      // @ts-ignore - TODO: Send error message as a message type rather than JSON as a string
+      parsedMessage = JSON.parse(message.content)
+    } catch (e) {
+      // Normal message; not a JSON string
     }
-  }
+
+    if (parsedMessage && parsedMessage.assistantType === 'error') {
+      setMessageAuthor('error')
+      setContent(parsedMessage.content)
+      setMessageIcon(authorIcon['error'])
+      return
+    }
+
+    const authorType = getAuthorType(parsedMessage || message)
+
+    setMessageAuthor(authorType)
+
+    if (authorType === 'fnCall') {
+      if (message.function_call.name === 'searchTheWeb') {
+        setContent('Doing some research...')
+      } else if (message.function_call.name === 'processSearchResult') {
+        setContent('Reading something I found...')
+      }
+    } else {
+      setContent((parsedMessage || message).content)
+    }
+
+    setMessageIcon(authorIcon[authorType])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message])
 
   const urls = useMemo(() => extractUniqueUrls(content), [])
 
   return (
-    <div
-      className={cn('group relative mb-4 flex items-start md:-ml-12')}
+    <Card
+      className={cn(
+        'group relative mb-4 flex items-start p-4 md:-ml-12',
+        messageAuthor === 'user' ? 'bg-gray-200 dark:bg-gray-700' : '',
+        messageAuthor === 'error' ? 'bg-red-200 dark:bg-red-900' : ''
+      )}
       {...props}
     >
       <div
@@ -145,12 +203,8 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             : 'bg-primary text-primary-foreground'
         )}
       >
-        {message.role === 'user' && <IconUser />}
-        {message.role === 'assistant' && !message.function_call && (
-          <IconOpenAI />
-        )}
-        {message.role === 'assistant' && message.function_call && <IconCheck />}
-        {message.role === 'function' && <IconSpinner />}
+        {/* Render Icon */}
+        {messageIcon}
       </div>
       <div className="relative ml-4 flex-1 space-y-4 px-1">
         {message.role === 'function' && message.function_call ? (
@@ -217,6 +271,6 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         )}
         <ChatMessageActions message={message} />
       </div>
-    </div>
+    </Card>
   )
 }

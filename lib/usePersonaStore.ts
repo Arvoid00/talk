@@ -16,9 +16,9 @@ export const usePersonaStore = create<PersonaState>(set => ({
       personas = [
         {
           id: 0,
-          prompt_name: 'Default Persona',
-          emoji: '🤖',
-          prompt_body: defaultPersona
+          name: 'Default Persona',
+          body: defaultPersona,
+          emoji: '🤖'
         }
       ]
     }

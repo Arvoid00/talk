@@ -24,7 +24,7 @@ export function SidebarItem({ onClick, chat, children }: SidebarItemProps) {
   const isActive = pathname === chat.path
 
   // TODO: Remove this once we're clear on using `chat_id` or `id`
-  if (!chat?.chat_id && !chat?.id) return null
+  if (!chat.id) return null
 
   return (
     <div className="relative">

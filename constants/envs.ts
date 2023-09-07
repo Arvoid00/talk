@@ -4,11 +4,11 @@ export const envsSchema = z.object({
   OPENAI_API_KEY: z.string(),
   METAPHOR_API_KEY: z.string(),
   AUTH_GITHUB_ID: z.string(),
-  AUTH_GITHUB_SECRET: z.string()
-  // KV_URL: z.string(),
-  // KV_REST_API_URL: z.string(),
-  // KV_REST_API_TOKEN: z.string(),
-  // KV_REST_API_READ_ONLY_TOKEN: z.string()
+  AUTH_GITHUB_SECRET: z.string(),
+  KV_URL: z.string(),
+  KV_REST_API_URL: z.string(),
+  KV_REST_API_TOKEN: z.string(),
+  KV_REST_API_READ_ONLY_TOKEN: z.string()
 })
 
 const _env: any = envsSchema.safeParse(process.env)
@@ -23,9 +23,9 @@ export const envs = {
   OPENAI_API_KEY: _env.data.OPENAI_API_KEY,
   METAPHOR_API_KEY: _env.data.METAPHOR_API_KEY,
   AUTH_GITHUB_ID: _env.data.AUTH_GITHUB_ID,
-  AUTH_GITHUB_SECRET: _env.data.AUTH_GITHUB_SECRET
-  // KV_URL: _env.data.KV_URL,
-  // KV_REST_API_URL: _env.data.KV_REST_API_URL,
-  // KV_REST_API_TOKEN: _env.data.KV_REST_API_TOKEN,
-  // KV_REST_API_READ_ONLY_TOKEN: _env.data.KV_REST_API_READ_ONLY_TOKEN
+  AUTH_GITHUB_SECRET: _env.data.AUTH_GITHUB_SECRET,
+  KV_URL: _env.data.KV_URL,
+  KV_REST_API_URL: _env.data.KV_REST_API_URL,
+  KV_REST_API_TOKEN: _env.data.KV_REST_API_TOKEN,
+  KV_REST_API_READ_ONLY_TOKEN: _env.data.KV_REST_API_READ_ONLY_TOKEN
 }

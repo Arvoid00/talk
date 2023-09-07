@@ -33,7 +33,7 @@ export async function GET(req: Request) {
 
       if (url && isUrlValid) {
         const { data: linkExists } = await supabase
-          .from('linkPreviews')
+          .from('link_previews')
           .select()
           .eq('url', url)
           .order('created_at', { ascending: false }) // Sort by created_at in descending order
