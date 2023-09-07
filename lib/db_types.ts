@@ -42,20 +42,69 @@ export interface Database {
         }
         Relationships: []
       }
-      chats: {
+      authors: {
         Row: {
-          id: string
-          payload: Json | null
+          created_at: string | null
+          deleted_at: string | null
+          id: number
+          persona_id: number | null
           user_id: string | null
         }
         Insert: {
-          id: string
-          payload?: Json | null
+          created_at?: string | null
+          deleted_at?: string | null
+          id?: number
+          persona_id?: number | null
           user_id?: string | null
         }
         Update: {
+          created_at?: string | null
+          deleted_at?: string | null
+          id?: number
+          persona_id?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "authors_persona_id_fkey"
+            columns: ["persona_id"]
+            referencedRelation: "personas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      chats: {
+        Row: {
+          created_at: string | null
+          deleted_at: string | null
+          id: string
+          payload: Json | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deleted_at?: string | null
+          id: string
+          payload?: Json | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deleted_at?: string | null
           id?: string
           payload?: Json | null
+          title?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -84,6 +133,107 @@ export interface Database {
           {
             foreignKeyName: "customers_id_fkey"
             columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      messages: {
+        Row: {
+          chat_id: string | null
+          content: string | null
+          created_at: string | null
+          deleted_at: string | null
+          from_id: number | null
+          function_call: Json | null
+          id: number
+          name: string | null
+          role: string | null
+          to_id: number | null
+          type: Database["public"]["Enums"]["assistant_type"] | null
+        }
+        Insert: {
+          chat_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          from_id?: number | null
+          function_call?: Json | null
+          id?: number
+          name?: string | null
+          role?: string | null
+          to_id?: number | null
+          type?: Database["public"]["Enums"]["assistant_type"] | null
+        }
+        Update: {
+          chat_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          from_id?: number | null
+          function_call?: Json | null
+          id?: number
+          name?: string | null
+          role?: string | null
+          to_id?: number | null
+          type?: Database["public"]["Enums"]["assistant_type"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_from_id_fkey"
+            columns: ["from_id"]
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_to_id_fkey"
+            columns: ["to_id"]
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      personas: {
+        Row: {
+          body: string
+          created_at: string | null
+          deleted_at: string | null
+          emoji: string | null
+          id: number
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          emoji?: string | null
+          id?: number
+          name?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          deleted_at?: string | null
+          emoji?: string | null
+          id?: number
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompts_user_id_fkey"
+            columns: ["user_id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -164,46 +314,6 @@ export interface Database {
           name?: string | null
         }
         Relationships: []
-      }
-      prompts: {
-        Row: {
-          created_at: string | null
-          deleted_at: string | null
-          emoji: string | null
-          id: number
-          prompt_body: string
-          prompt_name: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          deleted_at?: string | null
-          emoji?: string | null
-          id?: number
-          prompt_body?: string
-          prompt_name?: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          deleted_at?: string | null
-          emoji?: string | null
-          id?: number
-          prompt_body?: string
-          prompt_name?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prompts_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
       }
       submissions: {
         Row: {
@@ -354,6 +464,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      assistant_type: "log" | "error"
       pricing_plan_interval: "day" | "week" | "month" | "year"
       pricing_type: "one_time" | "recurring"
       subscription_status:

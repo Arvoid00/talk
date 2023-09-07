@@ -122,9 +122,13 @@ export default function ChatLayout({
             setChats(prev => prev.filter(chat => chat.id !== payload.old.id))
           } else if (payload.eventType === 'INSERT') {
             setChats(prev =>
-              [payload?.new?.payload as Chat, ...prev].sort(
+              // as unkown because otherwise type error
+              [payload?.new?.payload as unknown as Chat, ...prev].sort(
                 (a: Chat, b: Chat) => {
-                  return b.createdAt - a.createdAt
+                  return (
+                    new Date(b.createdAt).valueOf() -
+                    new Date(a.createdAt).valueOf()
+                  )
                 }
               )
             )
@@ -348,7 +352,7 @@ const Sidebar = ({
                       chat && (
                         <SidebarItem
                           onClick={() => setOpen(false)}
-                          key={chat.id}
+                          key={`${chat.id}-${i}`}
                           chat={chat}
                         >
                           <SidebarActions

@@ -16,10 +16,7 @@ export function PersonasList({ user, personas }: PersonaListProps) {
   const [editPersonas, setEditPersonas] = React.useState(personas)
 
   function addPersona() {
-    setEditPersonas([
-      ...editPersonas,
-      { id: 0, prompt_name: '', prompt_body: '' }
-    ])
+    setEditPersonas([...editPersonas, { id: 0, name: '', body: '' }])
   }
 
   const onUpdate = async () => {
@@ -29,22 +26,22 @@ export function PersonasList({ user, personas }: PersonaListProps) {
 
   const onRemove = async (id: number) => {
     // remove index from editPersonas
-    const newPrompts = editPersonas.filter(prompt => prompt.id !== id)
-    setEditPersonas(newPrompts)
+    const newPersonas = editPersonas.filter(persona => persona.id !== id)
+    setEditPersonas(newPersonas)
   }
 
   const isAddDisabled = editPersonas?.some(
-    prompt => prompt.prompt_name === '' || prompt.prompt_body === ''
+    persona => persona.name === '' || persona.body === ''
   )
 
   return (
     <div className="space-y-8">
       <div className="space-y-4">
         {editPersonas?.length ? (
-          editPersonas.map((prompt, index) => (
+          editPersonas.map((persona, index) => (
             <PersonaForm
-              key={prompt.id}
-              prompt={prompt}
+              key={persona.id}
+              persona={persona}
               user={user}
               onUpdate={onUpdate}
               onRemove={onRemove}

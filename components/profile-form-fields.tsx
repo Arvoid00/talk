@@ -16,7 +16,7 @@ export function PromptNameField({ form }: { form: UseFormReturn }) {
   return (
     <FormField
       control={form.control}
-      name={`prompt_name`}
+      name={`name`}
       render={({ field }) => (
         <div className="flex flex-1 space-x-2">
           <FormItem className="mb-4 flex-1">
@@ -54,7 +54,7 @@ export function PromptEmojiField({ form }: { form: UseFormReturn }) {
   return (
     <FormField
       control={form.control}
-      name={`prompt_emoji`}
+      name={`emoji`}
       render={({ field }) => (
         <FormItem>
           <FormControl>
@@ -71,7 +71,7 @@ export function PromptBodyField({ form }: { form: UseFormReturn }) {
   return (
     <FormField
       control={form.control}
-      name={`prompt_body`}
+      name={`body`}
       render={({ field }) => (
         <FormItem>
           <FormLabel>Persona Instructions</FormLabel>

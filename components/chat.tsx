@@ -31,10 +31,11 @@ import { Persona } from '../constants/personas'
 import { usePersonaStore } from '../lib/usePersonaStore'
 import { AlertAuth } from './alert-auth'
 import { Input } from './ui/input'
+import { kv } from '@vercel/kv';
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
-  initialMessages?: Message[]
+  initialMessages?: Message[] | SmolTalkMessage[]
   id?: string
   user: any
 }
@@ -62,6 +63,7 @@ const functionCallHandler: FunctionCallHandler = async (
   functionCall
 ) => {
   let functionResponse: ChatRequest
+
 
   /* ========================================================================== */
   /* Handle searchTheWeb function call                                          */
@@ -93,7 +95,7 @@ const functionCallHandler: FunctionCallHandler = async (
   /* ========================================================================== */
   /* Handle processSearchResult function call                                   */
   /* ========================================================================== */
-  console.log('🔴 functionCall', functionCall)
+
   if (functionCall.name === 'processSearchResult') {
     const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
     const processedContent = await processSearchResult(
@@ -135,6 +137,7 @@ const functionCallHandler: FunctionCallHandler = async (
 
 export function Chat({ user, id, initialMessages, className }: ChatProps) {
   const { persona, setPersonas } = usePersonaStore()
+  // const [atLimit, setAtLimit] = useState(false)
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
@@ -144,6 +147,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
 
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
+
   const { messages, append, reload, stop, isLoading, input, setInput, error } =
     useSmolTalkChat({
       initialMessages,

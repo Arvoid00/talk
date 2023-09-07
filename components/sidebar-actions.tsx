@@ -86,7 +86,7 @@ export function SidebarActions({
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              className="h-6 w-6 p-0 hover:bg-background"
+              className="w-6 h-6 p-0 hover:bg-background"
               onClick={() => setShareDialogOpen(true)}
             >
               <Pencil1Icon />
@@ -164,7 +164,7 @@ export function SidebarActions({
                   const result = (await shareChat(chat)) as Chat
 
                   if (result && 'error' in result) {
-                    toast.error(result.error)
+                    toast.error(result.error as string)
                     return
                   }
 

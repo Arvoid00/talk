@@ -1,10 +1,27 @@
-import { type UseChatHelpers } from 'ai/react'
+import { type UseChatHelpers } from 'ai/react';
 
-import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { PromptForm } from '@/components/prompt-form'
-import { Button } from '@/components/ui/button'
-import { IconRefresh, IconStop } from '@/components/ui/icons'
-import { Model } from '@/constants/models'
+import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom';
+import { PromptForm } from '@/components/prompt-form';
+import { Button } from '@/components/ui/button';
+import { IconRefresh, IconStop } from '@/components/ui/icons';
+import { Model } from '@/constants/models';
+// import React, { memo } from 'react';
+
+// const areEqual = (prevProps: ChatPanelProps, nextProps: ChatPanelProps) => {
+//   // Define your custom logic here. Return true if passing nextProps to render would return
+//   // the same result as passing prevProps to render, otherwise return false
+
+//   // For example, you might do something like:
+//   return (
+//     prevProps.isLoading === nextProps.isLoading &&
+//     prevProps.input === nextProps.input
+//     // Add other relevant props
+//   );
+// };
+
+// const MemoizedChatPanel = memo(ChatPanel, areEqual);
+
+// export default MemoizedChatPanel;
 
 export interface ChatPanelProps
   extends Pick<
@@ -34,8 +51,9 @@ export function ChatPanel({
   setModel,
   model,
   messages,
-  user
+  user,
 }: ChatPanelProps) {
+
   return (
     <div className="fixed inset-x-0 bottom-0 bg-gradient-to-b from-muted/10 from-10% to-muted/30 to-50% lg:pl-72">
       <ButtonScrollToBottom />
@@ -67,27 +85,11 @@ export function ChatPanel({
           <PromptForm
             user={user}
             onSubmit={async value => {
-              await append({
+              const response = await append({
                 id,
                 content: value,
                 role: 'user'
               })
-              // FIXME: FYI this was breaking a couple of things with the chat history:
-              // - Overwriting the path and sharePath with invalid strings
-              // - Not setting `id`, but instead assigning a new id to `chat_id` which kept the items from appearing in the sidebar
-              // - For some reason doing this is also emptied the `messages` array which otherwise includes message objects
-              // All of this is being handled by the `append` function which is a helper we get from the next `ai` package
-              //
-              // id = id ?? Math.random().toString(36).slice(2) // random id up to 11 chars
-              // await upsertChat({
-              //   chat_id: id,
-              //   title: 'TODO: make title: '+ id,
-              //   userId: userId || 'unknown-user-id', // TODO: try to get rid of unknown user id, higher up
-              //   messages,
-              //   createdAt: new Date(),
-              //   path: "todo",
-              //   sharePath: "todo"
-              // })
             }}
             input={input}
             setInput={setInput}

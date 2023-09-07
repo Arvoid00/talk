@@ -23,9 +23,9 @@ export async function upsertChat(chat: Chat) {
   })
 
   const { error } = await supabase.from('chats').upsert({
-    id: chat.chat_id || nanoid(),
+    id: chat.id || nanoid(),
     user_id: chat.userId,
-    payload: chat
+    payload: chat.toString() // must stringify or JSON type complains. TODO: check that this JSON.parses properly.
   })
   if (error) {
     console.log('upsertChat error', error)
@@ -47,8 +47,6 @@ export async function getArtifacts() {
     const { data } = await supabase.from('artifacts').select()
     // .order('created_at', { ascending: false })
     // .throwOnError()
-
-    console.log(data)
 
     return (data as Artifact[]) ?? []
   } catch (error) {
@@ -87,7 +85,7 @@ export async function getChats(userId?: string | null) {
       .eq('user_id', userId)
       .throwOnError()
 
-    return (data?.map(entry => entry.payload) as Chat[]) ?? []
+    return (data?.map(entry => entry.payload) as unknown as Chat[]) ?? []
   } catch (error) {
     return []
   }
@@ -104,7 +102,7 @@ export async function getChat(id: string) {
     .eq('id', id)
     .maybeSingle()
 
-  return (data?.payload as Chat) ?? null
+  return (data?.payload as unknown as Chat) ?? null
 }
 
 export async function removeChat({ id, path }: { id: string; path: string }) {
@@ -156,7 +154,7 @@ export async function getSharedChat(id: string) {
     .not('payload->sharePath', 'is', null)
     .maybeSingle()
 
-  return (data?.payload as Chat) ?? null
+  return (data?.payload as unknown as Chat) ?? null
 }
 
 export async function shareChat(chat: Chat) {
@@ -178,6 +176,28 @@ export async function shareChat(chat: Chat) {
   return payload
 }
 
+export async function getIsSubscribed(user: User) {
+  try {
+    const cookieStore = cookies()
+    const supabase = createServerActionClient<Database>({
+      cookies: () => cookieStore
+    })
+
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', user.id)
+      .filter('status', 'in', '("active", "trialing")')
+      .is('deleted_at', null)
+      .maybeSingle()
+  } catch (error) {
+    console.log('get is subscribed error', error)
+    return {
+      error: 'Unauthorized'
+    }
+  }
+}
+
 export async function getPersonas(user: User) {
   try {
     const cookieStore = cookies()
@@ -186,8 +206,8 @@ export async function getPersonas(user: User) {
     })
 
     const { data, error } = await supabase
-      .from('prompts')
-      .select('id, prompt_name, prompt_body, emoji')
+      .from('personas')
+      .select('id, name, body, emoji')
       .order('created_at', { ascending: true })
       .eq('user_id', user.id)
       .is('deleted_at', null)
@@ -196,7 +216,7 @@ export async function getPersonas(user: User) {
 
     return personas
   } catch (error) {
-    console.log('get prompts error', error)
+    console.log('get personas error', error)
     return {
       error: 'Unauthorized'
     }
@@ -211,8 +231,8 @@ export async function getPersonaById(user: User, persona: Persona) {
     })
 
     const { data, error } = await supabase
-      .from('prompts')
-      .select('id, prompt_name, prompt_body, emoji')
+      .from('personas')
+      .select('id, name, body, emoji')
       .eq('user_id', user.id)
       .eq('id', persona.id)
       .is('deleted_at', null)
@@ -239,10 +259,10 @@ export async function createOrUpdatePersona({
   try {
     // userData will update auth.users table
     const personaData = {
-      prompt_id: values.prompt_id,
-      prompt_name: values.prompt_name,
-      prompt_body: values.prompt_body,
-      prompt_emoji: values.prompt_emoji
+      id: values.id,
+      name: values.name,
+      body: values.body,
+      emoji: values.emoji
     }
 
     const cookieStore = cookies()
@@ -252,27 +272,27 @@ export async function createOrUpdatePersona({
 
     let result
 
-    if (personaData.prompt_id) {
+    if (personaData.id) {
       console.log('update persona', personaData)
       result = await supabase
-        .from('prompts')
+        .from('personas')
         .update({
           user_id: user.id,
-          prompt_name: personaData.prompt_name,
-          prompt_body: personaData.prompt_body,
-          emoji: personaData.prompt_emoji
+          name: personaData.name,
+          body: personaData.body,
+          emoji: personaData.emoji
         })
-        .eq('id', personaData.prompt_id)
+        .eq('id', personaData.id)
         .is('deleted_at', null)
         .select()
     } else {
       result = await supabase
-        .from('prompts')
+        .from('personas')
         .insert({
           user_id: user.id,
-          prompt_name: personaData.prompt_name,
-          prompt_body: personaData.prompt_body,
-          emoji: personaData.prompt_emoji
+          name: personaData.name,
+          body: personaData.body,
+          emoji: personaData.emoji
         })
         .eq('user_id', user.id)
         .select()
@@ -285,7 +305,7 @@ export async function createOrUpdatePersona({
 
     return {
       data: {
-        prompts: personaResponse
+        personas: personaResponse
       }
     }
   } catch (error) {
@@ -304,7 +324,7 @@ export async function removePersona({ id, user }: { id: string; user: User }) {
     })
 
     const { data: personaResponse, error } = await supabase
-      .from('prompts')
+      .from('personas')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)
 
@@ -314,7 +334,7 @@ export async function removePersona({ id, user }: { id: string; user: User }) {
 
     return {
       data: {
-        prompts: personaResponse
+        personas: personaResponse
       }
     }
   } catch (error) {
