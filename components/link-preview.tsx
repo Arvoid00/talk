@@ -166,7 +166,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
         data-testid="container"
         onClick={onClick}
         className={cn(
-          'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-800',
+          'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-400',
           className
         )}
         style={{
@@ -197,7 +197,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
       data-testid="container"
       onClick={onClick}
       className={cn(
-        'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-800',
+        'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-400',
         className
       )}
       style={{
