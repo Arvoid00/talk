@@ -184,13 +184,15 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message])
 
-  const urls = useMemo(() => extractUniqueUrls(content), [])
+  const urls = useMemo(() => extractUniqueUrls(content), [content])
 
   return (
     <Card
       className={cn(
         'group relative mb-4 flex items-start p-4 md:-ml-12',
-        messageAuthor === 'user' ? 'bg-gray-200 dark:bg-gray-700' : '',
+        messageAuthor === 'user'
+          ? 'bg-gray-100 dark:border-gray-700/30 dark:bg-muted'
+          : '',
         messageAuthor === 'error' ? 'bg-red-200 dark:bg-red-900' : ''
       )}
       {...props}

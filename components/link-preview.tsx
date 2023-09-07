@@ -75,10 +75,8 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
   textAlign,
   margin,
   fallback = null,
-  backgroundColor = 'white',
   primaryTextColor = 'black',
   secondaryTextColor = 'rgb(100, 100, 100)',
-  borderColor = '#ccc',
   showLoader = true,
   customLoader = null,
   openInNewTab = true,
@@ -168,7 +166,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
         data-testid="container"
         onClick={onClick}
         className={cn(
-          'cursor-pointer overflow-hidden rounded-lg border border-gray-300 hover:border-gray-800',
+          'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-800',
           className
         )}
         style={{
@@ -176,9 +174,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
           height,
           borderRadius,
           textAlign,
-          margin,
-          backgroundColor,
-          borderColor
+          margin
         }}
       >
         <div className="px-3 py-2">
@@ -201,7 +197,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
       data-testid="container"
       onClick={onClick}
       className={cn(
-        'cursor-pointer overflow-hidden rounded-lg border border-gray-300 hover:border-gray-800',
+        'cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-white hover:border-gray-800',
         className
       )}
       style={{
@@ -209,9 +205,7 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
         height,
         borderRadius,
         textAlign,
-        margin,
-        backgroundColor,
-        borderColor
+        margin
       }}
     >
       {(image || fallbackImageSrc) && showPlaceholderIfNoImage && (
