@@ -22,7 +22,7 @@ import { extractUniqueUrls } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
 import { ArrowDownIcon } from '@radix-ui/react-icons'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from './ui/button'
 
 export interface ChatMessageProps {
@@ -114,10 +114,6 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
 type MessageAuthor = 'user' | 'assistant' | 'fnCall' | 'fnResponse' | 'error'
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
-  const [messageAuthor, setMessageAuthor] = useState<MessageAuthor>()
-  const [content, setContent] = useState<string>('')
-  const [messageIcon, setMessageIcon] = useState<JSX.Element>()
-
   const getAuthorType = (message: Message) => {
     if (message.role === 'assistant') {
       if (message.name === 'rate-limit') return 'error'
@@ -149,66 +145,45 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     return null
   }
 
-  useEffect(() => {
-    let parsedMessage = null
+  const { content, messageAuthor, messageIcon } = useMemo(() => {
+    let parsedMessage, content, messageAuthor, messageIcon
 
     try {
-      // @ts-ignore - TODO: Send error message as a message type rather than JSON as a string
       parsedMessage = JSON.parse(message.content)
     } catch (e) {
       // Normal message; not a JSON string
     }
 
     if (parsedMessage && parsedMessage.assistantType === 'error') {
-      setMessageAuthor('error')
-      setContent(parsedMessage.content)
-      setMessageIcon(authorIcon['error'])
-      return
-    }
-
-    const authorType = getAuthorType(parsedMessage || message)
-
-    setMessageAuthor(authorType)
-
-    if (authorType === 'fnCall') {
-      if (message.function_call.name === 'searchTheWeb') {
-        setContent('Doing some research...')
-      } else if (message.function_call.name === 'processSearchResult') {
-        setContent('Reading something I found...')
-      }
+      messageAuthor = 'error'
+      content = parsedMessage.content
+      messageIcon = authorIcon['error']
     } else {
-      setContent((parsedMessage || message).content)
+      const authorType = getAuthorType(parsedMessage || message)
+
+      messageAuthor = authorType
+
+      if (authorType === 'fnCall') {
+        if (message.function_call.name === 'searchTheWeb') {
+          content = 'Doing some research...'
+        } else if (message.function_call.name === 'processSearchResult') {
+          content = 'Reading something I found...'
+        }
+      } else {
+        content = (parsedMessage || message).content
+      }
+
+      messageIcon = authorIcon[authorType]
     }
 
-    setMessageIcon(authorIcon[authorType])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return { content, messageAuthor, messageIcon }
   }, [message])
 
   const urls = useMemo(() => extractUniqueUrls(content), [content])
 
-  return (
-    <Card
-      className={cn(
-        'group relative mb-4 flex items-start p-4 md:-ml-12',
-        messageAuthor === 'user'
-          ? 'bg-gray-100 dark:border-gray-700/30 dark:bg-muted'
-          : '',
-        messageAuthor === 'error' ? 'bg-red-200 dark:bg-red-900' : ''
-      )}
-      {...props}
-    >
-      <div
-        className={cn(
-          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
-          message.role === 'user'
-            ? 'bg-background'
-            : 'bg-primary text-primary-foreground'
-        )}
-      >
-        {/* Render Icon */}
-        {messageIcon}
-      </div>
-      <div className="relative ml-4 flex-1 space-y-4 px-1">
+  const renderMessage = useMemo(() => {
+    return (
+      <>
         {message.role === 'function' && message.function_call ? (
           renderFunctionCall()
         ) : message.role === 'function' ? (
@@ -271,6 +246,34 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             </div>
           </>
         )}
+      </>
+    )
+  }, [message])
+
+  return (
+    <Card
+      className={cn(
+        'group relative mb-4 flex items-start p-4 md:-ml-12',
+        messageAuthor === 'user'
+          ? 'bg-gray-100 dark:border-gray-700/30 dark:bg-muted'
+          : '',
+        messageAuthor === 'error' ? 'bg-red-200 dark:bg-red-900' : ''
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          'flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow',
+          message.role === 'user'
+            ? 'bg-background'
+            : 'bg-primary text-primary-foreground'
+        )}
+      >
+        {/* Render Icon */}
+        {messageIcon}
+      </div>
+      <div className="relative ml-4 flex-1 space-y-4 px-1">
+        {renderMessage}
         <ChatMessageActions message={message} />
       </div>
     </Card>

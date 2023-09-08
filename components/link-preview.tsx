@@ -1,6 +1,6 @@
 import { getURL } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 
 const proxyLink = '/api/link-preview?url='
 export const placeholderImg = '/fallback.png'
@@ -44,7 +44,7 @@ export interface LinkPreviewProps {
   openInNewTab?: boolean
   fetcher?: (url: string) => Promise<APIResponse | null>
   fallbackImageSrc?: string
-  explicitImageSrc?: string
+  explicitImageSrc?: string | null
   /* Whether the placeholder image is displayed in case no image could be scraped */
   showPlaceholderIfNoImage?: boolean
   onSuccess?: (metadata: APIResponse | null) => void
@@ -64,7 +64,7 @@ const customFetcher = async (url: string) => {
   return json.metadata
 }
 
-export const LinkPreview: React.FC<LinkPreviewProps> = ({
+export default function LinkPreview({
   url,
   className = '',
   width,
@@ -84,8 +84,8 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
   fallbackImageSrc = placeholderImg,
   explicitImageSrc = null,
   showPlaceholderIfNoImage = false,
-  onSuccess = metadata => {}
-}) => {
+  onSuccess = (metadata: any) => {}
+}: LinkPreviewProps) {
   const _isMounted = useRef(true)
   const [metadata, setMetadata] = useState<APIResponse | null>()
   const [loading, setLoading] = useState(true)
@@ -143,7 +143,8 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
     return () => {
       _isMounted.current = false
     }
-  }, [url, fetcher])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url])
 
   if (loading && showLoader) {
     if (customLoader) {
@@ -247,5 +248,3 @@ export const LinkPreview: React.FC<LinkPreviewProps> = ({
     </div>
   )
 }
-
-export default LinkPreview

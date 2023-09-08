@@ -17,10 +17,7 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 import { Model, models } from '@/constants/models'
-import {
-  processSearchResult,
-  searchTheWeb
-} from '@/app/chat-functions'
+import { processSearchResult, searchTheWeb } from '@/app/chat-functions'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { SmolTalkMessage } from '@/lib/types'
 import { cn, nanoid } from '@/lib/utils'
@@ -31,7 +28,7 @@ import { Persona } from '../constants/personas'
 import { usePersonaStore } from '../lib/usePersonaStore'
 import { AlertAuth } from './alert-auth'
 import { Input } from './ui/input'
-import { kv } from '@vercel/kv';
+import { kv } from '@vercel/kv'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -63,7 +60,6 @@ const functionCallHandler: FunctionCallHandler = async (
   functionCall
 ) => {
   let functionResponse: ChatRequest
-
 
   /* ========================================================================== */
   /* Handle searchTheWeb function call                                          */
@@ -127,8 +123,6 @@ const functionCallHandler: FunctionCallHandler = async (
       ]
     })
   }
-
-
 }
 
 /* ========================================================================== */
