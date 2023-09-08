@@ -131,6 +131,12 @@ export async function clearChats() {
 
     const userId = (await supabase.auth.getUser())?.data?.user?.id
 
+    if (!userId) {
+      return {
+        error: 'Unauthorized'
+      }
+    }
+
     await supabase.from('chats').delete().eq('user_id', userId).throwOnError()
     revalidatePath('/')
     return revalidatePath('/')
@@ -225,6 +231,10 @@ export async function getPersonas(user: User) {
 
 export async function getPersonaById(user: User, persona: Persona) {
   try {
+    if (!persona?.id) {
+      return null
+    }
+
     const cookieStore = cookies()
     const supabase = createServerActionClient<Database>({
       cookies: () => cookieStore

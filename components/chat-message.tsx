@@ -164,9 +164,16 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
       messageAuthor = authorType
 
       if (authorType === 'fnCall') {
-        if (message.function_call.name === 'searchTheWeb') {
+        if (
+          typeof message.function_call !== 'string' &&
+          message.function_call?.name === 'searchTheWeb'
+        ) {
+          // your code here
           content = 'Doing some research...'
-        } else if (message.function_call.name === 'processSearchResult') {
+        } else if (
+          typeof message.function_call !== 'string' &&
+          message?.function_call?.name === 'processSearchResult'
+        ) {
           content = 'Reading something I found...'
         }
       } else {

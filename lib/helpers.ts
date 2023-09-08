@@ -65,7 +65,7 @@ export function extractUniqueUrls(text: string): any[] {
   let finalUrls = new Set()
 
   // Look for Markdown links and extract URLs
-  const markdownUrls: any = text.match(/\[.*?\]\((https?:\/\/[^\s\)]+)\)/g)
+  const markdownUrls: any = text?.match(/\[.*?\]\((https?:\/\/[^\s\)]+)\)/g)
 
   if (markdownUrls) {
     for (let url of markdownUrls) {
@@ -78,7 +78,8 @@ export function extractUniqueUrls(text: string): any[] {
   }
 
   // Look for plain text URLs
-  const plainUrls = text.match(/https?:\/\/[^\s]+/g)
+  const plainUrls = text?.match(/https?:\/\/[^\s]+/g)
+
   if (plainUrls) {
     for (let url of plainUrls) {
       // Remove trailing characters like ':' or ')'
