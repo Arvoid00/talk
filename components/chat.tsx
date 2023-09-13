@@ -1,8 +1,8 @@
 'use client'
 
-import { UseChatOptions, useChat, type Message } from 'ai/react'
-
 import { getPersonas } from '@/app/actions'
+import { processSearchResult, searchTheWeb } from '@/app/chat-functions'
+import { AlertAuth } from '@/components/alert-auth'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
@@ -16,19 +16,17 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Model, models } from '@/constants/models'
-import { processSearchResult, searchTheWeb } from '@/app/chat-functions'
+import { Persona } from '@/constants/personas'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { SmolTalkMessage } from '@/lib/types'
+import { usePersonaStore } from '@/lib/usePersonaStore'
 import { cn, nanoid } from '@/lib/utils'
 import { ChatRequest, FunctionCallHandler } from 'ai'
+import { UseChatOptions, useChat, type Message } from 'ai/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { Persona } from '../constants/personas'
-import { usePersonaStore } from '../lib/usePersonaStore'
-import { AlertAuth } from './alert-auth'
-import { Input } from './ui/input'
-import { kv } from '@vercel/kv'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {

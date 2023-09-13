@@ -7,6 +7,7 @@ import { IconRefresh, IconStop } from '@/components/ui/icons'
 import { Model } from '@/constants/models'
 import { useLayoutStore } from '@/lib/useLayoutStore'
 import { cn } from '@/lib/utils'
+import { nanoid } from 'nanoid'
 // import React, { memo } from 'react';
 
 // const areEqual = (prevProps: ChatPanelProps, nextProps: ChatPanelProps) => {
@@ -94,7 +95,7 @@ export function ChatPanel({
             user={user}
             onSubmit={async value => {
               const response = await append({
-                id,
+                id: nanoid(),
                 content: value,
                 role: 'user'
               })
