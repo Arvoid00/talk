@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
 import { cookies } from 'next/headers'
 
-export const runtime = 'edge'
+// export const runtime = 'edge'
 
 export default async function Home() {
   const cookieStore = cookies()
