@@ -74,8 +74,7 @@ export async function scrapePage(url: string, chatId: string) {
             text: 'body'
           }),
           json_response: 'true',
-          api_key:
-            '8TF7ZT2URZNJ5B3WAJHQ4WW9ZTIUHW54C0TDABUACDL4UGNB6BIJ29SDQQDVKWN7ZZ5TMI4RZDSATZZH',
+          api_key: process.env.SCRAPINGBEE_API_KEY || '',
           url: url
         }
       })

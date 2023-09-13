@@ -7,7 +7,9 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 
 import { ChatMessageActions } from '@/components/chat-message-actions'
+import LinkPreview from '@/components/link-preview'
 import { MemoizedReactMarkdown } from '@/components/markdown'
+import { Card } from '@/components/ui/card'
 import { CodeBlock } from '@/components/ui/codeblock'
 import {
   IconCheck,
@@ -16,12 +18,12 @@ import {
   IconSpinner,
   IconUser
 } from '@/components/ui/icons'
+import { extractUniqueUrls } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { Button } from './ui/button'
 import { ArrowDownIcon } from '@radix-ui/react-icons'
-import { Card } from '@/components/ui/card';
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
+import { Button } from './ui/button'
 
 export interface ChatMessageProps {
   message: Message
@@ -31,6 +33,9 @@ export interface ChatMessageProps {
 const ShowMoreButton = ({ onClick }: { onClick: () => void }) => (
   <div
     onClick={onClick}
+    style={{
+      boxShadow: '0 4px 2px -2px transparent'
+    }}
     className="absolute inset-x-0 bottom-0 flex h-40 items-end justify-center bg-gradient-to-t from-[#f9f9fa] to-transparent shadow-lg dark:from-[#18181a]"
   >
     <Button
@@ -109,10 +114,6 @@ const RenderFunctionMessage = ({ message }: ChatMessageProps) => {
 type MessageAuthor = 'user' | 'assistant' | 'fnCall' | 'fnResponse' | 'error'
 
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
-  const [messageAuthor, setMessageAuthor] = useState<MessageAuthor>()
-  const [content, setContent] = useState<string>('')
-  const [messageIcon, setMessageIcon] = useState<JSX.Element>()
-
   const getAuthorType = (message: Message) => {
     if (message.role === 'assistant') {
       if (message.name === 'rate-limit') return 'error'
@@ -124,7 +125,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     if (message.role === 'function') return 'fnResponse'
 
     return 'assistant'
-  };
+  }
 
   const authorIcon = {
     user: <IconUser />,
@@ -132,7 +133,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     fnCall: <IconSpinner />,
     fnResponse: <IconCheck />,
     error: <IconClose />
-  } as const;
+  } as const
 
   const renderFunctionCall = () => {
     if (message.function_call) {
@@ -144,48 +145,118 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
     return null
   }
 
-  useEffect(() => {
-    let parsedMessage = null;
+  const { content, messageAuthor, messageIcon } = useMemo(() => {
+    let parsedMessage, content, messageAuthor, messageIcon
 
     try {
-      // @ts-ignore - TODO: Send error message as a message type rather than JSON as a string
       parsedMessage = JSON.parse(message.content)
-
     } catch (e) {
       // Normal message; not a JSON string
     }
 
     if (parsedMessage && parsedMessage.assistantType === 'error') {
-      setMessageAuthor('error')
-      setContent(parsedMessage.content)
-      setMessageIcon(authorIcon['error'])
-      return;
-    }
-
-    const authorType = getAuthorType(parsedMessage || message)
-
-    setMessageAuthor(authorType)
-
-    if (authorType === 'fnCall') {
-      if (message.function_call.name === 'searchTheWeb') {
-        setContent('Doing some research...')
-      } else if (message.function_call.name === 'processSearchResult') {
-        setContent('Reading something I found...')
-      }
+      messageAuthor = 'error'
+      content = parsedMessage.content
+      messageIcon = authorIcon['error']
     } else {
-      setContent((parsedMessage || message).content)
+      const authorType = getAuthorType(parsedMessage || message)
+
+      messageAuthor = authorType
+
+      if (authorType === 'fnCall') {
+        if (message.function_call.name === 'searchTheWeb') {
+          content = 'Doing some research...'
+        } else if (message.function_call.name === 'processSearchResult') {
+          content = 'Reading something I found...'
+        }
+      } else {
+        content = (parsedMessage || message).content
+      }
+
+      messageIcon = authorIcon[authorType]
     }
 
-    setMessageIcon(authorIcon[authorType])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message]);
+    return { content, messageAuthor, messageIcon }
+  }, [message])
 
+  const urls = useMemo(() => extractUniqueUrls(content), [content])
+
+  const renderMessage = useMemo(() => {
+    return (
+      <>
+        {message.role === 'function' && message.function_call ? (
+          renderFunctionCall()
+        ) : message.role === 'function' ? (
+          <RenderFunctionMessage message={message} />
+        ) : (
+          <>
+            <MemoizedReactMarkdown
+              linkTarget={'_blank'}
+              className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+              remarkPlugins={[remarkGfm, remarkMath]}
+              components={{
+                p({ children }) {
+                  return <p className="mb-2 last:mb-0">{children}</p>
+                },
+                code({ node, inline, className, children, ...props }) {
+                  if (children.length) {
+                    if (children[0] == '▍') {
+                      return (
+                        <span className="mt-1 animate-pulse cursor-default">
+                          ▍
+                        </span>
+                      )
+                    }
+
+                    children[0] = (children[0] as string).replace('`▍`', '▍')
+                  }
+
+                  const match = /language-(\w+)/.exec(className || '')
+
+                  if (inline) {
+                    return (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    )
+                  }
+
+                  return (
+                    <CodeBlock
+                      key={Math.random()}
+                      language={(match && match[1]) || ''}
+                      value={String(children).replace(/\n$/, '')}
+                      {...props}
+                    />
+                  )
+                }
+              }}
+            >
+              {content}
+            </MemoizedReactMarkdown>
+            <div className="grid grid-cols-2 gap-4">
+              {urls?.map(url => (
+                <LinkPreview
+                  key={url}
+                  openInNewTab={true}
+                  showLoader={true}
+                  url={url}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </>
+    )
+  }, [message])
 
   return (
     <Card
       className={cn(
         'group relative mb-4 flex items-start p-4 md:-ml-12',
-        messageAuthor === 'user' ? 'bg-gray-200 dark:bg-gray-700' : '',
+        messageAuthor === 'user'
+          ? 'bg-gray-100 dark:border-gray-700/30 dark:bg-muted'
+          : '',
         messageAuthor === 'error' ? 'bg-red-200 dark:bg-red-900' : ''
       )}
       {...props}
@@ -201,57 +272,8 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         {/* Render Icon */}
         {messageIcon}
       </div>
-      <div className="relative ml-4 flex-1 space-y-2 overflow-hidden px-1">
-        {message.role === 'function' && message.function_call ? (
-          renderFunctionCall()
-        ) : message.role === 'function' ? (
-          <RenderFunctionMessage message={message} />
-        ) : (
-          <MemoizedReactMarkdown
-            linkTarget={'_blank'}
-            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
-            remarkPlugins={[remarkGfm, remarkMath]}
-            components={{
-              p({ children }) {
-                return <p className="mb-2 last:mb-0">{children}</p>
-              },
-              code({ node, inline, className, children, ...props }) {
-                if (children.length) {
-                  if (children[0] == '▍') {
-                    return (
-                      <span className="mt-1 animate-pulse cursor-default">
-                        ▍
-                      </span>
-                    )
-                  }
-
-                  children[0] = (children[0] as string).replace('`▍`', '▍')
-                }
-
-                const match = /language-(\w+)/.exec(className || '')
-
-                if (inline) {
-                  return (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  )
-                }
-
-                return (
-                  <CodeBlock
-                    key={Math.random()}
-                    language={(match && match[1]) || ''}
-                    value={String(children).replace(/\n$/, '')}
-                    {...props}
-                  />
-                )
-              }
-            }}
-          >
-            {content}
-          </MemoizedReactMarkdown>
-        )}
+      <div className="relative ml-4 flex-1 space-y-4 px-1">
+        {renderMessage}
         <ChatMessageActions message={message} />
       </div>
     </Card>

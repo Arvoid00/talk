@@ -2,8 +2,8 @@ import { type Message } from 'ai'
 
 import { Separator } from '@/components/ui/separator'
 import { ChatMessage } from '@/components/chat-message'
-import { SmolTalkMessage } from '@/lib/types';
-import { nanoid } from 'nanoid';
+import { SmolTalkMessage } from '@/lib/types'
+import { nanoid } from 'nanoid'
 
 export interface ChatList {
   messages: Message[]
