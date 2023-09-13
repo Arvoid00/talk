@@ -77,7 +77,7 @@ const functionCallHandler: FunctionCallHandler = async (
             name: 'searchTheWeb',
             role: 'function' as const,
             content: JSON.stringify({
-              query: functionCall.arguments.query,
+              query: parsedFunctionCallArguments.query,
               results:
                 results ||
                 'Sorry, I could not find anything on the internet about that.'
@@ -99,7 +99,7 @@ const functionCallHandler: FunctionCallHandler = async (
     )
 
     const { title, url, id, publishedDate, author, score } =
-      functionCall.arguments
+      parsedFunctionCallArguments
 
     return (functionResponse = {
       messages: [
