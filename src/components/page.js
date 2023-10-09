@@ -9,10 +9,10 @@ import { SubscribeModal } from '~/components/subscribe-modal';
 export const Page = ({ children }) => {
   return (
     <>
-      <div id="__next" className="relative min-h-screen bg-gray-100">
+      <div id="__next" className="relative min-h-screen overflow-hidden bg-gray-100">
         <motion.div initial="initial" animate="animate" exit="exit" variants={variants}>
           <Header />
-          <main className="mx-auto w-full max-w-lg l:max-w-none">{children}</main>
+          <main className="w-full max-w-lg mx-auto l:max-w-none">{children}</main>
           <Footer />
         </motion.div>
       </div>
