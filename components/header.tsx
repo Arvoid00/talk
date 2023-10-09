@@ -16,7 +16,7 @@ import { Chat } from '@/lib/types'
 
 export function Header({ chats, user }: { chats: Chat[]; user?: any }) {
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-4 backdrop-blur-xl">
+    <header className="from-background/10 via-background/50 to-background/80 sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between border-b bg-gradient-to-b px-4 backdrop-blur-xl">
       <div className="flex items-center">
         {user ? (
           <Sidebar>
@@ -37,7 +37,7 @@ export function Header({ chats, user }: { chats: Chat[]; user?: any }) {
           </Link>
         )}
         <div className="flex items-center">
-          <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
+          <IconSeparator className="text-muted-foreground/50 h-6 w-6" />
           {user ? (
             <UserMenu user={user} />
           ) : (

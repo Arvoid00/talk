@@ -19,6 +19,9 @@
     "format:write": "prettier --write \"{app,lib,components}/**/*.{ts,tsx,mdx}\" --cache",
     "format:check": "prettier --check \"{app,lib,components}**/*.{ts,tsx,mdx}\" --cache"
   },
+  "sideEffects": [
+    "*.css"
+  ],
   "engines": {
     "node": "18.x.x"
   },
@@ -54,7 +57,11 @@
     "focus-trap-react": "^10.2.1",
     "metaphor-node": "^1.0.18",
     "nanoid": "^4.0.2",
-    "next": "13.4.15",
+    "@candycode/core": "^0.0.210",
+    "framer-motion": "^10.16.4",
+    "jotai": "^2.4.3",
+    "next": "^13.5.4",
+    "prism-react-renderer": "^2.1.0",
     "next-themes": "^0.2.1",
     "nextjs-toploader": "^1.4.2",
     "openai-edge": "^0.5.1",
@@ -76,6 +83,8 @@
     "zustand": "^4.4.1"
   },
   "devDependencies": {
+    "@swc-jotai/react-refresh": "^0.1.0",
+    "@tailwindcss/forms": "^0.5.6",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^17.0.45",
     "@types/react": "^18.2.15",
@@ -98,5 +107,14 @@
     "tailwindcss-animate": "^1.0.6",
     "typescript": "^5.1.6"
   },
+  "browserslist": [
+    "last 3 firefox major versions",
+    "last 3 and_ff major versions",
+    "last 3 chrome major versions",
+    "last 3 and_chr major versions",
+    "last 3 edge major versions",
+    "last 2 safari major versions",
+    "last 2 ios_saf major versions"
+  ],
   "packageManager": "pnpm@8.6.3"
 }

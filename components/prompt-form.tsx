@@ -58,22 +58,22 @@ export function PromptForm({
       }}
       ref={formRef}
     >
-      <div className="relative flex w-full flex-row bg-background sm:rounded-md sm:border sm:px-4">
+      <div className="bg-background sm:rounded-md sm:border sm:px-4 relative flex w-full flex-row">
         {/* <div className="mt-4 flex gap-2">
           <PersonaSelector user={user} />
         </div>
 
         <div className="right-6 top-4 flex justify-center gap-2 absolute"> */}
-        <div className="absolute bottom-0 right-2 flex gap-2 sm:relative sm:mt-4">
+        <div className="sm:relative sm:mt-4 absolute bottom-0 right-2 flex gap-2">
           <PersonaSelector user={user} />
         </div>
 
-        <div className="absolute right-0 top-4 flex justify-center gap-2 sm:right-6">
+        <div className="sm:right-6 absolute right-0 top-4 flex justify-center gap-2">
           <Button
             id="smol-submitbtn"
             type="submit"
             size="icon"
-            className="hidden sm:flex"
+            className="sm:flex hidden"
             disabled={isLoading || input === ''}
           >
             <IconArrowElbow />
@@ -100,7 +100,7 @@ export function PromptForm({
             minHeight: '60px',
             maxHeight: '140px'
           }}
-          className="w-full bg-slate-100/10 px-4 py-[1.3rem] focus-within:outline-none sm:bg-transparent sm:text-sm"
+          className="bg-slate-100/10 sm:bg-transparent sm:text-sm w-full px-4 py-[1.3rem] focus-within:outline-none"
         />
       </div>
     </form>

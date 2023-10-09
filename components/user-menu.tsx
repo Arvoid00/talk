@@ -43,7 +43,7 @@ export function UserMenu({ user }: UserMenuProps) {
               <Image
                 height={60}
                 width={60}
-                className="h-6 w-6 select-none rounded-full ring-1 ring-zinc-100/10 transition-opacity duration-300 hover:opacity-80"
+                className="ring-zinc-100/10 h-6 w-6 select-none rounded-full ring-1 transition-opacity duration-300 hover:opacity-80"
                 src={
                   user?.user_metadata.avatar_url
                     ? `${user.user_metadata.avatar_url}&s=60`
@@ -52,7 +52,7 @@ export function UserMenu({ user }: UserMenuProps) {
                 alt={user.user_metadata.name ?? 'Avatar'}
               />
             ) : (
-              <div className="flex h-7 w-7 shrink-0 select-none items-center justify-center rounded-full bg-muted/50 text-xs font-medium uppercase text-muted-foreground">
+              <div className="bg-muted/50 text-xs text-muted-foreground flex h-7 w-7 shrink-0 select-none items-center justify-center rounded-full font-medium uppercase">
                 {getUserInitials(user?.user_metadata.name ?? user?.email)}
               </div>
             )}
@@ -86,7 +86,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </DropdownMenuItem> */}
           <DropdownMenuItem
             onClick={signOut}
-            className="cursor-pointer text-xs text-red-300 hover:bg-red-700"
+            className="text-xs text-red-300 hover:bg-red-700 cursor-pointer"
           >
             Log Out
           </DropdownMenuItem>

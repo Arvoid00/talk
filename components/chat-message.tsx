@@ -34,7 +34,7 @@ const ShowMoreButton = ({ onClick }: { onClick: () => void }) => (
     <Button
       variant={'outline'}
       onClick={onClick}
-      className="mb-4 bg-background"
+      className="bg-background mb-4"
     >
       Show more <ArrowDownIcon className="ml-1" />
     </Button>
@@ -126,7 +126,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
 
   return (
     <div
-      className={cn('group relative mb-4 flex items-start md:-ml-12')}
+      className={cn('md:-ml-12 group relative mb-4 flex items-start')}
       {...props}
     >
       <div
@@ -152,7 +152,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
         ) : (
           <MemoizedReactMarkdown
             linkTarget={'_blank'}
-            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+            className="prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 break-words"
             remarkPlugins={[remarkGfm, remarkMath]}
             components={{
               p({ children }) {
@@ -162,7 +162,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
                 if (children.length) {
                   if (children[0] == '▍') {
                     return (
-                      <span className="mt-1 animate-pulse cursor-default">
+                      <span className="animate-pulse mt-1 cursor-default">
                         ▍
                       </span>
                     )

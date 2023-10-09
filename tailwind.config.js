@@ -1,96 +1,219 @@
-const { fontFamily } = require('tailwindcss/defaultTheme')
+const colors = require('tailwindcss/colors');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ['class'],
-  content: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
+  content: ['./src/app/**/*.js', './src/components/**/*.js'],
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px'
-      }
+    screens: {
+      m: { raw: 'not all and (min-aspect-ratio: 2/3) and (min-width: 768px)' },
+      t: { raw: '(min-aspect-ratio: 2/3) and (min-width: 768px)' },
+      l: { raw: '(min-aspect-ratio: 4/3) and (min-width: 1280px)' },
+      d: { raw: '(min-aspect-ratio: 4/3) and (min-width: 1536px)' },
+      u: { raw: '(min-aspect-ratio: 5/3) and (min-width: 1792px)' },
+      c: { raw: '(min-width: 1280px)' },
+    },
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      black: colors.black,
+      white: colors.white,
+      gray: colors.zinc,
+      yellow: {
+        DEFAULT: '#FFF200',
+        50: '#FFFEEB',
+        100: '#FFFDE0',
+        200: '#FFFBB8',
+        300: '#FFF98F',
+        400: '#FFF652',
+        500: '#FFF200',
+        600: '#E6DA00',
+        700: '#CCC200',
+        800: '#A8A000',
+        900: '#7A7400',
+        950: '#575200',
+      },
+      cyan: {
+        DEFAULT: '#17E9E1',
+        50: '#F1FEFD',
+        100: '#E3FCFC',
+        200: '#C2F9F7',
+        300: '#94F5F2',
+        400: '#61F0EB',
+        500: '#17E9E1',
+        600: '#14D2CB',
+        700: '#12BAB5',
+        800: '#0F9A95',
+        900: '#0B706C',
+        950: '#074F4D',
+      },
+      purple: {
+        DEFAULT: '#8B73FF',
+        50: '#F7F5FF',
+        100: '#EEEBFF',
+        200: '#DDD6FF',
+        300: '#C8BDFF',
+        400: '#AE9EFF',
+        500: '#8B73FF',
+        600: '#7B61FF',
+        700: '#6647FF',
+        800: '#4824FF',
+        900: '#2300D1',
+        950: '#17008A',
+      },
+      magenta: {
+        DEFAULT: '#FB35A4',
+        50: '#FFF5FB',
+        100: '#FFE6F4',
+        200: '#FECDE9',
+        300: '#FDAAD9',
+        400: '#FD82C7',
+        500: '#FB35A4',
+        600: '#F5058D',
+        700: '#D20479',
+        800: '#AF0365',
+        900: '#7D0248',
+        950: '#64023A',
+      },
+    },
+    fontFamily: {
+      'hobeaux': ['"hobeaux"', '"Georgia"', '"Times"', 'serif'],
+      'apparat': ['"apparat"', '"Helvetica"', '"Arial"', 'sans-serif'],
+      'apparat-light': ['"apparat-light"', '"Helvetica"', '"Arial"', 'sans-serif'],
+      'source-code': ['"source-code-pro"', '"Consolas"', '"Menlo"', 'monospace'],
+    },
+    fontSize: {
+      '4pt': ['0.33333rem'],
+      '5pt': ['0.41667rem'],
+      '6pt': ['0.5rem'],
+      '7pt': ['0.58333rem'],
+      '8pt': ['0.66667rem'],
+      '9pt': ['0.75rem'],
+      '10pt': ['0.83333rem'],
+      '11pt': ['0.91667rem'],
+      '12pt': ['1rem'],
+      '13pt': ['1.08333rem'],
+      '14pt': ['1.16667rem'],
+      '15pt': ['1.25rem'],
+      '16pt': ['1.33333rem'],
+      '17pt': ['1.41667rem'],
+      '18pt': ['1.5rem'],
+      '19pt': ['1.58333rem'],
+      '20pt': ['1.66667rem'],
+      '21pt': ['1.75rem'],
+      '22pt': ['1.83333rem'],
+      '23pt': ['1.91667rem'],
+      '24pt': ['2rem'],
+      '26pt': ['2.16667rem'],
+      '28pt': ['2.33333rem'],
+      '30pt': ['2.5rem'],
+      '32pt': ['2.66667rem'],
+      '34pt': ['2.83333rem'],
+      '36pt': ['3rem'],
+      '38pt': ['3.16667rem'],
+      '40pt': ['3.33333rem'],
+      '42pt': ['3.5rem'],
+      '44pt': ['3.66667rem'],
+      '46pt': ['3.83333rem'],
+      '48pt': ['4rem'],
+      '50pt': ['4.16667rem'],
+      '52pt': ['4.33333rem'],
+      '54pt': ['4.5rem'],
+      '56pt': ['4.66667rem'],
+      '58pt': ['4.83333rem'],
+      '60pt': ['5rem'],
+      '62pt': ['5.16667rem'],
+      '64pt': ['5.33333rem'],
+      '72pt': ['6rem'],
+      '84pt': ['7rem'],
+      '96pt': ['8rem'],
+      '108pt': ['9rem'],
+      '120pt': ['10rem'],
+      '132pt': ['11rem'],
+      '144pt': ['12rem'],
+      '156pt': ['13rem'],
+      '168pt': ['14rem'],
+      '180pt': ['15rem'],
+      '192pt': ['16rem'],
+      '204pt': ['17rem'],
+      '216pt': ['18rem'],
+      '228pt': ['19rem'],
+      '240pt': ['20rem'],
+    },
+    borderWidth: {
+      DEFAULT: '0.0625rem',
+      sm: '0.125rem',
+      md: '0.25rem',
+      lg: '0.5rem',
+      xl: '1rem',
     },
     extend: {
-      fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans]
+      aspectRatio: {
+        'square': '1 / 1',
+        '1/1': '1 / 1',
+        'wide': '4 / 3',
+        '4/3': '4 / 3',
+        'wider': '16 / 9',
+        '16/9': '16 / 9',
+        'widest': '21 / 9',
+        '21/9': '21 / 9',
+        'tall': '3 / 4',
+        '3/4': '3 / 4',
+        'taller': '9 / 16',
+        '9/16': '9 / 16',
+        'tallest': '9 / 21',
+        '9/21': '9 / 21',
       },
-      colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))'
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))'
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))'
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))'
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))'
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))'
-        }
+      boxShadow: {
+        'solid-sm': '1px 1px 0 0 #000000',
+        'solid': '3px 3px 0 0 #000000',
+        'solid-lg': '6px 6px 0 0 #000000',
       },
-      borderRadius: {
-        lg: `var(--radius)`,
-        md: `calc(var(--radius) - 2px)`,
-        sm: 'calc(var(--radius) - 4px)'
+      cursor: {
+        grab: 'grab',
+        grabbing: 'grabbing',
       },
-      keyframes: {
-        'accordion-down': {
-          from: { height: 0 },
-          to: { height: 'var(--radix-accordion-content-height)' }
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 }
-        },
-        'slide-from-left': {
-          '0%': {
-            transform: 'translateX(-100%)'
-          },
-          '100%': {
-            transform: 'translateX(0)'
-          }
-        },
-        'slide-to-left': {
-          '0%': {
-            transform: 'translateX(0)'
-          },
-          '100%': {
-            transform: 'translateX(-100%)'
-          }
-        }
+      height: {
+        'gr-sm': '38.461538%',
+        'gr-lg': '61.538462%',
       },
-      animation: {
-        'slide-from-left':
-          'slide-from-left 0.3s cubic-bezier(0.82, 0.085, 0.395, 0.895)',
-        'slide-to-left':
-          'slide-to-left 0.25s cubic-bezier(0.82, 0.085, 0.395, 0.895)',
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
-      }
-    }
+      letterSpacing: {
+        condensed: '-.15em',
+        tightest: '-.1em',
+        expanded: '.15em',
+        extended: '.3em',
+        extreme: '.6em',
+      },
+      listStyleType: {
+        circle: 'circle',
+        square: 'square',
+      },
+      maxWidth: {
+        '8xl': '88rem',
+      },
+      spacing: {
+        112: '28rem',
+        128: '32rem',
+        192: '48rem',
+        256: '64rem',
+      },
+      width: {
+        'gr-sm': '38.461538%',
+        'gr-lg': '61.538462%',
+      },
+      zIndex: {
+        60: '60',
+        70: '70',
+        80: '80',
+        90: '90',
+        100: '100',
+      },
+    },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')]
-}
+  corePlugins: {
+    animation: false,
+  },
+  plugins: [require('@tailwindcss/forms')],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
+};

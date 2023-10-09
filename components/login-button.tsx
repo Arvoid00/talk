@@ -39,7 +39,7 @@ export function LoginButton({
       {...props}
     >
       {isLoading ? (
-        <IconSpinner className="mr-2 animate-spin" />
+        <IconSpinner className="animate-spin mr-2" />
       ) : showGithubIcon ? (
         <IconGitHub className="mr-2" />
       ) : null}

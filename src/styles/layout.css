@@ -1,0 +1,53 @@
+/* Scale base font-size starting from 1em (16px) at 30em (480px) and reaching 1.375em (22px) at 120em (1920px) */
+:root {
+  @apply scroll-smooth;
+  font-size: clamp(1em, calc(1rem + ((1vw - 0.3em) * 0.4167)), 1.375em);
+  min-height: 0vw;
+  color-scheme: light;
+}
+
+/* Prevent shrinking the viewport below Apple iPhone SE dimensions */
+body {
+  @apply min-w-[375px] overflow-y-auto overflow-x-clip bg-black font-apparat;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Add custom flair to selected elements */
+::selection {
+  @apply bg-magenta text-black;
+}
+
+/* Prevent 300ms delay from applying to links and buttons */
+a,
+button {
+  @apply touch-manipulation select-none;
+}
+
+/* Custom scrollbar */
+*::-webkit-scrollbar {
+  @apply h-full w-3 bg-gray-100;
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply rounded-2xl border-sm border-solid border-gray-100 bg-black;
+}
+
+*::-webkit-scrollbar-button {
+  @apply hidden;
+}
+
+/* Fix for Next.js <Link /> to anchors */
+* {
+  @apply scroll-smooth !important;
+}
+
+/* Code snippets */
+.prism-code {
+  tab-size: 2;
+  @apply overflow-hidden !bg-transparent font-source-code text-7pt t:text-10pt;
+}

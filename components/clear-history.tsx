@@ -63,7 +63,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
               })
             }}
           >
-            {isPending && <IconSpinner className="mr-2 animate-spin" />}
+            {isPending && <IconSpinner className="animate-spin mr-2" />}
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>
