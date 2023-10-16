@@ -2,8 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "~/*": ["src/*"],
-      "@/*": ["src/*"],
+      "~/*": ["src/*"]
     },
     "checkJs": true,
     "removeComments": true
