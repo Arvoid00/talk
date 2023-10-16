@@ -173,7 +173,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <div className={cn('md:pt-10 pb-[200px] pt-4', className)}>
+      <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length > 0 ? (
           <>
             <ChatList messages={messages} />

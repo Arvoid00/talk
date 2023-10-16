@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# swyx oct 9 - temporarily commented out to depoy
-# pnpm run lint:fix
-# pnpm run type-check
+pnpm run lint:fix
+pnpm run type-check

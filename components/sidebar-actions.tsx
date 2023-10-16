@@ -100,7 +100,7 @@ export function SidebarActions({
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              className="hover:bg-background h-6 w-6 p-0"
+              className="h-6 w-6 p-0 hover:bg-background"
               onClick={() => setShareDialogOpen(true)}
             >
               <IconShare />
@@ -113,7 +113,7 @@ export function SidebarActions({
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              className="hover:bg-background h-6 w-6 p-0"
+              className="h-6 w-6 p-0 hover:bg-background"
               disabled={isRemovePending}
               onClick={() => setDeleteDialogOpen(true)}
             >
@@ -132,7 +132,7 @@ export function SidebarActions({
               Anyone with the URL will be able to view the shared chat.
             </DialogDescription>
           </DialogHeader>
-          <div className="text-sm space-y-1 rounded-md border p-4">
+          <div className="space-y-1 rounded-md border p-4 text-sm">
             <div className="font-medium">{chat.title}</div>
             <div className="text-muted-foreground">
               {formatDate(chat.createdAt)} · {chat.messages.length} messages
@@ -175,7 +175,7 @@ export function SidebarActions({
             >
               {isSharePending ? (
                 <>
-                  <IconSpinner className="animate-spin mr-2" />
+                  <IconSpinner className="mr-2 animate-spin" />
                   Copying...
                 </>
               ) : (
@@ -220,7 +220,7 @@ export function SidebarActions({
                 })
               }}
             >
-              {isRemovePending && <IconSpinner className="animate-spin mr-2" />}
+              {isRemovePending && <IconSpinner className="mr-2 animate-spin" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

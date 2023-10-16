@@ -1,10 +1,5 @@
 # Smol Talk
 
-## smolai website
-
-- `export NPM_TOKEN=npm_zhMrglwQTwxxx` (get from swyx)
-- `pnpm i`
-
 ## Features
 
 - [Next.js](https://nextjs.org) App Router

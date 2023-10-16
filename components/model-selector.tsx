@@ -70,7 +70,7 @@ export function ModelSelector({
         <HoverCardTrigger asChild></HoverCardTrigger>
         <HoverCardContent
           align="start"
-          className="text-sm w-[260px]"
+          className="w-[260px] text-sm"
           side="left"
         >
           The model which will generate the completion. Some models are suitable
@@ -91,8 +91,8 @@ export function ModelSelector({
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-[250px] p-0">
-          <div className="border-b-2 border-b-foreground bg-background text-foreground flex flex-col items-start space-y-2 rounded-t-2xl px-2 py-4">
-            <Link href="/" className="text-sm h-auto p-0">
+          <div className="flex flex-col items-start space-y-2 rounded-t-2xl border-b-2 border-b-foreground bg-background px-2 py-4 text-foreground">
+            <Link href="/" className="h-auto p-0 text-sm">
               <Button
                 onClick={e => {
                   e.preventDefault()
@@ -100,26 +100,26 @@ export function ModelSelector({
                   router.push('/')
                 }}
                 variant="link"
-                className="text-sm h-auto p-0"
+                className="h-auto p-0 text-sm"
               >
-                <IconPlus className="text-muted-foreground mr-2" />
+                <IconPlus className="mr-2 text-muted-foreground" />
                 New Chat
               </Button>
             </Link>
 
-            <Label className="text-xs text-muted-foreground mb-2">
+            <Label className="mb-2 text-xs text-muted-foreground">
               Template
             </Label>
             {exampleMessages.map((message, index) => (
               <Button
                 key={index}
                 variant="link"
-                className="text-sm h-auto p-0"
+                className="h-auto p-0 text-sm"
                 onClick={() => {
                   setInput(message.message)
                 }}
               >
-                <IconArrowRight className="text-muted-foreground mr-2" />
+                <IconArrowRight className="mr-2 text-muted-foreground" />
                 {message.heading}
               </Button>
             ))}
@@ -129,7 +129,7 @@ export function ModelSelector({
               side="left"
               align="start"
               forceMount
-              className="lg:block hidden min-h-[280px]"
+              className="hidden min-h-[280px] lg:block"
             >
               <div className="grid gap-2">
                 <h4 className="font-medium leading-none">{peekedModel.name}</h4>

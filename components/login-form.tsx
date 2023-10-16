@@ -107,7 +107,7 @@ export function LoginForm({
 
         <div className="mt-4 flex items-center">
           <Button disabled={isLoading}>
-            {isLoading && <IconSpinner className="animate-spin mr-2" />}
+            {isLoading && <IconSpinner className="mr-2 animate-spin" />}
             {action === 'sign-in' ? 'Sign In' : 'Sign Up'}
           </Button>
           <p className="ml-4">

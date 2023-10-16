@@ -62,7 +62,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
         <HoverCardTrigger asChild></HoverCardTrigger>
         <HoverCardContent
           align="start"
-          className="text-sm w-[260px] whitespace-pre-line"
+          className="w-[260px] whitespace-pre-line text-sm"
           side="left"
         />
       </HoverCard>
@@ -94,7 +94,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
                 align="start"
                 hidden={!peekedPersona}
                 forceMount
-                className="lg:block hidden min-h-[40px] whitespace-pre-line"
+                className="hidden min-h-[40px] whitespace-pre-line lg:block"
               >
                 <div className="grid gap-2">
                   <h4 className="font-medium leading-none">
@@ -109,7 +109,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
                   </div>
                   <Link
                     href="/settings/personas"
-                    className="text-sm flex h-auto grow-0 p-0"
+                    className="flex h-auto grow-0 p-0 text-sm"
                   >
                     <Button
                       onClick={e => {
@@ -117,7 +117,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
                         router.push('/settings/personas')
                       }}
                       variant="link"
-                      className="text-sm h-auto p-0"
+                      className="h-auto p-0 text-sm"
                     >
                       Edit
                     </Button>
@@ -135,16 +135,16 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
 
                 <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
                   <CommandEmpty className="p-2">
-                    <Link href="/" className="text-sm h-auto p-0">
+                    <Link href="/" className="h-auto p-0 text-sm">
                       <Button
                         onClick={e => {
                           e.preventDefault()
                           router.push('/')
                         }}
                         variant="link"
-                        className="text-sm h-auto w-full justify-start truncate p-0"
+                        className="h-auto w-full justify-start truncate p-0 text-sm"
                       >
-                        <IconPlus className="text-muted-foreground mr-2 shrink-0" />
+                        <IconPlus className="mr-2 shrink-0 text-muted-foreground" />
                         <div className="flex truncate">
                           <span className="truncate">
                             Create {`"${search}"`}
@@ -172,30 +172,30 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
               </Command>
             </HoverCard>
 
-            <div className="border-t-2 border-t-foreground bg-background text-foreground flex flex-col items-start space-y-2 rounded-b-2xl px-2 py-4">
-              <Link href="/" className="text-sm h-auto p-0">
+            <div className="flex flex-col items-start space-y-2 rounded-b-2xl border-t-2 border-t-foreground bg-background px-2 py-4 text-foreground">
+              <Link href="/" className="h-auto p-0 text-sm">
                 <Button
                   onClick={e => {
                     e.preventDefault()
                     router.push('/settings/personas')
                   }}
                   variant="link"
-                  className="text-sm h-auto p-0"
+                  className="h-auto p-0 text-sm"
                 >
-                  <IconPlus className="text-muted-foreground mr-2" />
+                  <IconPlus className="mr-2 text-muted-foreground" />
                   Add New
                 </Button>
               </Link>
-              <Link href="/settings/personas" className="text-sm h-auto p-0">
+              <Link href="/settings/personas" className="h-auto p-0 text-sm">
                 <Button
                   onClick={e => {
                     e.preventDefault()
                     router.push('/settings/personas')
                   }}
                   variant="link"
-                  className="text-sm h-auto p-0"
+                  className="h-auto p-0 text-sm"
                 >
-                  <Pencil1Icon className="text-muted-foreground mr-2" />
+                  <Pencil1Icon className="mr-2 text-muted-foreground" />
                   Manage Personas
                 </Button>
               </Link>
