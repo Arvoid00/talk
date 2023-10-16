@@ -19,12 +19,12 @@ export async function middleware(req: NextRequest) {
   // If you want to allow anonymous users, simply remove the check below.
   if (
     !session &&
-    !req.url.includes('/sign-in') &&
-    !req.url.includes('/sign-up')
+    !req.url.includes('/talk/sign-in') &&
+    !req.url.includes('/talk/sign-up')
   ) {
     const redirectUrl = req.nextUrl.clone()
-    console.log({redirectUrl, session})
-    redirectUrl.pathname = '/sign-in'
+    console.log({ redirectUrl, session })
+    redirectUrl.pathname = '/talk/sign-in'
     redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }

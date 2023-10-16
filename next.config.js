@@ -12,5 +12,21 @@ module.exports = {
         hostname: '**.githubusercontent.com'
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/talk',
+        basePath: false,
+        permanent: false
+      },
+      {
+        source: '/sign-in',
+        destination: '/talk/sign-in',
+        basePath: false,
+        permanent: false
+      }
+    ]
   }
 }

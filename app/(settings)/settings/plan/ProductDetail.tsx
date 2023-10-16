@@ -41,7 +41,7 @@ const ProductDetail = ({ product, session, subscription }: Props) => {
   const redirectToCustomerPortal = async () => {
     try {
       const { url } = await postData({
-        url: '/api/create-portal-link'
+        url: '/talk/api/create-portal-link'
       })
       router.push(url)
     } catch (error) {
@@ -53,7 +53,7 @@ const ProductDetail = ({ product, session, subscription }: Props) => {
     setPriceIdLoading(price.id)
     try {
       const { sessionId } = await postData({
-        url: '/api/create-checkout-session',
+        url: '/talk/api/create-checkout-session',
         data: { price }
       })
 

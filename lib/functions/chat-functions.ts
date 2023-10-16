@@ -4,7 +4,7 @@
 
 export const searchTheWeb = async (query: string) => {
   try {
-    const response = await fetch('/api/search', {
+    const response = await fetch('/talk/api/search', {
       method: 'POST',
       headers: {
         accept: 'application/json',
@@ -31,7 +31,7 @@ export const searchTheWeb = async (query: string) => {
 
 export const processSearchResult = async (id: string) => {
   try {
-    const res = await fetch(`/api/process?id=${id}`, {
+    const res = await fetch(`/talk/api/process?id=${id}`, {
       method: 'POST',
       headers: {
         accept: 'application/json',

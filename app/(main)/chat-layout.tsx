@@ -25,7 +25,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { User } from '@supabase/supabase-js'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { redirect, usePathname, useRouter } from 'next/navigation'
 import { Fragment, useEffect, useMemo, useState, useTransition } from 'react'
 import { SidebarActions } from '../../components/sidebar-actions'
 import { SidebarItem } from '../../components/sidebar-item'
@@ -122,6 +122,10 @@ export default function ChatLayout({
       supabase.removeChannel(channel)
     }
   }, [pathname])
+
+  if (!user) {
+    return redirect('/talk/sign-in')
+  }
 
   return (
     <>
