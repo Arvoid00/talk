@@ -24,7 +24,7 @@ import { User } from '@supabase/supabase-js'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { redirect, usePathname, useRouter } from 'next/navigation'
 import {
   Fragment,
   useCallback,
@@ -152,6 +152,10 @@ export default function ChatLayout({
     'translate-x-0': isSidebarOpen,
     'lg:-translate-x-full': !isSidebarOpen
   })
+
+  if (!user) {
+    return redirect('/sign-in')
+  }
 
   return (
     <>
