@@ -29,9 +29,13 @@ export function LoginButton({
       onClick={async () => {
         setIsLoading(true)
         console.log(`location.origin`, location.origin)
+        const redirectLink =
+          process.env.NODE_ENV === 'production'
+            ? `https://smol.ai/talk/api/auth/callback`
+            : `${location.origin}/talk/api/auth/callback`
         await supabase.auth.signInWithOAuth({
           provider: 'github',
-          options: { redirectTo: `${location.origin}/talk/api/auth/callback` }
+          options: { redirectTo: redirectLink }
         })
       }}
       type="button"
