@@ -36,7 +36,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const session = await auth({ cookieStore })
 
   if (!session?.user) {
-    redirect(`/talk/sign-in?next=/talk/chat/${params.id}`)
+    redirect(`/sign-in?next=/talk/chat/${params.id}`)
   }
 
   const chat = await getChat(params.id)

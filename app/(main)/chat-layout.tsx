@@ -124,7 +124,7 @@ export default function ChatLayout({
   }, [pathname])
 
   if (!user) {
-    return redirect('/talk/sign-in')
+    return redirect('/sign-in')
   }
 
   return (
