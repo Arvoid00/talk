@@ -19,11 +19,11 @@ export async function middleware(req: NextRequest) {
   // If you want to allow anonymous users, simply remove the check below.
   if (
     !session &&
-    !req.url.includes('/sign-in') &&
-    !req.url.includes('/sign-up')
+    !req.url.includes('/talk/sign-in') &&
+    !req.url.includes('/talk/sign-up')
   ) {
     const redirectUrl = req.nextUrl.clone()
-    console.log({redirectUrl, session})
+    console.log({ redirectUrl, session })
     redirectUrl.pathname = '/sign-in'
     redirectUrl.searchParams.set(`redirectedFrom`, req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
@@ -42,6 +42,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!share|api|_next/static|_next/image|favicon.ico).*)'
+    '/((?!share|api|_next/static|_next/image|favicon.ico).*)',
+    { source: '/' }
   ]
 }

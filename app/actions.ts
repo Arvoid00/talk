@@ -166,7 +166,7 @@ export async function getSharedChat(id: string) {
 export async function shareChat(chat: Chat) {
   const payload = {
     ...chat,
-    sharePath: `/share/${chat.id}`
+    sharePath: `/talk/share/${chat.id}`
   }
 
   const cookieStore = cookies()

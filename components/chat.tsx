@@ -43,6 +43,7 @@ function useSmolTalkChat(
   const { initialMessages, ...rest } = opts
   return useChat({
     ...rest,
+    api: '/talk/api/chat',
     initialMessages: initialMessages?.map(message => ({
       ...message
     }))
