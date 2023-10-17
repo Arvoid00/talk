@@ -24,12 +24,9 @@ export async function GET(request: Request) {
   console.log('requestUrl.origin', requestUrl.origin)
   // URL to redirect to after sign in process completes
 
-  // requestUrl.origin = https://smoltalk.vercel.app
-  // check if VERCEL_ENV is production
-  // change to NEXT_PUBLIC_URL
-
+  // fix for production app redirect
   if (process.env.VERCEL_ENV === 'production') {
-    return NextResponse.redirect('https://smol.ai')
+    return NextResponse.redirect(process.env.NEXT_PUBLIC_SITE_URL as string)
   }
 
   return NextResponse.redirect(requestUrl.origin)
