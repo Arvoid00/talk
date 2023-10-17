@@ -92,6 +92,7 @@ const functionCallHandler: FunctionCallHandler = async (
   /* ========================================================================== */
 
   if (functionCall.name === 'processSearchResult') {
+    if (!functionCall.arguments) return (functionResponse = { messages: [] })
     const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
     const processedContent = await processSearchResult(
       parsedFunctionCallArguments.id
