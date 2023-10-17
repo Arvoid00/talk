@@ -30,7 +30,7 @@ export function LoginButton({
         setIsLoading(true)
         console.log(`location.origin`, location.origin)
         const redirectLink =
-          process.env.NODE_ENV === 'production'
+          process.env.VERCEL_ENV === 'production'
             ? `https://smol.ai/talk/api/auth/callback`
             : `${location.origin}/talk/api/auth/callback`
         await supabase.auth.signInWithOAuth({
