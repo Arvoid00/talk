@@ -46,6 +46,8 @@ cp .env.example .env
 
 Install Docker [or Colima](https://www.swyx.io/running-docker-without-docker-desktop)
 
+If using colima and local development, you must use 127.0.0.1 instead of localhost
+
 [Install the Supabase CLI](https://supabase.com/docs/guides/cli) and start the local Supabase stack:
 
 ```bash

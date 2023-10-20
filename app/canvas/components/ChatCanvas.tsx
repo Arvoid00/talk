@@ -1,7 +1,6 @@
 'use client'
 
 import { getPersonas } from '@/app/actions'
-import { processSearchResult, searchTheWeb } from '@/app/chat-functions'
 import { AlertAuth } from '@/components/alert-auth'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
@@ -11,7 +10,7 @@ import { Model, models } from '@/constants/models'
 import { Persona } from '@/constants/personas'
 import { SmolTalkMessage } from '@/lib/types'
 import { usePersonaStore } from '@/lib/usePersonaStore'
-import { cn, nanoid } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import {
   Editor,
   TLGeoShape,
@@ -21,7 +20,6 @@ import {
 } from '@tldraw/tldraw'
 import '@tldraw/tldraw/editor.css'
 import '@tldraw/tldraw/ui.css'
-import { ChatRequest, FunctionCallHandler } from 'ai'
 import { UseChatOptions, useChat, type Message } from 'ai/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -47,81 +45,6 @@ function useSmolTalkChat(
 }
 
 /* ========================================================================== */
-/* Function Call Handler                                                      */
-/* ========================================================================== */
-
-const functionCallHandler: FunctionCallHandler = async (
-  chatMessages,
-  functionCall
-) => {
-  let functionResponse: ChatRequest
-
-  /* ========================================================================== */
-  /* Handle searchTheWeb function call                                          */
-  /* ========================================================================== */
-
-  if (functionCall.name === 'searchTheWeb') {
-    if (functionCall.arguments) {
-      const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
-      const results = await searchTheWeb(parsedFunctionCallArguments.query)
-      return (functionResponse = {
-        messages: [
-          ...chatMessages,
-          {
-            id: nanoid(),
-            name: 'searchTheWeb',
-            role: 'function' as const,
-            content: JSON.stringify({
-              query: parsedFunctionCallArguments.query,
-              results:
-                results ||
-                'Sorry, I could not find anything on the internet about that.'
-            })
-          }
-        ]
-      })
-    }
-  }
-
-  /* ========================================================================== */
-  /* Handle processSearchResult function call                                   */
-  /* ========================================================================== */
-
-  if (functionCall.name === 'processSearchResult') {
-    if (!functionCall.arguments) return (functionResponse = { messages: [] })
-    const parsedFunctionCallArguments = JSON.parse(functionCall.arguments)
-    const processedContent = await processSearchResult(
-      parsedFunctionCallArguments.id
-    )
-
-    const { title, url, id, publishedDate, author, score } =
-      parsedFunctionCallArguments
-
-    return (functionResponse = {
-      messages: [
-        ...chatMessages,
-        {
-          id: nanoid(),
-          name: 'processSearchResult',
-          role: 'function' as const,
-          content: JSON.stringify({
-            link: {
-              title: title,
-              url: url,
-              publishedDate: publishedDate || null,
-              author: author || null,
-              score: score || null,
-              id: id
-            },
-            results: processedContent
-          })
-        }
-      ]
-    })
-  }
-}
-
-/* ========================================================================== */
 /* Chat Component                                                             */
 /* ========================================================================== */
 
@@ -144,8 +67,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
         if (response.status === 401) {
           toast.error(response.statusText)
         }
-      },
-      experimental_onFunctionCall: functionCallHandler
+      }
     })
 
   useEffect(() => {
@@ -163,7 +85,7 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
         {messages.length > 0 ? (
           <>
-            <ChatList messages={messages} />
+            <ChatList messages={messages} isLoading={isLoading} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : !isLoading ? (
@@ -219,8 +141,7 @@ export default function ChatCanvas({
         if (response.status === 401) {
           toast.error(response.statusText)
         }
-      },
-      experimental_onFunctionCall: functionCallHandler
+      }
     })
 
   useEffect(() => {
@@ -410,18 +331,18 @@ const InsideOfEditorContext = ({ messages }: { messages: any[] }) => {
               boundShapeId: previousMessageId,
               normalizedAnchor: {
                 x: 0.5,
-                y: 1
+                y: 0.5
               },
-              isExact: true
+              isExact: false
             },
             end: {
               type: 'binding',
               boundShapeId: latestMessageId,
               normalizedAnchor: {
                 x: 0.5,
-                y: 0
+                y: 0.5
               },
-              isExact: true
+              isExact: false
             }
           }
         }

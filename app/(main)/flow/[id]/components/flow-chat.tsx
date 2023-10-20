@@ -1,5 +1,6 @@
 'use client'
 
+import { FlowChatList } from '@/app/(main)/flow/[id]/components/flow-chat-list'
 import { getPersonas } from '@/app/actions'
 import { AlertAuth } from '@/components/alert-auth'
 import { ChatList } from '@/components/chat-list'
@@ -53,13 +54,16 @@ function useSmolTalkChat(
 /* Chat Component                                                             */
 /* ========================================================================== */
 
-export function Chat({ user, id, initialMessages, className }: ChatProps) {
+export function FlowChat({ user, id, initialMessages, className }: ChatProps) {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
   const { persona, setPersonas } = usePersonaStore()
   // const [atLimit, setAtLimit] = useState(false)
   const [previewToken, setPreviewToken] = useLocalStorage<string | null>(
     'ai-token',
     null
   )
+  const router = useRouter()
 
   const [model, setModel] = useState<Model>(models[0])
 
@@ -103,16 +107,41 @@ export function Chat({ user, id, initialMessages, className }: ChatProps) {
     fetchPersonas()
   }, [setPersonas, user])
 
+  useEffect(() => {
+    const updateDimensions = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+
+    window.addEventListener('resize', updateDimensions)
+    updateDimensions() // Initialize dimensions
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions)
+    }
+  }, [])
+
+  const { width, height } = dimensions
+
   const isAuthError = error?.message.includes('Unauthorized')
 
   console.log('messages', messages)
 
+  const MENU_BAR_HEIGHT = 70
+
   return (
     <>
-      <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
+      <div
+        // className={cn('pb-[200px] pt-4 md:pt-10', className)}
+        style={{ width: `${width}px`, height: `${height - MENU_BAR_HEIGHT}px` }}
+      >
         {messages.length > 0 ? (
           <>
-            <ChatList messages={messages} isLoading={isLoading} />
+            {!!width && !!height && (
+              <FlowChatList messages={messages} isLoading={isLoading} />
+            )}
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : !isLoading ? (

@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 
 import { auth } from '@/auth'
 import { getChat } from '@/app/actions'
-import { Chat } from '@/components/chat'
+import { FlowChat } from '@/app/(main)/flow/[id]/components/flow-chat'
 import { cookies } from 'next/headers'
 
 export const runtime = 'edge'
@@ -26,12 +26,13 @@ export async function generateMetadata({
   }
 
   const chat = await getChat(params.id)
+  console.log(chat)
   return {
     title: chat?.title?.toString().slice(0, 50) ?? 'Chat'
   }
 }
 
-export default async function ChatPage({ params }: ChatPageProps) {
+export default async function FlowPage({ params }: ChatPageProps) {
   const cookieStore = cookies()
   const session = await auth({ cookieStore })
 
@@ -50,6 +51,10 @@ export default async function ChatPage({ params }: ChatPageProps) {
   }
 
   return (
-    <Chat id={chat.id} user={session?.user} initialMessages={chat.messages} />
+    <FlowChat
+      id={chat.id}
+      user={session?.user}
+      initialMessages={chat.messages}
+    />
   )
 }

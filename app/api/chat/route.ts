@@ -4,7 +4,11 @@ import {
   createRouteHandlerClient,
   type User
 } from '@supabase/auth-helpers-nextjs'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+import {
+  OpenAIStream,
+  StreamingTextResponse,
+  experimental_StreamData
+} from 'ai'
 import { functionSchema, type UserKvData } from 'lib/types'
 import { cookies } from 'next/headers'
 import 'server-only'
@@ -19,7 +23,8 @@ import { kv } from '@vercel/kv'
 
 import { scrapePage } from '@/app/api/chat/scrape'
 import { FREE_LIMIT, PAID_LIMIT, WINDOW_SIZE } from '@/constants/rate-limits'
-import PromptBuilder from './prompt-builder'
+import PromptBuilder from '@/app/api/chat/prompt-builder'
+import { processSearchResult, searchTheWeb } from '@/app/chat-functions'
 
 export const runtime = 'nodejs'
 
@@ -146,11 +151,13 @@ export async function POST(req: Request) {
     }
   }
 
+  console.log('id', id)
+
   // if this is the first message in a chat,
   // check if the chat id already exists
   if (messages?.length === 1) {
     // while loop to check if chat id exists
-    // if it does, generate a new id
+    // if already exists, generate a new id
     while (await checkIfChatExists(id)) {
       id = nanoid()
       payload = {
@@ -160,7 +167,7 @@ export async function POST(req: Request) {
       }
     }
 
-    await supabase.from('chats').insert({ id, payload }).throwOnError()
+    await supabase.from('chats').insert({ id, payload, title }).throwOnError()
 
     // extract the first url from the first message
     const extractedUrls = await extractUrlArray(messages[0]?.content)
@@ -179,6 +186,15 @@ export async function POST(req: Request) {
   } else {
     await supabase.from('chats').update({ payload }).eq('id', id).throwOnError()
   }
+
+  const { data } = await supabase
+    .from('messages')
+    .insert({
+      role: 'user',
+      content: messages[messages.length - 1].content,
+      chat_id: id
+    })
+    .throwOnError()
 
   /**
    * Rate limiter
@@ -238,7 +254,78 @@ export async function POST(req: Request) {
 
   await kv.set(user.id, userKvData)
 
+  // Instantiate the StreamData. It works with all API providers.
+  // const data = new experimental_StreamData()
+
   const stream = OpenAIStream(res, {
+    experimental_onFunctionCall: async (
+      { name, arguments: args },
+      createFunctionCallMessages
+    ) => {
+      console.log('route.ts > onFunctionCall', name, args)
+
+      /* ========================================================================== */
+      /* Handle searchTheWeb function call                                          */
+      /* ========================================================================== */
+
+      if (name === 'searchTheWeb') {
+        if (args && args.query) {
+          const results = await searchTheWeb(args.query as string)
+
+          // data.append({
+          //   text: 'Searching the web...'
+          // })
+
+          const newMessages = createFunctionCallMessages(
+            results ||
+              'Sorry, I could not find anything on the internet about that.'
+          )
+
+          console.log('route.ts > searchTheWeb', newMessages)
+
+          return openai.createChatCompletion({
+            messages: [...messages, ...newMessages],
+            stream: true,
+            model: model.id || 'gpt-4-0613',
+            functions: functionSchema
+          })
+        }
+      }
+
+      /* ========================================================================== */
+      /* Handle processSearchResult function call                                   */
+      /* ========================================================================== */
+
+      if (name === 'processSearchResult') {
+        const { title, url, id, publishedDate, author, score } = args
+
+        const processedContent = await processSearchResult(id as string)
+
+        const newMessages = createFunctionCallMessages(
+          JSON.stringify({
+            link: {
+              title: title,
+              url: url,
+              publishedDate: publishedDate || null,
+              author: author || null,
+              score: score || null,
+              id: id
+            },
+            results: processedContent
+          })
+        )
+
+        console.log('route.ts > processSearchResult', newMessages)
+
+        return openai.createChatCompletion({
+          messages: [...messages, ...newMessages],
+          stream: true,
+          model: model.id || 'gpt-4-0613',
+          functions: functionSchema
+        })
+      }
+    },
+
     async onCompletion(completion) {
       const payload = {
         id,
@@ -254,14 +341,72 @@ export async function POST(req: Request) {
           }
         ]
       }
-      console.log(payload)
 
-      // Insert chat into database.
-      await supabase.from('chats').upsert({ id, payload }).throwOnError()
+      // update chat into database
+      await supabase
+        .from('chats')
+        .update({ payload })
+        .eq('id', id)
+        .throwOnError()
+
+      console.log('✅ completion: ', completion)
+
+      try {
+        const parsedCompletion = JSON.parse(completion)
+        if (parsedCompletion?.function_call) {
+          // insert function call into database
+          const { error } = await supabase
+            .from('messages')
+            .insert({
+              role: 'assistant',
+              function_call: parsedCompletion.function_call,
+              chat_id: id
+            })
+            .throwOnError()
+        } else if (parsedCompletion?.role === 'function') {
+          // insert function call into database
+          const { error } = await supabase
+            .from('messages')
+            .insert({
+              role: 'function',
+              content: completion,
+              chat_id: id
+            })
+            .throwOnError()
+        }
+      } catch (e) {
+        console.log(e)
+        // insert message into database
+        console.log('insert message into database', {
+          role: 'assistant',
+          content: completion,
+          chat_id: id
+        })
+        const { error } = await supabase
+          .from('messages')
+          .insert({
+            role: 'assistant',
+            content: completion,
+            chat_id: id
+          })
+          .throwOnError()
+      }
+
       console.log('route.ts > payload, insert to db', payload)
+    },
+    onFinal(completion) {
+      // IMPORTANT! you must close StreamData manually or the response will never finish.
+      // data.close()
     }
+    // IMPORTANT! until this is stable, you must explicitly opt in to supporting streamData.
+    // experimental_streamData: true
   })
+
+  // data.append({
+  //   text: 'Hello, how are you?'
+  // })
 
   console.log('route.ts > stream')
   return new StreamingTextResponse(stream)
+  // return new StreamingTextResponse(stream, {}, data)
 }

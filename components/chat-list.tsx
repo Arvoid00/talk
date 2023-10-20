@@ -7,6 +7,7 @@ import { nanoid } from 'nanoid'
 
 export interface ChatList {
   messages: Message[]
+  isLoading?: boolean
   atLimit?: boolean
 }
 
@@ -20,12 +21,13 @@ const limitMessage: SmolTalkMessage = {
     'You have reached the rate limit for your plan level. Please try again later.'
 }
 
-export function ChatList({ messages }: ChatList) {
-
+export function ChatList({ messages, isLoading }: ChatList) {
   if (!messages.length) {
     return null
   }
 
+  const isWaitingForResponse =
+    messages[messages.length - 1].role === 'user' && isLoading
   return (
     <div className="relative mx-auto max-w-2xl px-4 md:px-8">
       {messages.map((message, index) => {
@@ -40,4 +42,11 @@ export function ChatList({ messages }: ChatList) {
       })}
     </div>
   )
+  {
+    isWaitingForResponse && (
+      <div className="mt-4 flex items-center justify-center md:mt-8">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-500"></div>
+      </div>
+    )
+  }
 }

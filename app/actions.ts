@@ -16,25 +16,39 @@ function nanoid() {
   return Math.random().toString(36).slice(2) // random id up to 11 chars
 }
 
-export async function upsertChat(chat: Chat) {
+export async function insertChat(chat: Chat) {
   const cookieStore = cookies()
   const supabase = createServerActionClient<Database>({
     cookies: () => cookieStore
   })
 
-  const { error } = await supabase.from('chats').upsert({
+  const { error } = await supabase.from('chats').insert({
     id: chat.id || nanoid(),
     user_id: chat.userId,
     payload: chat.toString() // must stringify or JSON type complains. TODO: check that this JSON.parses properly.
   })
+
   if (error) {
-    console.log('upsertChat error', error)
+    console.log('insertChat error', error)
     return {
       error: 'Unauthorized'
     }
-  } else {
-    return null
   }
+
+  const { error: messageError } = await supabase.from('messages').insert({
+    role: 'user',
+    user_id: chat.userId,
+    content: chat.messages[0].content
+  })
+
+  if (messageError) {
+    console.log('insertChat initial message error', error)
+    return {
+      error: 'Unauthorized'
+    }
+  }
+
+  return null
 }
 
 export async function getArtifacts() {
@@ -96,13 +110,23 @@ export async function getChat(id: string) {
   const supabase = createServerActionClient<Database>({
     cookies: () => cookieStore
   })
-  const { data } = await supabase
+  const { data: chat } = await supabase
     .from('chats')
-    .select('payload')
+    .select('id, user_id, title, messages (id, role, content, created_at)')
+    .order('created_at', { foreignTable: 'messages' })
+    .filter('messages.content', 'not.is', null)
     .eq('id', id)
     .maybeSingle()
 
-  return (data?.payload as unknown as Chat) ?? null
+  const chatResponse = {
+    id: chat?.id,
+    title: chat?.title,
+    path: `/chat/${chat?.id}`,
+    userId: chat?.user_id,
+    messages: chat?.messages
+  }
+
+  return (chatResponse as unknown as Chat) ?? null
 }
 
 export async function removeChat({ id, path }: { id: string; path: string }) {
