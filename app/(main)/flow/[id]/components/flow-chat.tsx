@@ -1,6 +1,9 @@
 'use client'
 
-import { FlowChatList } from '@/app/(main)/flow/[id]/components/flow-chat-list'
+import {
+  FlowChatList,
+  FlowChatWithProvider
+} from '@/app/(main)/flow/[id]/components/flow-chat-list'
 import { getPersonas } from '@/app/actions'
 import { AlertAuth } from '@/components/alert-auth'
 import { ChatList } from '@/components/chat-list'
@@ -97,8 +100,6 @@ export function FlowChat({ user, id, initialMessages, className }: ChatProps) {
     }
   })
 
-  console.log('data: ', data)
-
   useEffect(() => {
     const fetchPersonas = async () => {
       const result = (await getPersonas(user)) as Persona[]
@@ -135,12 +136,15 @@ export function FlowChat({ user, id, initialMessages, className }: ChatProps) {
     <>
       <div
         // className={cn('pb-[200px] pt-4 md:pt-10', className)}
-        style={{ width: `${width}px`, height: `${height - MENU_BAR_HEIGHT}px` }}
+        style={{
+          width: `${width - 287}px`,
+          height: `${height - MENU_BAR_HEIGHT}px`
+        }}
       >
         {messages.length > 0 ? (
           <>
             {!!width && !!height && (
-              <FlowChatList messages={messages} isLoading={isLoading} />
+              <FlowChatWithProvider messages={messages} isLoading={isLoading} />
             )}
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>

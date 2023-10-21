@@ -3,22 +3,25 @@ import { type Message } from 'ai'
 import { SmolTalkMessage } from '@/lib/types'
 import { nanoid } from 'nanoid'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Connection,
   Controls,
+  CoordinateExtent,
   Edge,
-  EdgeProps,
   MiniMap,
   Node,
-  NodeProps,
+  NodeChange,
+  OnNodesChange,
   PanOnScrollMode,
   Panel,
+  ReactFlowProvider,
   addEdge,
   useEdgesState,
-  useNodesState
+  useNodesState,
+  useReactFlow
 } from 'reactflow'
 
 import 'reactflow/dist/style.css'
@@ -83,16 +86,64 @@ const onPaneContextMenu = (event: any) =>
   console.log('onPaneContextMenu', event)
 
 export function FlowChatList({ messages, isLoading }: FlowChatList) {
-  const [lastY, setLastY] = useState(0) // Keep track of the last Y-coordinate
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  // const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const {
+    setNodes,
+    setEdges,
+    getNodes,
+    addNodes,
+    addEdges,
+    getNode,
+    fitView,
+    viewportInitialized,
+    setCenter,
+    getZoom
+  } = useReactFlow()
+
   const onConnect = useCallback(
     (params: Connection | Edge) => setEdges(els => addEdge(params, els)),
     []
   )
 
-  console.log('nodes', nodes)
-  console.log('nodes', edges)
+  const [nodesLength, setNodesLength] = useState(0)
+
+  const PADDING_X = 100
+  const PADDING_Y = 100
+  const WIDTH = 2000
+  const HEIGHT = 1000
+
+  const translateExtent = useMemo<CoordinateExtent>(
+    () =>
+      getNodes().reduce(
+        ([[left, top], [right, bottom]], { position }) => [
+          [
+            Math.min(
+              left,
+              (position ?? { x: Infinity }).x - WIDTH / 2 - PADDING_X
+            ),
+            Math.min(
+              top,
+              (position ?? { y: Infinity }).y - HEIGHT / 2 - PADDING_Y
+            )
+          ],
+          [
+            Math.max(
+              right,
+              (position ?? { x: -Infinity }).x + WIDTH / 2 + PADDING_X
+            ),
+            Math.max(
+              bottom,
+              (position ?? { y: -Infinity }).y + HEIGHT / 2 + PADDING_Y
+            )
+          ]
+        ],
+        [
+          [Infinity, Infinity],
+          [-Infinity, -Infinity]
+        ]
+      ),
+    [getNodes()]
+  )
 
   const [isSelectable, setIsSelectable] = useState(true)
   const [isDraggable, setIsDraggable] = useState(true)
@@ -110,40 +161,85 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
 
   const [initialLoaded, setInitialLoaded] = useState(false)
 
-  const addNode = (newMessage: Message) => {
-    const lastNode = nodes[nodes.length - 1]
-    const lastEdge = edges[edges.length - 1]
+  const onNodesChange: OnNodesChange = (changes: NodeChange[]) => {
+    console.log('onChanges: ', changes)
 
-    const newY = (lastNode.height as number) + lastNode.position.y + 50
+    const hasDimensionChanges = changes.some(
+      ({ type }) => type === 'dimensions'
+    )
+
+    if (!hasDimensionChanges) {
+      return
+    }
+
+    const nodes = getNodes()
+    setNodesLength(nodes.length)
+
+    if (nodes.length === messages.length && !initialLoaded) {
+      const lastNode = nodes[nodes.length - 1]
+
+      setCenter(
+        lastNode.position.x + (lastNode.width || 0) / 2,
+        lastNode.position.y + (lastNode.height || 0) / 2,
+        {
+          zoom: 1,
+          duration: 0
+        }
+      )
+      setInitialLoaded(true)
+    } else if (nodes.length === messages.length) {
+      const lastNode = nodes[nodes.length - 1]
+
+      setCenter(
+        lastNode.position.x + (lastNode.width || 0) / 2,
+        lastNode.position.y,
+        {
+          zoom: getZoom(),
+          duration: 500
+        }
+      )
+    }
+  }
+
+  const addNode = (newMessage: Message) => {
+    let nodes = getNodes()
+
+    const lastNode = nodes[nodes.length - 1]
+
+    const newY = lastNode
+      ? (lastNode.height ?? 0) + lastNode.position.y + 20
+      : 0
 
     // Create the new node
     const newNode: Node = {
       id: `n${newMessage.id}`,
       type: 'output',
       data: { label: newMessage.content },
-      position: { x: 0, y: newY }
+      position: { x: -400, y: newY }
     }
 
-    // Update nodes and lastY for next iteration
-    setNodes(prevNodes => [
-      ...prevNodes.map(node => {
-        return node.id === lastNode.id
-          ? { ...node, position: { x: 0, y: newY } }
-          : node
-      }),
-      newNode
-    ])
+    if (lastNode) {
+      if (nodes.length > 1) {
+        setNodes(prevNodes => [
+          ...prevNodes.map(node => {
+            return node.id === lastNode.id ? { ...node, type: 'default' } : node
+          })
+        ])
+      }
 
-    const newEdge = {
-      id: `e${newMessage.id}`,
-      source: `n${messages[messages.length - 2].id}`,
-      target: `n${newMessage.id}`,
-      animated: true
+      addNodes([newNode])
+
+      const newEdge = {
+        id: `${lastNode.id}_${newNode.id}`,
+        source: lastNode.id,
+        target: newNode.id,
+        animated: true
+      }
+
+      addEdges(newEdge)
+    } else {
+      addNodes([{ ...newNode, type: 'input' }])
     }
-
-    setEdges(prevEdges => [...prevEdges, newEdge])
-
-    setLastY(newY)
   }
 
   const updateNode = (newMessage: Message) => {
@@ -164,38 +260,18 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
   }
 
   useEffect(() => {
-    if (!initialLoaded && messages.length) {
-      setInitialLoaded(true)
-      const initialMessageNodes: Node[] = messages.map((message, index) => {
-        // Calculate position for new node based on index
-        const x = 0
-        const y = index * 100
+    const nodes = getNodes()
 
-        return {
-          id: `n${message.id}`,
-          type: index === 0 ? 'input' : 'default',
-          data: { label: message.content },
-          position: { x, y }
-          // parentNode:
-          //   index === 0 ? `n${messages[index].id}` : `n${messages[index - 1].id}`
-        }
-      })
+    if (viewportInitialized && nodes.length < messages.length) {
+      const message = messages[nodes.length]
 
-      const initialMessageEdges = messages.map((message, index) => {
-        return {
-          id: `e${index}`,
-          source:
-            index === 0
-              ? `n${messages[index].id}`
-              : `n${messages[index - 1].id}`,
-          target: `n${message.id}`,
-          animated: true
-        }
-      })
+      addNode(message)
+    }
+  }, [viewportInitialized, nodesLength])
 
-      setNodes(_ => [...initialMessageNodes])
-      setEdges(_ => [...initialMessageEdges])
-    } else {
+  useEffect(() => {
+    if (initialLoaded) {
+      const nodes = getNodes()
       if (messages.length && messages.length > nodes.length) {
         const newMessage = messages[messages.length - 1]
         addNode(newMessage)
@@ -204,7 +280,7 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
         updateNode(newMessage)
       }
     }
-  }, [messages, setNodes])
+  }, [messages])
 
   // if (!messages.length) {
   //   return null
@@ -237,13 +313,18 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
 
   return (
     <ReactFlow
-      nodes={nodes}
-      edges={edges}
+      defaultNodes={[]}
+      defaultEdges={[]}
+      minZoom={1}
+      maxZoom={2}
+      // nodes={nodes}
+      // edges={edges}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
+      // onEdgesChange={onEdgesChange}
       elementsSelectable={isSelectable}
       nodesConnectable={isConnectable}
       nodesDraggable={isDraggable}
+      translateExtent={translateExtent}
       zoomOnScroll={zoomOnScroll}
       panOnScroll={panOnScroll}
       panOnScrollMode={panOnScrollMode}
@@ -256,7 +337,6 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
       onPaneClick={captureZoomClick ? onPaneClick : undefined}
       onPaneScroll={captureZoomScroll ? onPaneScroll : undefined}
       onPaneContextMenu={captureZoomClick ? onPaneContextMenu : undefined}
-      fitView
     >
       <Background color="#ccc" variant={BackgroundVariant.Dots} />
       <MiniMap />
@@ -418,5 +498,13 @@ export function FlowChatList({ messages, isLoading }: FlowChatList) {
         </div>
       </Panel>
     </ReactFlow>
+  )
+}
+
+export function FlowChatWithProvider(props: any) {
+  return (
+    <ReactFlowProvider>
+      <FlowChatList {...props} />
+    </ReactFlowProvider>
   )
 }
