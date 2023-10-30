@@ -53,7 +53,7 @@ export function SidebarList({ userId, serverChats }: SidebarListProps) {
         </div>
       ) : (
         <div className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">No chat history</p>
+          <p className="text-sm text-muted-foreground">Geen chat historie</p>
         </div>
       )}
     </div>

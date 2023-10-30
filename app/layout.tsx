@@ -11,8 +11,8 @@ import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
   metadataBase: new URL(getURL()),
   title: {
-    default: '🐣 Smol Talk',
-    template: `%s - Smol Talk`
+    default: 'Matchpoint',
+    template: `%s - Matchpoint`
   },
   description: 'An AI-powered chatbot built with Next.js and Vercel.',
   themeColor: [

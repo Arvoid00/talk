@@ -365,4 +365,3 @@ export interface Database {
     }
   }
 }
-

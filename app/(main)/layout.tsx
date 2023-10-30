@@ -1,3 +1,5 @@
+'use server'
+
 import ChatLayout from '@/app/(main)/chat-layout'
 import { getChats } from '@/app/actions'
 import { auth } from '@/auth'

@@ -33,7 +33,7 @@ export function Header({ chats, user }: { chats: Chat[]; user?: any }) {
           <Link href="/" target="_blank" rel="nofollow">
             {/* <IconNextChat className="w-6 h-6 mr-2 dark:hidden" inverted />
             <IconNextChat className="hidden w-6 h-6 mr-2 dark:block" /> */}
-            🐣 Smol Talk
+            Matchpoint
           </Link>
         )}
         <div className="flex items-center">

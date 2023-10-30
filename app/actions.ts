@@ -2,10 +2,11 @@
 import 'server-only'
 
 import { Database } from '@/lib/db_types'
-import {
-  createServerActionClient,
-  type User
-} from '@supabase/auth-helpers-nextjs'
+// import {
+//   createServerActionClient,
+//   type User
+// } from '@supabase/auth-helpers-nextjs'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -16,11 +17,32 @@ function nanoid() {
   return Math.random().toString(36).slice(2) // random id up to 11 chars
 }
 
+type User = { id: string }
+
 export async function upsertChat(chat: Chat) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient<Database>({
-    cookies: () => cookieStore
-  })
+
+  // const supabase = createServerActionClient<Database>({
+  //   cookies: () => cookieStore
+  // })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        }
+      }
+    }
+  )
 
   const { error } = await supabase.from('chats').upsert({
     id: chat.chat_id || nanoid(),
@@ -43,9 +65,27 @@ export async function getChats(userId?: string | null) {
   }
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
     const { data } = await supabase
       .from('chats')
       .select('payload')
@@ -61,9 +101,27 @@ export async function getChats(userId?: string | null) {
 
 export async function getChat(id: string) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient<Database>({
-    cookies: () => cookieStore
-  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        }
+      }
+    }
+  )
+  // const supabase = createServerActionClient<Database>({
+  //   cookies: () => cookieStore
+  // })
   const { data } = await supabase
     .from('chats')
     .select('payload')
@@ -76,9 +134,28 @@ export async function getChat(id: string) {
 export async function removeChat({ id, path }: { id: string; path: string }) {
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
     await supabase.from('chats').delete().eq('id', id).throwOnError()
 
     revalidatePath('/')
@@ -93,9 +170,28 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 export async function clearChats() {
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
 
     const userId = (await supabase.auth.getUser())?.data?.user?.id
 
@@ -112,9 +208,28 @@ export async function clearChats() {
 
 export async function getSharedChat(id: string) {
   const cookieStore = cookies()
-  const supabase = createServerActionClient<Database>({
-    cookies: () => cookieStore
-  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        }
+      }
+    }
+  )
+
+  // const supabase = createServerActionClient<Database>({
+  //   cookies: () => cookieStore
+  // })
   const { data } = await supabase
     .from('chats')
     .select('payload')
@@ -132,9 +247,27 @@ export async function shareChat(chat: Chat) {
   }
 
   const cookieStore = cookies()
-  const supabase = createServerActionClient<Database>({
-    cookies: () => cookieStore
-  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        }
+      }
+    }
+  )
+  // const supabase = createServerActionClient<Database>({
+  //   cookies: () => cookieStore
+  // })
   await supabase
     .from('chats')
     .update({ payload: payload as any })
@@ -147,9 +280,26 @@ export async function shareChat(chat: Chat) {
 export async function getPersonas(user: User) {
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
 
     const { data, error } = await supabase
       .from('prompts')
@@ -172,9 +322,26 @@ export async function getPersonas(user: User) {
 export async function getPersonaById(user: User, persona: Persona) {
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
 
     const { data, error } = await supabase
       .from('prompts')
@@ -212,9 +379,26 @@ export async function createOrUpdatePersona({
     }
 
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
 
     let result
 
@@ -265,9 +449,27 @@ export async function createOrUpdatePersona({
 export async function removePersona({ id, user }: { id: string; user: User }) {
   try {
     const cookieStore = cookies()
-    const supabase = createServerActionClient<Database>({
-      cookies: () => cookieStore
-    })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.set({ name, value: '', ...options })
+          }
+        }
+      }
+    )
+    // const supabase = createServerActionClient<Database>({
+    //   cookies: () => cookieStore
+    // })
 
     const { data: personaResponse, error } = await supabase
       .from('prompts')
@@ -307,9 +509,27 @@ export async function updateUser({
 
     if (userData.email) {
       const cookieStore = cookies()
-      const supabase = createServerActionClient<Database>({
-        cookies: () => cookieStore
-      })
+
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return cookieStore.get(name)?.value
+            },
+            set(name: string, value: string, options: CookieOptions) {
+              cookieStore.set({ name, value, ...options })
+            },
+            remove(name: string, options: CookieOptions) {
+              cookieStore.set({ name, value: '', ...options })
+            }
+          }
+        }
+      )
+      // const supabase = createServerActionClient<Database>({
+      //   cookies: () => cookieStore
+      // })
 
       await supabase.auth.updateUser({ email: userData.email })
     }

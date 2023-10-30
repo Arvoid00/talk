@@ -21,7 +21,8 @@ import {
   DoubleArrowRightIcon,
   HamburgerMenuIcon
 } from '@radix-ui/react-icons'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+// import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { User } from '@supabase/supabase-js'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
@@ -47,7 +48,10 @@ export default function ChatLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [chats, setChats] = useState<Chat[]>(serverChats)
 
-  const supabase = createClientComponentClient<Database>()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const router = useRouter()
   const pathname = usePathname()
   const { setTheme, theme } = useTheme()
@@ -65,19 +69,19 @@ export default function ChatLayout({
   const profileOptions = useMemo(
     () => [
       {
-        label: 'Profile',
+        label: 'Profiel',
         onClick: () => onNavigate('/settings')
       },
       {
-        label: 'My Plan',
+        label: 'Mijn Abonnement',
         onClick: () => onNavigate('/settings/plan')
       },
       {
-        label: 'Settings',
+        label: 'Instellingen',
         onClick: () => onNavigate('/settings')
       },
       {
-        label: theme === 'light' ? 'Dark Appearance' : 'Light Appearance',
+        label: theme === 'light' ? 'Dark Mode' : 'Light Mode',
         onClick: () =>
           startTransition(() => {
             setTheme(theme === 'light' ? 'dark' : 'light')
@@ -264,7 +268,7 @@ export default function ChatLayout({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut} className="text-destructive">
-              Log out
+              Uitloggen
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -298,7 +302,7 @@ const Sidebar = ({
         <div className="flex items-center justify-between border-b py-4 pl-4 pr-3">
           <div className="flex items-center">
             <h1 className="ml-2 font-semibold">
-              <Link href="/">🐣 Smol Talk</Link>
+              <Link href="/">Matchpoint</Link>
             </h1>
           </div>
           <div className="flex">
@@ -319,7 +323,7 @@ const Sidebar = ({
                   Chats
                 </TabsTrigger>
                 <TabsTrigger className="w-full" value="discover">
-                  Discover
+                  Ontdek
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -349,7 +353,7 @@ const Sidebar = ({
               ) : (
                 <div className="p-8 text-center">
                   <p className="text-sm text-muted-foreground">
-                    No chat history
+                    Geen chat historie
                   </p>
                 </div>
               )}
@@ -357,7 +361,7 @@ const Sidebar = ({
             <TabsContent value="discover">
               <div className="p-8 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Nothing to discover yet ;)
+                  Nog niets te ontdekken ;)
                 </p>
               </div>
             </TabsContent>
@@ -422,7 +426,7 @@ const Sidebar = ({
                 onClick={onSignOut}
                 className="text-destructive"
               >
-                Log out
+                Uitloggen
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

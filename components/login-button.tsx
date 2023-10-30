@@ -1,6 +1,7 @@
 'use client'
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+// import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import * as React from 'react'
 
 import { Button, type ButtonProps } from '@/components/ui/button'
@@ -22,7 +23,10 @@ export function LoginButton({
 }: LoginButtonProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   // Create a Supabase client configured to use cookies
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   return (
     <button

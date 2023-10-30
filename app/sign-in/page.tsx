@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import { LoginButton } from '@/components/login-button'
+import { LoginForm } from '@/components/login-form'
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
@@ -16,12 +17,13 @@ export default async function SignInPage() {
     <>
       <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-md rounded-md bg-white p-6 shadow-md">
+          {/* <LoginForm action={'sign-in'} /> */}
           <div className="mb-4 text-center text-xl font-semibold">
-            <Link href="https://smol.ai">smol.ai</Link>
+            Matchpoint
+            {/* <Link href="https://smol.ai">smol.ai</Link> */}
           </div>
           <div className="mb-6 text-center">
-            {`We ask everyone to sign in to chat. It's just to confirm you're
-            real.`}
+            {`We ask everyone to sign in, just to confirm you're real.`}
             {/* For a genuine chat experience, please log in first. */}
           </div>
           {/* <div className="mb-4">
@@ -51,8 +53,8 @@ export default async function SignInPage() {
               name="password"
               className="mt-1 w-full rounded-md border p-2"
             />
-          </div> */}
-          {/* <div className="mb-4">
+          </div>
+          <div className="mb-4">
             <label htmlFor="remember" className="flex items-center">
               <input
                 type="checkbox"
@@ -62,8 +64,8 @@ export default async function SignInPage() {
               />
               Remember me
             </label>
-          </div> */}
-          {/* <button className="mb-4 w-full rounded-md bg-black py-2 text-white hover:bg-gray-700">
+          </div>
+          <button className="mb-4 w-full rounded-md bg-black py-2 text-white hover:bg-gray-700">
             Sign in
           </button> */}
 

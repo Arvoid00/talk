@@ -84,7 +84,7 @@ export function PersonaSelector({ user, ...props }: PersonaSelectorProps) {
               </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{persona ? persona.prompt_name : 'Choose Persona'}</p>
+              <p>{persona ? persona.prompt_name : 'Kies Persona'}</p>
             </TooltipContent>
           </Tooltip>
           <PopoverContent align="start" className="w-[250px] p-0">

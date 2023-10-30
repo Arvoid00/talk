@@ -32,27 +32,13 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { Model, models, types } from '@/constants/models'
+import { exampleMessages } from '@/components/empty-screen'
 
 interface ModelSelectorProps extends PopoverProps {
   setModel: (model: Model) => void
   setInput: React.Dispatch<React.SetStateAction<string>>
   model: Model
 }
-
-const exampleMessages = [
-  {
-    heading: 'Explain technical concepts',
-    message: `What is a "serverless function"?`
-  },
-  {
-    heading: 'Summarize an article',
-    message: 'Summarize the following article for a 2nd grader:'
-  },
-  {
-    heading: 'Draft an email',
-    message: `Draft an email to my boss about the following:`
-  }
-]
 
 export function ModelSelector({
   setModel,
@@ -90,7 +76,7 @@ export function ModelSelector({
             <IconChevronUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-[250px] p-0">
+        <PopoverContent align="end" className="w-[450px] p-0">
           <div className="flex flex-col items-start space-y-2 rounded-t-2xl border-b-2 border-b-foreground bg-background px-2 py-4 text-foreground">
             <Link href="/" className="h-auto p-0 text-sm">
               <Button
@@ -152,24 +138,33 @@ export function ModelSelector({
               <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
                 <CommandEmpty>No Models found.</CommandEmpty>
                 <HoverCardTrigger />
-                {types.map(type => (
-                  <CommandGroup key={type} heading={type}>
-                    {models
-                      .filter(model => model.type === type)
-                      .map(model => (
-                        <ModelItem
-                          key={model.id}
-                          model={model}
-                          isSelected={model?.id === model.id}
-                          onPeek={model => setPeekedModel(model)}
-                          onSelect={() => {
-                            setModel(model)
-                            setOpen(false)
-                          }}
-                        />
-                      ))}
-                  </CommandGroup>
-                ))}
+                {types.map(type => {
+                  const filteredModels = models.filter(
+                    model => model.type === type
+                  )
+                  if (filteredModels.length > 0) {
+                    return (
+                      <CommandGroup key={type} heading={type}>
+                        {models
+                          .filter(model => model.type === type)
+                          .map(model => (
+                            <ModelItem
+                              key={model.id}
+                              model={model}
+                              isSelected={model?.id === model.id}
+                              onPeek={model => setPeekedModel(model)}
+                              onSelect={() => {
+                                setModel(model)
+                                setOpen(false)
+                              }}
+                            />
+                          ))}
+                      </CommandGroup>
+                    )
+                  } else {
+                    return null
+                  }
+                })}
               </CommandList>
             </Command>
           </HoverCard>

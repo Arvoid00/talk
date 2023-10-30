@@ -2,9 +2,6 @@
 module.exports = {
   reactStrictMode: true,
   basePath: '/talk',
-  experimental: {
-    serverActions: true
-  },
   images: {
     remotePatterns: [
       {

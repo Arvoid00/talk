@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
   title: 'Settings',
-  description: 'Smol Talk settings page.'
+  description: 'Matchpoint settings page.'
 }
 
 const sidebarNavItems = [

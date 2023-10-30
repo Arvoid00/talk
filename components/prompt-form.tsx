@@ -91,7 +91,7 @@ export function PromptForm({
           onKeyDown={onKeyDown}
           value={input}
           onChange={handleInput}
-          placeholder="Send a message"
+          placeholder="Typ hier je vraag..."
           id="smol-inputbox"
           spellCheck={false}
           style={{

@@ -1,9 +1,10 @@
 import { getPersonaById } from '@/app/actions'
 import { Database } from '@/lib/db_types'
-import {
-  createRouteHandlerClient,
-  type User
-} from '@supabase/auth-helpers-nextjs'
+// import {
+//   createRouteHandlerClient,
+//   type User
+// } from '@supabase/auth-helpers-nextjs'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { cookies } from 'next/headers'
 import 'server-only'
@@ -18,6 +19,8 @@ import { ChatCompletionFunctions } from 'smolai'
 import PromptBuilder from './prompt-builder'
 
 export const runtime = 'nodejs'
+
+type User = { id: string }
 
 const processSearchResultSchema: ChatCompletionFunctions = {
   name: 'processSearchResult',
@@ -76,9 +79,23 @@ const functionSchema = [searchTheWebSchema, processSearchResultSchema]
 
 export async function POST(req: Request) {
   const cookieStore = cookies()
-  const supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookieStore
-  })
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: '', ...options })
+        }
+      }
+    }
+  )
 
   const json = await req.json()
   const { messages, previewToken, model, persona } = json
